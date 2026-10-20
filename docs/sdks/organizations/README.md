@@ -13,7 +13,7 @@
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_listOrganizations" method="get" path="/organizations" -->
+<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/organizations" -->
 ```go
 package main
 
@@ -47,7 +47,7 @@ func main() {
 
 ### Response
 
-**[*operations.OrganizationsListOrganizationsResponse](../../models/operations/organizationslistorganizationsresponse.md), error**
+**[*operations.OrganizationsListResponse](../../models/operations/organizationslistresponse.md), error**
 
 ### Errors
 
@@ -59,7 +59,7 @@ func main() {
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_createOrganization" method="post" path="/organizations" -->
+<!-- UsageSnippet language="go" operationID="Organizations_create" method="post" path="/organizations" -->
 ```go
 package main
 
@@ -67,7 +67,6 @@ import(
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
 	"github.com/phren-io/phren-go-sdk/models/components"
-	"github.com/phren-io/phren-go-sdk/types"
 	"log"
 )
 
@@ -76,15 +75,8 @@ func main() {
 
     s := phren.New()
 
-    res, err := s.Organizations.Create(ctx, components.Organization{
-        UID: "<id>",
-        ID: "<id>",
-        Owner: "<value>",
-        DisplayName: "Carrie29",
-        State: components.OrganizationStatePurging,
-        CreateTime: types.MustTimeFromString("2025-01-20T10:40:06.722Z"),
-        UpdateTime: types.MustTimeFromString("2025-11-20T15:31:52.952Z"),
-        PurgeTime: types.MustTimeFromString("2025-04-14T23:45:49.623Z"),
+    res, err := s.Organizations.Create(ctx, components.OrganizationInput{
+        DisplayName: "Blanca_Hettinger",
     })
     if err != nil {
         log.Fatal(err)
@@ -97,15 +89,15 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                          | Type                                                               | Required                                                           | Description                                                        |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `ctx`                                                              | [context.Context](https://pkg.go.dev/context#Context)              | :heavy_check_mark:                                                 | The context to use for the request.                                |
-| `request`                                                          | [components.Organization](../../models/components/organization.md) | :heavy_check_mark:                                                 | The request object to use for the request.                         |
-| `opts`                                                             | [][operations.Option](../../models/operations/option.md)           | :heavy_minus_sign:                                                 | The options for this request.                                      |
+| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
+| `request`                                                                    | [components.OrganizationInput](../../models/components/organizationinput.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
+| `opts`                                                                       | [][operations.Option](../../models/operations/option.md)                     | :heavy_minus_sign:                                                           | The options for this request.                                                |
 
 ### Response
 
-**[*operations.OrganizationsCreateOrganizationResponse](../../models/operations/organizationscreateorganizationresponse.md), error**
+**[*operations.OrganizationsCreateResponse](../../models/operations/organizationscreateresponse.md), error**
 
 ### Errors
 
@@ -117,7 +109,7 @@ func main() {
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_getOrganization" method="get" path="/organizations/{organizationId}" -->
+<!-- UsageSnippet language="go" operationID="Organizations_get" method="get" path="/organizations/{organization}" -->
 ```go
 package main
 
@@ -132,7 +124,7 @@ func main() {
 
     s := phren.New()
 
-    res, err := s.Organizations.Get(ctx, "<id>")
+    res, err := s.Organizations.Get(ctx, "<value>")
     if err != nil {
         log.Fatal(err)
     }
@@ -147,12 +139,12 @@ func main() {
 | Parameter                                                | Type                                                     | Required                                                 | Description                                              |
 | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
 | `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
-| `organizationID`                                         | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
 | `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
 
 ### Response
 
-**[*operations.OrganizationsGetOrganizationResponse](../../models/operations/organizationsgetorganizationresponse.md), error**
+**[*operations.OrganizationsGetResponse](../../models/operations/organizationsgetresponse.md), error**
 
 ### Errors
 
@@ -164,7 +156,7 @@ func main() {
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_deleteOrganization" method="delete" path="/organizations/{organizationId}" -->
+<!-- UsageSnippet language="go" operationID="Organizations_delete" method="delete" path="/organizations/{organization}" -->
 ```go
 package main
 
@@ -179,7 +171,7 @@ func main() {
 
     s := phren.New()
 
-    res, err := s.Organizations.Delete(ctx, "<id>")
+    res, err := s.Organizations.Delete(ctx, "<value>")
     if err != nil {
         log.Fatal(err)
     }
@@ -194,12 +186,12 @@ func main() {
 | Parameter                                                | Type                                                     | Required                                                 | Description                                              |
 | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
 | `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
-| `organizationID`                                         | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
 | `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
 
 ### Response
 
-**[*operations.OrganizationsDeleteOrganizationResponse](../../models/operations/organizationsdeleteorganizationresponse.md), error**
+**[*operations.OrganizationsDeleteResponse](../../models/operations/organizationsdeleteresponse.md), error**
 
 ### Errors
 

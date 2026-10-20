@@ -1,12 +1,13 @@
 openapi: 3.1.0
 info:
-  title: Resource Manager
+  title: Phren API
   version: 0.0.0
-tags: []
+tags:
+  - name: organizations
 paths:
   /organizations:
     get:
-      operationId: Organizations_listOrganizations
+      operationId: Organizations_list
       parameters: []
       responses:
         '200':
@@ -17,31 +18,31 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Organization'
-      x-speakeasy-group: organizations
-      x-speakeasy-name-override: list
+      tags:
+        - organizations
     post:
-      operationId: Organizations_createOrganization
+      operationId: Organizations_create
       parameters: []
       responses:
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
+        '200':
+          description: The request has succeeded.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+      tags:
+        - organizations
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Organization'
-      x-speakeasy-group: organizations
-      x-speakeasy-name-override: create
-  /organizations/{organizationId}:
+  /organizations/{organization}:
     get:
-      operationId: Organizations_getOrganization
+      operationId: Organizations_get
       parameters:
-        - name: organizationId
+        - name: organization
           in: path
           required: true
           schema:
@@ -53,12 +54,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
-      x-speakeasy-group: organizations
-      x-speakeasy-name-override: get
+      tags:
+        - organizations
     delete:
-      operationId: Organizations_deleteOrganization
+      operationId: Organizations_delete
       parameters:
-        - name: organizationId
+        - name: organization
           in: path
           required: true
           schema:
@@ -66,50 +67,34 @@ paths:
       responses:
         '204':
           description: 'There is no content to send for this request, but the headers may be useful. '
-      x-speakeasy-group: organizations
-      x-speakeasy-name-override: delete
+      tags:
+        - organizations
 components:
   schemas:
     Organization:
       type: object
       required:
-        - uid
-        - id
-        - owner
-        - display_name
-        - state
-        - create_time
-        - update_time
-        - purge_time
+        - name
+        - displayName
       properties:
-        uid:
+        name:
           type: string
-        id:
+          readOnly: true
+        displayName:
           type: string
-        owner:
-          type: string
-        display_name:
-          type: string
-        state:
-          $ref: '#/components/schemas/organizationState'
-        create_time:
-          type: string
-          format: date-time
-        update_time:
-          type: string
-          format: date-time
-        purge_time:
-          type: string
-          format: date-time
-    organizationState:
-      type: string
-      enum:
-        - STATE_UNSPECIFIED
-        - ACTIVE
-        - DELETING
-        - RESTORING
-        - PURGING
-        - FAILED
 servers:
   - url: https://api.phren.io
+    description: The production server
     variables: {}
+  - url: https://staging.api.phren.io
+    description: The staging server
+    variables: {}
+x-speakeasy-name-override:
+  - operationId: ^.+_list$
+    methodNameOverride: list
+  - operationId: ^.+_get$
+    methodNameOverride: get
+  - operationId: ^.+_create$
+    methodNameOverride: create
+  - operationId: ^.+_delete$
+    methodNameOverride: delete

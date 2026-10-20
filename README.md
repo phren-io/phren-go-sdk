@@ -22,7 +22,6 @@ Developer-friendly & type-safe Go SDK specifically catered to leverage *phren* A
 * [phren](#phren)
   * [SDK Installation](#sdk-installation)
   * [SDK Example Usage](#sdk-example-usage)
-  * [Authentication](#authentication)
   * [Available Resources and Operations](#available-resources-and-operations)
   * [Retries](#retries)
   * [Error Handling](#error-handling)
@@ -55,21 +54,18 @@ import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
-	"os"
 )
 
 func main() {
 	ctx := context.Background()
 
-	s := phren.New(
-		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
-	)
+	s := phren.New()
 
-	res, err := s.Widgets.ListWidgets(ctx)
+	res, err := s.Organizations.List(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.WidgetList != nil {
+	if res.Organizations != nil {
 		// handle response
 	}
 }
@@ -77,61 +73,18 @@ func main() {
 ```
 <!-- End SDK Example Usage [usage] -->
 
-<!-- Start Authentication [security] -->
-## Authentication
-
-### Per-Client Security Schemes
-
-This SDK supports the following security scheme globally:
-
-| Name         | Type | Scheme      | Environment Variable |
-| ------------ | ---- | ----------- | -------------------- |
-| `BearerAuth` | http | HTTP Bearer | `PHREN_BEARER_AUTH`  |
-
-You can configure it using the `WithSecurity` option when initializing the SDK client instance. For example:
-```go
-package main
-
-import (
-	"context"
-	phren "github.com/phren-io/phren-go-sdk"
-	"log"
-	"os"
-)
-
-func main() {
-	ctx := context.Background()
-
-	s := phren.New(
-		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
-	)
-
-	res, err := s.Widgets.ListWidgets(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if res.WidgetList != nil {
-		// handle response
-	}
-}
-
-```
-<!-- End Authentication [security] -->
-
 <!-- Start Available Resources and Operations [operations] -->
 ## Available Resources and Operations
 
 <details open>
 <summary>Available methods</summary>
 
-### [Widgets](docs/sdks/widgets/README.md)
+### [Organizations](docs/sdks/organizations/README.md)
 
-* [ListWidgets](docs/sdks/widgets/README.md#listwidgets) - List widgets
-* [CreateWidget](docs/sdks/widgets/README.md#createwidget) - Create a widget
-* [GetWidget](docs/sdks/widgets/README.md#getwidget) - Read a widget
-* [UpdateWidget](docs/sdks/widgets/README.md#updatewidget) - Update a widget (send only the fields to change)
-* [DeleteWidget](docs/sdks/widgets/README.md#deletewidget) - Delete a widget
-* [AnalyzeWidget](docs/sdks/widgets/README.md#analyzewidget) - Analyze a widget
+* [List](docs/sdks/organizations/README.md#list)
+* [Create](docs/sdks/organizations/README.md#create)
+* [Get](docs/sdks/organizations/README.md#get)
+* [Delete](docs/sdks/organizations/README.md#delete)
 
 </details>
 <!-- End Available Resources and Operations [operations] -->
@@ -151,17 +104,14 @@ import (
 	"github.com/phren-io/phren-go-sdk/retry"
 	"log"
 	"models/operations"
-	"os"
 )
 
 func main() {
 	ctx := context.Background()
 
-	s := phren.New(
-		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
-	)
+	s := phren.New()
 
-	res, err := s.Widgets.ListWidgets(ctx, operations.WithRetries(
+	res, err := s.Organizations.List(ctx, operations.WithRetries(
 		retry.Config{
 			Strategy: "backoff",
 			Backoff: &retry.BackoffStrategy{
@@ -175,7 +125,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.WidgetList != nil {
+	if res.Organizations != nil {
 		// handle response
 	}
 }
@@ -191,7 +141,6 @@ import (
 	phren "github.com/phren-io/phren-go-sdk"
 	"github.com/phren-io/phren-go-sdk/retry"
 	"log"
-	"os"
 )
 
 func main() {
@@ -209,14 +158,13 @@ func main() {
 				},
 				RetryConnectionErrors: false,
 			}),
-		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
-	res, err := s.Widgets.ListWidgets(ctx)
+	res, err := s.Organizations.List(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.WidgetList != nil {
+	if res.Organizations != nil {
 		// handle response
 	}
 }
@@ -231,7 +179,7 @@ Handling errors in this SDK should largely match your expectations. All operatio
 
 By Default, an API error will return `apierrors.APIError`. When custom error responses are specified for an operation, the SDK may also return their associated error. You can refer to respective *Errors* tables in SDK docs for more details on possible error types for each operation.
 
-For example, the `ListWidgets` function may return the following errors:
+For example, the `List` function may return the following errors:
 
 | Error Type         | Status Code | Content Type |
 | ------------------ | ----------- | ------------ |
@@ -248,17 +196,14 @@ import (
 	phren "github.com/phren-io/phren-go-sdk"
 	"github.com/phren-io/phren-go-sdk/models/apierrors"
 	"log"
-	"os"
 )
 
 func main() {
 	ctx := context.Background()
 
-	s := phren.New(
-		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
-	)
+	s := phren.New()
 
-	res, err := s.Widgets.ListWidgets(ctx)
+	res, err := s.Organizations.List(ctx)
 	if err != nil {
 
 		var e *apierrors.APIError
@@ -275,9 +220,17 @@ func main() {
 <!-- Start Server Selection [server] -->
 ## Server Selection
 
-### Override Server URL Per-Client
+### Select Server by Index
 
-The default server can be overridden globally using the `WithServerURL(serverURL string)` option when initializing the SDK client instance. For example:
+You can override the default server globally using the `WithServerIndex(serverIndex int)` option when initializing the SDK client instance. The selected server will then be used as the default on the operations that use it. This table lists the indexes associated with the available servers:
+
+| #   | Server                         | Description           |
+| --- | ------------------------------ | --------------------- |
+| 0   | `https://api.phren.io`         | The production server |
+| 1   | `https://staging.api.phren.io` | The staging server    |
+
+#### Example
+
 ```go
 package main
 
@@ -285,22 +238,50 @@ import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
-	"os"
 )
 
 func main() {
 	ctx := context.Background()
 
 	s := phren.New(
-		phren.WithServerURL("https://api.phren.io"),
-		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+		phren.WithServerIndex(0),
 	)
 
-	res, err := s.Widgets.ListWidgets(ctx)
+	res, err := s.Organizations.List(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.WidgetList != nil {
+	if res.Organizations != nil {
+		// handle response
+	}
+}
+
+```
+
+### Override Server URL Per-Client
+
+The default server can also be overridden globally using the `WithServerURL(serverURL string)` option when initializing the SDK client instance. For example:
+```go
+package main
+
+import (
+	"context"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+	ctx := context.Background()
+
+	s := phren.New(
+		phren.WithServerURL("https://staging.api.phren.io"),
+	)
+
+	res, err := s.Organizations.List(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if res.Organizations != nil {
 		// handle response
 	}
 }

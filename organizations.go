@@ -32,7 +32,7 @@ func newOrganizations(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *
 	}
 }
 
-func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*operations.OrganizationsListOrganizationsResponse, error) {
+func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*operations.OrganizationsListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -61,7 +61,7 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "Organizations_listOrganizations",
+		OperationID:      "Organizations_list",
 		SecuritySource:   nil,
 	}
 
@@ -178,7 +178,7 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 		}
 	}
 
-	res := &operations.OrganizationsListOrganizationsResponse{
+	res := &operations.OrganizationsListResponse{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -231,7 +231,7 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 
 }
 
-func (s *Organizations) Create(ctx context.Context, request components.Organization, opts ...operations.Option) (*operations.OrganizationsCreateOrganizationResponse, error) {
+func (s *Organizations) Create(ctx context.Context, request components.OrganizationInput, opts ...operations.Option) (*operations.OrganizationsCreateResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -260,7 +260,7 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "Organizations_createOrganization",
+		OperationID:      "Organizations_create",
 		SecuritySource:   nil,
 	}
 	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Request", "json", `request:"mediaType=application/json"`)
@@ -384,7 +384,7 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 		}
 	}
 
-	res := &operations.OrganizationsCreateOrganizationResponse{
+	res := &operations.OrganizationsCreateResponse{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -392,7 +392,7 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 	}
 
 	switch {
-	case httpRes.StatusCode == 201:
+	case httpRes.StatusCode == 200:
 		switch {
 		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -437,9 +437,9 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 
 }
 
-func (s *Organizations) Get(ctx context.Context, organizationID string, opts ...operations.Option) (*operations.OrganizationsGetOrganizationResponse, error) {
-	request := operations.OrganizationsGetOrganizationRequest{
-		OrganizationID: organizationID,
+func (s *Organizations) Get(ctx context.Context, organization string, opts ...operations.Option) (*operations.OrganizationsGetResponse, error) {
+	request := operations.OrganizationsGetRequest{
+		Organization: organization,
 	}
 
 	o := operations.Options{}
@@ -460,7 +460,7 @@ func (s *Organizations) Get(ctx context.Context, organizationID string, opts ...
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/organizations/{organizationId}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/organizations/{organization}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -470,7 +470,7 @@ func (s *Organizations) Get(ctx context.Context, organizationID string, opts ...
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "Organizations_getOrganization",
+		OperationID:      "Organizations_get",
 		SecuritySource:   nil,
 	}
 
@@ -587,7 +587,7 @@ func (s *Organizations) Get(ctx context.Context, organizationID string, opts ...
 		}
 	}
 
-	res := &operations.OrganizationsGetOrganizationResponse{
+	res := &operations.OrganizationsGetResponse{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,
@@ -640,9 +640,9 @@ func (s *Organizations) Get(ctx context.Context, organizationID string, opts ...
 
 }
 
-func (s *Organizations) Delete(ctx context.Context, organizationID string, opts ...operations.Option) (*operations.OrganizationsDeleteOrganizationResponse, error) {
-	request := operations.OrganizationsDeleteOrganizationRequest{
-		OrganizationID: organizationID,
+func (s *Organizations) Delete(ctx context.Context, organization string, opts ...operations.Option) (*operations.OrganizationsDeleteResponse, error) {
+	request := operations.OrganizationsDeleteRequest{
+		Organization: organization,
 	}
 
 	o := operations.Options{}
@@ -663,7 +663,7 @@ func (s *Organizations) Delete(ctx context.Context, organizationID string, opts 
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/organizations/{organizationId}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/organizations/{organization}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -673,7 +673,7 @@ func (s *Organizations) Delete(ctx context.Context, organizationID string, opts 
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "Organizations_deleteOrganization",
+		OperationID:      "Organizations_delete",
 		SecuritySource:   nil,
 	}
 
@@ -790,7 +790,7 @@ func (s *Organizations) Delete(ctx context.Context, organizationID string, opts 
 		}
 	}
 
-	res := &operations.OrganizationsDeleteOrganizationResponse{
+	res := &operations.OrganizationsDeleteResponse{
 		HTTPMeta: components.HTTPMetadata{
 			Request:  req,
 			Response: httpRes,

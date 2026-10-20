@@ -37,6 +37,7 @@ generation:
 go:
   version: 0.0.1
   additionalDependencies: {}
+  baseErrorName: PhrenError
   clientServerStatusCodesAsErrors: true
   defaultErrorName: APIError
   enableCustomCodeRegions: false

@@ -1,8 +1,8 @@
-# OrganizationsDeleteOrganizationRequest
+# OrganizationsGetRequest
 
 
 ## Fields
 
 | Field              | Type               | Required           | Description        |
 | ------------------ | ------------------ | ------------------ | ------------------ |
-| `OrganizationID`   | `string`           | :heavy_check_mark: | N/A                |
+| `Organization`     | `string`           | :heavy_check_mark: | N/A                |
