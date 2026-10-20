@@ -1,0 +1,198 @@
+lockVersion: 2.0.0
+id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
+management: {}
+trackedFiles:
+  .devcontainer/README.md:
+    last_write_checksum: sha1:be2627d96bcc7a331cdb1b53ab5136930ae7febc
+  .devcontainer/devcontainer.json:
+    last_write_checksum: sha1:8a54e16e0b01d791205e6bafa9b912f73b68ab0e
+  .devcontainer/setup.sh:
+    last_write_checksum: sha1:0443cc8beac352499afd25be90adf28d3736dbe0
+  .gitattributes:
+    last_write_checksum: sha1:84b0115789fc3ea52e31df701d8a27f76077e29f
+  USAGE.md:
+    last_write_checksum: sha1:a8615871485449036169e9bc25e57c00ba2f2319
+  docs/models/components/analyzeresult.md:
+    last_write_checksum: sha1:fdc2881194a3f87241e5c2da738fcb89f26e21e4
+  docs/models/components/error.md:
+    last_write_checksum: sha1:b52c3f19d9d8bbb8e27fea858940acb3e475cc73
+  docs/models/components/httpmetadata.md:
+    last_write_checksum: sha1:7c40945dac218ce5e5e11e7c907d27a3ea14c417
+  docs/models/components/security.md:
+    last_write_checksum: sha1:3d20d8f28e0ecfee6550ce09129b5ec06e25c24d
+  docs/models/components/widget.md:
+    last_write_checksum: sha1:d232a7cebaead526ea98a10f786a935941d98556
+  docs/models/components/widgetcolor.md:
+    last_write_checksum: sha1:8be641979ae5a83f3b5028c85dddb1eb2b0c134f
+  docs/models/components/widgetinput.md:
+    last_write_checksum: sha1:38be65739085e0543da1657155510216b1e525fc
+  docs/models/components/widgetlist.md:
+    last_write_checksum: sha1:0a0bc54c8893f418c303c5393baec9e03561a248
+  docs/models/components/widgetupdate.md:
+    last_write_checksum: sha1:d8ad0bc9859962ccb3c6664d21456c2548d61fe4
+  docs/models/components/widgetupdatecolor.md:
+    last_write_checksum: sha1:221b790f6af954dcc46c07cd8d918cbd15c56c27
+  docs/models/operations/analyzewidgetrequest.md:
+    last_write_checksum: sha1:b5c60c431489eb94c840efdf472a42e7573c8b12
+  docs/models/operations/analyzewidgetresponse.md:
+    last_write_checksum: sha1:870144ff1336ede68dafaa628c0e0f60e406aeb3
+  docs/models/operations/createwidgetresponse.md:
+    last_write_checksum: sha1:58fd26bc1b0dba7a49deab90f73c23b86be69a47
+  docs/models/operations/deletewidgetrequest.md:
+    last_write_checksum: sha1:f8d9c41f3af47c26a9d49fdfe1ff590ef2a42ec5
+  docs/models/operations/deletewidgetresponse.md:
+    last_write_checksum: sha1:c8480b76af5e7e73b1c7389dab8761ba1005c0e4
+  docs/models/operations/getwidgetrequest.md:
+    last_write_checksum: sha1:3152e9c03c1bacd563e534c297c7825a1b40cfe1
+  docs/models/operations/getwidgetresponse.md:
+    last_write_checksum: sha1:c2616a73d0ce12db286b6f1bb4c5f65e499ac0dd
+  docs/models/operations/listwidgetsresponse.md:
+    last_write_checksum: sha1:933f6c4bef11a835c125926a01f777007f472e9a
+  docs/models/operations/option.md:
+    last_write_checksum: sha1:c9e83d548975847c2854ce288d628b709ac8bbf2
+  docs/models/operations/updatewidgetrequest.md:
+    last_write_checksum: sha1:4343b7d299201ac18a735e776df6664ffeefa7f7
+  docs/models/operations/updatewidgetresponse.md:
+    last_write_checksum: sha1:44935bcc3428d48baddcdf09b2087a4afbe43759
+  docs/sdks/widgets/README.md:
+    last_write_checksum: sha1:c1a07e47550bba7ccec16076cb920fbada54900e
+  go.mod:
+    last_write_checksum: sha1:708820a167f59c63a41be588ce6464fb48b9ced9
+  internal/config/sdkconfiguration.go:
+    last_write_checksum: sha1:3126b08be2a6bc03253a7faf0d00ce5b521673d3
+  internal/hooks/hooks.go:
+    last_write_checksum: sha1:a4b25e51f69416de204478d8d72ec52b82b8a359
+  internal/utils/contenttype.go:
+    last_write_checksum: sha1:ab5cfd860d02c6e6a37f89e2b5649a9859947fb1
+  internal/utils/env.go:
+    last_write_checksum: sha1:1e0bcb2d2caed9f3657f1dbc99b55811bed0298c
+  internal/utils/form.go:
+    last_write_checksum: sha1:0df6b20517d3974c720df13f843d7eb70a1627c2
+  internal/utils/headers.go:
+    last_write_checksum: sha1:33227a72bdd030e7381eb474b84660f722c7e613
+  internal/utils/json.go:
+    last_write_checksum: sha1:e1930a34f91fd2f714fa013b3a019e9186681cf5
+  internal/utils/pathparams.go:
+    last_write_checksum: sha1:a57afef8d8bf4e3553eb15eb0aea507d2a471535
+  internal/utils/queryparams.go:
+    last_write_checksum: sha1:7f4418c680d4de79ab51e66caa547d7b26be838d
+  internal/utils/requestbody.go:
+    last_write_checksum: sha1:5e12ab305b551d282a19d8d0b17521659cef9e1e
+  internal/utils/retries.go:
+    last_write_checksum: sha1:558df5379ca6b3b55a9061beaccc6d050d48e3d1
+  internal/utils/security.go:
+    last_write_checksum: sha1:982f805f707b2dc7af0c7725958be3943d18b344
+  internal/utils/union.go:
+    last_write_checksum: sha1:8452aaebbbdcb9a67512e4a371393fc10f1f3412
+  internal/utils/union_test.go:
+    last_write_checksum: sha1:c55e5e44c26dfae67b83359851996122a3dfc9cf
+  internal/utils/utils.go:
+    last_write_checksum: sha1:1dea22666cab8b5635aa3fe31d54bb5de6875209
+  models/apierrors/apierror.go:
+    last_write_checksum: sha1:e699d3325ea82ea2b0d29656396210f0513c3391
+  models/apierrors/responsevalidationerror.go:
+    last_write_checksum: sha1:593de5fc935fb91206142dfeca06887a84e8a507
+  models/components/analyzeresult.go:
+    last_write_checksum: sha1:838fc239eddf8b628147bc0723c481c3655e4c2f
+  models/components/error.go:
+    last_write_checksum: sha1:2d35aeffc00eed29f8fb185bd26492fbf64be822
+  models/components/httpmetadata.go:
+    last_write_checksum: sha1:01a20fcff33179809ff9920ee431c7adabbd98f1
+  models/components/security.go:
+    last_write_checksum: sha1:44fa11d01f1c4fc2a767e4aebe3fef4a29e43936
+  models/components/widget.go:
+    last_write_checksum: sha1:32f4b7bca12c1e7e1f285d0ab7e12ccc829e8309
+  models/components/widgetlist.go:
+    last_write_checksum: sha1:3fb4a96a1528893f2d777d54f75c56bb44ff9842
+  models/components/widgetupdate.go:
+    last_write_checksum: sha1:9f95eb8c68c95485d094fab5426c850726cf5780
+  models/operations/analyzewidget.go:
+    last_write_checksum: sha1:65166e520844b71ff27fb7d2837593afd5aa2192
+  models/operations/createwidget.go:
+    last_write_checksum: sha1:6e6b1a577d172ab3fca567aa08c5b9815233e94f
+  models/operations/deletewidget.go:
+    last_write_checksum: sha1:67a9c964386ac9e2dd7bdb29ee0c39eee552c268
+  models/operations/getwidget.go:
+    last_write_checksum: sha1:fea7e1297672871978715c14beb255f890711354
+  models/operations/listwidgets.go:
+    last_write_checksum: sha1:0406753d11828c821c4c1c2a15a64b0ff9787cd2
+  models/operations/options.go:
+    last_write_checksum: sha1:cfd219975dcfa36cbd6871de5e2e071003012985
+  models/operations/updatewidget.go:
+    last_write_checksum: sha1:b8d59a19337c94b8d6c8760e34ca9e0c10deb14c
+  optionalnullable/optionalnullable.go:
+    last_write_checksum: sha1:b828c94c45116e632925027e4e2c211e971e04e2
+  optionalnullable/optionalnullable_test.go:
+    last_write_checksum: sha1:d3991667754ed67db803aeab4a6239f6f9a1be37
+  phren.go:
+    last_write_checksum: sha1:215384a2f9aa58965915c83bcfc651d097bdb260
+  retry/config.go:
+    last_write_checksum: sha1:102d1953fbd7e9f312c4442c71ccca2eaaeaa27d
+  types/bigint.go:
+    last_write_checksum: sha1:49b004005d0461fb04b846eca062b070b0360b31
+  types/date.go:
+    last_write_checksum: sha1:3036a2e1ed15a1d484c093367eba000c38f384d0
+  types/datetime.go:
+    last_write_checksum: sha1:196d050af6450669214e9ae4fd28e56263ae2b5d
+  types/pointers.go:
+    last_write_checksum: sha1:fc2275ea006257ba9ba4ff6f2a2cdb6205371eef
+  widgets.go:
+    last_write_checksum: sha1:f4449eaa76908ee6bac03ca6df4584ba8386becc
+examples:
+  listWidgets:
+    speakeasy-default-list-widgets:
+      responses:
+        "200":
+          application/json: {"items": [{"id": "<id>", "weight": 777086, "color": "red"}]}
+        default:
+          application/json: {"code": 643862, "message": "<value>"}
+  createWidget:
+    speakeasy-default-create-widget:
+      requestBody:
+        application/json: {"weight": 23245, "color": "red"}
+      responses:
+        "200":
+          application/json: {"id": "<id>", "weight": 878966, "color": "blue"}
+        default:
+          application/json: {"code": 739612, "message": "<value>"}
+  getWidget:
+    speakeasy-default-get-widget:
+      parameters:
+        path:
+          id: "<id>"
+      responses:
+        "200":
+          application/json: {"id": "<id>", "weight": 879891, "color": "red"}
+        default:
+          application/json: {"code": 383735, "message": "<value>"}
+  updateWidget:
+    speakeasy-default-update-widget:
+      parameters:
+        path:
+          id: "<id>"
+      requestBody:
+        application/json: {}
+      responses:
+        "200":
+          application/json: {"id": "<id>", "weight": 212576, "color": "red"}
+        default:
+          application/json: {"code": 798786, "message": "<value>"}
+  deleteWidget:
+    speakeasy-default-delete-widget:
+      parameters:
+        path:
+          id: "<id>"
+      responses:
+        default:
+          application/json: {"code": 145839, "message": "<value>"}
+  analyzeWidget:
+    speakeasy-default-analyze-widget:
+      parameters:
+        path:
+          id: "<id>"
+      responses:
+        "200":
+          application/json: {"id": "<id>", "analysis": "<value>"}
+        default:
+          application/json: {"code": 529550, "message": "<value>"}
+examplesVersion: 1.0.2

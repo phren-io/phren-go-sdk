@@ -1,0 +1,19 @@
+workflowVersion: 1.0.0
+speakeasyVersion: latest
+sources:
+    Phren API:
+        inputs:
+            - location: ../platform/api/tsp-output/schema/openapi.yaml
+        output: .speakeasy/out.openapi.yaml
+        registry:
+            location: registry.speakeasyapi.dev/phren/me/phren-api
+targets:
+    phren:
+        target: go
+        source: Phren API
+        codeSamples:
+            registry:
+                location: registry.speakeasyapi.dev/phren/me/phren-api-go-code-samples
+            labelOverride:
+                fixedValue: Go (SDK)
+            blocking: false
