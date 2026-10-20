@@ -1,14 +1,12 @@
 openapi: 3.1.0
 info:
-  title: Phren API
+  title: Resource Manager
   version: 0.0.0
-tags:
-  - name: Widgets
+tags: []
 paths:
-  /widgets:
+  /organizations:
     get:
-      operationId: listWidgets
-      description: List widgets
+      operationId: Organizations_listOrganizations
       parameters: []
       responses:
         '200':
@@ -16,46 +14,34 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WidgetList'
-        default:
-          description: An unexpected error response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      tags:
-        - Widgets
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+      x-speakeasy-group: organizations
+      x-speakeasy-name-override: list
     post:
-      operationId: createWidget
-      description: Create a widget
+      operationId: Organizations_createOrganization
       parameters: []
       responses:
-        '200':
-          description: The request has succeeded.
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Widget'
-        default:
-          description: An unexpected error response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      tags:
-        - Widgets
+                $ref: '#/components/schemas/Organization'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Widget'
-  /widgets/{id}:
+              $ref: '#/components/schemas/Organization'
+      x-speakeasy-group: organizations
+      x-speakeasy-name-override: create
+  /organizations/{organizationId}:
     get:
-      operationId: getWidget
-      description: Read a widget
+      operationId: Organizations_getOrganization
       parameters:
-        - name: id
+        - name: organizationId
           in: path
           required: true
           schema:
@@ -66,50 +52,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Widget'
-        default:
-          description: An unexpected error response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      tags:
-        - Widgets
-    patch:
-      operationId: updateWidget
-      description: Update a widget (send only the fields to change)
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Widget'
-        default:
-          description: An unexpected error response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      tags:
-        - Widgets
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WidgetUpdate'
+                $ref: '#/components/schemas/Organization'
+      x-speakeasy-group: organizations
+      x-speakeasy-name-override: get
     delete:
-      operationId: deleteWidget
-      description: Delete a widget
+      operationId: Organizations_deleteOrganization
       parameters:
-        - name: id
+        - name: organizationId
           in: path
           required: true
           schema:
@@ -117,108 +66,50 @@ paths:
       responses:
         '204':
           description: 'There is no content to send for this request, but the headers may be useful. '
-        default:
-          description: An unexpected error response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      tags:
-        - Widgets
-  /widgets/{id}/analyze:
-    post:
-      operationId: analyzeWidget
-      description: Analyze a widget
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AnalyzeResult'
-        default:
-          description: An unexpected error response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      tags:
-        - Widgets
-security:
-  - BearerAuth: []
+      x-speakeasy-group: organizations
+      x-speakeasy-name-override: delete
 components:
   schemas:
-    AnalyzeResult:
+    Organization:
       type: object
       required:
+        - uid
         - id
-        - analysis
+        - owner
+        - display_name
+        - state
+        - create_time
+        - update_time
+        - purge_time
       properties:
+        uid:
+          type: string
         id:
           type: string
-        analysis:
+        owner:
           type: string
-    Error:
-      type: object
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
+        display_name:
           type: string
-    Widget:
-      type: object
-      required:
-        - id
-        - weight
-        - color
-      properties:
-        id:
+        state:
+          $ref: '#/components/schemas/organizationState'
+        create_time:
           type: string
-          readOnly: true
-        weight:
-          type: integer
-          format: int32
-        color:
+          format: date-time
+        update_time:
           type: string
-          enum:
-            - red
-            - blue
-    WidgetList:
-      type: object
-      required:
-        - items
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Widget'
-    WidgetUpdate:
-      type: object
-      properties:
-        weight:
-          type: integer
-          format: int32
-        color:
+          format: date-time
+        purge_time:
           type: string
-          enum:
-            - red
-            - blue
-      description: Fields that can be changed on a widget; all optional.
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: Bearer
+          format: date-time
+    organizationState:
+      type: string
+      enum:
+        - STATE_UNSPECIFIED
+        - ACTIVE
+        - DELETING
+        - RESTORING
+        - PURGING
+        - FAILED
 servers:
   - url: https://api.phren.io
-    description: Phren API
     variables: {}

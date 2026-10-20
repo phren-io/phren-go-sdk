@@ -1,0 +1,46 @@
+overlay: 1.0.0
+x-speakeasy-jsonpath: rfc9535
+info:
+  title: Speakeasy Modifications
+  version: 0.0.1
+  x-speakeasy-metadata:
+    type: speakeasy-modifications
+    before: ""
+    after: ""
+actions:
+  - target: $["paths"]["/organizations"]["get"]
+    update:
+      x-speakeasy-group: organizations
+      x-speakeasy-name-override: list
+    x-speakeasy-metadata:
+      after: sdk.organizations.list()
+      before: sdk.<no_group>.Organizations_listOrganizations()
+      created_at: 1792455973871
+      type: method-name
+  - target: $["paths"]["/organizations"]["post"]
+    update:
+      x-speakeasy-group: organizations
+      x-speakeasy-name-override: create
+    x-speakeasy-metadata:
+      after: sdk.organizations.create()
+      before: sdk.<no_group>.Organizations_createOrganization()
+      created_at: 1792455973872
+      type: method-name
+  - target: $["paths"]["/organizations/{organizationId}"]["get"]
+    update:
+      x-speakeasy-group: organizations
+      x-speakeasy-name-override: get
+    x-speakeasy-metadata:
+      after: sdk.organizations.get()
+      before: sdk.<no_group>.Organizations_getOrganization()
+      created_at: 1792455973872
+      type: method-name
+  - target: $["paths"]["/organizations/{organizationId}"]["delete"]
+    update:
+      x-speakeasy-group: organizations
+      x-speakeasy-name-override: delete
+    x-speakeasy-metadata:
+      after: sdk.organizations.delete()
+      before: sdk.<no_group>.Organizations_deleteOrganization()
+      created_at: 1792455973872
+      type: method-name

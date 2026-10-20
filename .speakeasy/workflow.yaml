@@ -3,10 +3,8 @@ speakeasyVersion: latest
 sources:
     Phren API:
         inputs:
-            - location: ../platform/api/tsp-output/schema/openapi.yaml
+            - location: registry.speakeasyapi.dev/phren/me/phren-api
         output: .speakeasy/out.openapi.yaml
-        registry:
-            location: registry.speakeasyapi.dev/phren/me/phren-api
 targets:
     phren:
         target: go
