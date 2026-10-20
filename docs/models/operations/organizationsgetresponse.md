@@ -1,4 +1,4 @@
-# OrganizationsGetOrganizationResponse
+# OrganizationsGetResponse
 
 
 ## Fields

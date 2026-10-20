@@ -6,21 +6,18 @@ import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
-	"os"
 )
 
 func main() {
 	ctx := context.Background()
 
-	s := phren.New(
-		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
-	)
+	s := phren.New()
 
-	res, err := s.Widgets.ListWidgets(ctx)
+	res, err := s.Organizations.List(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.WidgetList != nil {
+	if res.Organizations != nil {
 		// handle response
 	}
 }

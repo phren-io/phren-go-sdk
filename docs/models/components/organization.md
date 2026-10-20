@@ -3,13 +3,7 @@
 
 ## Fields
 
-| Field                                                                        | Type                                                                         | Required                                                                     | Description                                                                  |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `UID`                                                                        | `string`                                                                     | :heavy_check_mark:                                                           | N/A                                                                          |
-| `ID`                                                                         | `string`                                                                     | :heavy_check_mark:                                                           | N/A                                                                          |
-| `Owner`                                                                      | `string`                                                                     | :heavy_check_mark:                                                           | N/A                                                                          |
-| `DisplayName`                                                                | `string`                                                                     | :heavy_check_mark:                                                           | N/A                                                                          |
-| `State`                                                                      | [components.OrganizationState](../../models/components/organizationstate.md) | :heavy_check_mark:                                                           | N/A                                                                          |
-| `CreateTime`                                                                 | [time.Time](https://pkg.go.dev/time#Time)                                    | :heavy_check_mark:                                                           | N/A                                                                          |
-| `UpdateTime`                                                                 | [time.Time](https://pkg.go.dev/time#Time)                                    | :heavy_check_mark:                                                           | N/A                                                                          |
-| `PurgeTime`                                                                  | [time.Time](https://pkg.go.dev/time#Time)                                    | :heavy_check_mark:                                                           | N/A                                                                          |
+| Field              | Type               | Required           | Description        |
+| ------------------ | ------------------ | ------------------ | ------------------ |
+| `Name`             | `string`           | :heavy_check_mark: | N/A                |
+| `DisplayName`      | `string`           | :heavy_check_mark: | N/A                |

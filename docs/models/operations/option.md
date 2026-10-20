@@ -39,22 +39,6 @@ WithClient allows the overriding of the default HTTP client used by the SDK.
 phren.WithClient(httpClient)
 ```
 
-### WithSecurity
-
-WithSecurity configures the SDK to use the provided security details.
-
-```go
-phren.WithSecurity(/* ... */)
-```
-
-### WithSecuritySource
-
-WithSecuritySource configures the SDK to invoke the provided function on each method call to determine authentication.
-
-```go
-phren.WithSecuritySource(/* ... */)
-```
-
 ### WithRetryConfig
 
 WithRetryConfig allows setting the default retry configuration used by the SDK for all supported operations.
@@ -144,4 +128,12 @@ WithURLOverride allows overriding the default URL for an operation.
 
 ```go
 operations.WithURLOverride("/custom/path")
+```
+
+### WithAcceptHeaderOverride
+
+WithAcceptHeaderOverride allows overriding the `Accept` header for operations that support multiple response content types.
+
+```go
+operations.WithAcceptHeaderOverride(operations.AcceptHeaderEnumApplicationJson)
 ```

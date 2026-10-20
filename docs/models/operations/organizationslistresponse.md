@@ -1,4 +1,4 @@
-# OrganizationsListOrganizationsResponse
+# OrganizationsListResponse
 
 
 ## Fields

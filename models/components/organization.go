@@ -3,52 +3,16 @@
 
 package components
 
-import (
-	"github.com/phren-io/phren-go-sdk/internal/utils"
-	"time"
-)
-
 type Organization struct {
-	UID         string            `json:"uid"`
-	ID          string            `json:"id"`
-	Owner       string            `json:"owner"`
-	DisplayName string            `json:"display_name"`
-	State       OrganizationState `json:"state"`
-	CreateTime  time.Time         `json:"create_time"`
-	UpdateTime  time.Time         `json:"update_time"`
-	PurgeTime   time.Time         `json:"purge_time"`
+	Name        string `json:"name"`
+	DisplayName string `json:"displayName"`
 }
 
-func (o Organization) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(o, "", false)
-}
-
-func (o *Organization) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &o, "", false, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *Organization) GetUID() string {
+func (o *Organization) GetName() string {
 	if o == nil {
 		return ""
 	}
-	return o.UID
-}
-
-func (o *Organization) GetID() string {
-	if o == nil {
-		return ""
-	}
-	return o.ID
-}
-
-func (o *Organization) GetOwner() string {
-	if o == nil {
-		return ""
-	}
-	return o.Owner
+	return o.Name
 }
 
 func (o *Organization) GetDisplayName() string {
@@ -56,32 +20,4 @@ func (o *Organization) GetDisplayName() string {
 		return ""
 	}
 	return o.DisplayName
-}
-
-func (o *Organization) GetState() OrganizationState {
-	if o == nil {
-		return OrganizationState("")
-	}
-	return o.State
-}
-
-func (o *Organization) GetCreateTime() time.Time {
-	if o == nil {
-		return time.Time{}
-	}
-	return o.CreateTime
-}
-
-func (o *Organization) GetUpdateTime() time.Time {
-	if o == nil {
-		return time.Time{}
-	}
-	return o.UpdateTime
-}
-
-func (o *Organization) GetPurgeTime() time.Time {
-	if o == nil {
-		return time.Time{}
-	}
-	return o.PurgeTime
 }
