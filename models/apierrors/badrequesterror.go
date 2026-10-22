@@ -8,6 +8,7 @@ import (
 	"github.com/phren-io/phren-go-sdk/models/components"
 )
 
+// BadRequestError - The request is malformed or fails validation.
 type BadRequestError struct {
 	// URI identifying the problem type.
 	Type *string `json:"type,omitzero"`

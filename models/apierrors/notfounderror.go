@@ -8,6 +8,7 @@ import (
 	"github.com/phren-io/phren-go-sdk/models/components"
 )
 
+// NotFoundError - The caller is authorized for the requested resources, but this one does not exist.
 type NotFoundError struct {
 	// URI identifying the problem type.
 	Type *string `json:"type,omitzero"`

@@ -8,6 +8,7 @@ import (
 	"github.com/phren-io/phren-go-sdk/models/components"
 )
 
+// ForbiddenError - The caller lacks permission for this resource, or it does not exist outside the caller's access.
 type ForbiddenError struct {
 	// URI identifying the problem type.
 	Type *string `json:"type,omitzero"`

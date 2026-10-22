@@ -13,7 +13,8 @@ type Organization struct {
 	// Resource name, `organizations/{organization_id}`. Set by the server on create.
 	Name string `json:"name"`
 	// A system assigned unique identifier.
-	UID         string `json:"uid"`
+	UID string `json:"uid"`
+	// Human-readable name: 1-63 characters, single line.
 	DisplayName string `json:"display_name"`
 	// Lifecycle state of an organization.
 	State OrganizationState `json:"state"`

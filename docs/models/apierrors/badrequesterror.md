@@ -1,5 +1,7 @@
 # BadRequestError
 
+The request is malformed or fails validation.
+
 
 ## Fields
 
