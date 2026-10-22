@@ -1,6 +1,6 @@
-# BadRequestError
+# ProblemError
 
-The request is malformed or fails validation.
+RFC 9457 Problem Details. The body of every error response.
 
 
 ## Fields
