@@ -3,8 +3,11 @@
 
 package components
 
+// OrganizationInput - An organization: the top-level container that owns all other resources.
 type OrganizationInput struct {
-	DisplayName string `json:"displayName"`
+	DisplayName string `json:"display_name"`
+	// Lifecycle state of an organization.
+	State OrganizationState `json:"state"`
 }
 
 func (o *OrganizationInput) GetDisplayName() string {
@@ -12,4 +15,11 @@ func (o *OrganizationInput) GetDisplayName() string {
 		return ""
 	}
 	return o.DisplayName
+}
+
+func (o *OrganizationInput) GetState() OrganizationState {
+	if o == nil {
+		return OrganizationState("")
+	}
+	return o.State
 }

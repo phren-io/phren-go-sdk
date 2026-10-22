@@ -8,10 +8,51 @@ import (
 	"github.com/phren-io/phren-go-sdk/models/components"
 )
 
+type OrganizationsListRequest struct {
+	// Maximum number of results to return.
+	PageSize *int `queryParam:"style=form,explode=false,name=page_size"`
+	// Token from a previous page's links, to fetch the next page.
+	PageToken *string `queryParam:"style=form,explode=false,name=page_token"`
+	// AIP-160 filter expression.
+	Filter *string `queryParam:"style=form,explode=false,name=filter"`
+	// Include soft-deleted resources in the results.
+	ShowDeleted *bool `queryParam:"style=form,explode=false,name=show_deleted"`
+}
+
+func (o *OrganizationsListRequest) GetPageSize() *int {
+	if o == nil {
+		return nil
+	}
+	return o.PageSize
+}
+
+func (o *OrganizationsListRequest) GetPageToken() *string {
+	if o == nil {
+		return nil
+	}
+	return o.PageToken
+}
+
+func (o *OrganizationsListRequest) GetFilter() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Filter
+}
+
+func (o *OrganizationsListRequest) GetShowDeleted() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.ShowDeleted
+}
+
 type OrganizationsListResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
 	// The request has succeeded.
-	Organizations []components.Organization
+	ListOrganizationsResponse *components.ListOrganizationsResponse
+
+	Next func() (*OrganizationsListResponse, error)
 }
 
 func (o OrganizationsListResponse) MarshalJSON() ([]byte, error) {
@@ -32,9 +73,9 @@ func (o *OrganizationsListResponse) GetHTTPMeta() components.HTTPMetadata {
 	return o.HTTPMeta
 }
 
-func (o *OrganizationsListResponse) GetOrganizations() []components.Organization {
+func (o *OrganizationsListResponse) GetListOrganizationsResponse() *components.ListOrganizationsResponse {
 	if o == nil {
 		return nil
 	}
-	return o.Organizations
+	return o.ListOrganizationsResponse
 }
