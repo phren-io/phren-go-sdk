@@ -49,13 +49,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOrganizationsResponse'
         '400':
-          description: The server could not understand the request due to invalid syntax.
+          description: The request is malformed or fails validation.
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/BadRequestError'
         '403':
-          description: Access is forbidden.
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
             application/problem+json:
               schema:
@@ -85,19 +85,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Organization'
         '400':
-          description: The server could not understand the request due to invalid syntax.
+          description: The request is malformed or fails validation.
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/BadRequestError'
         '403':
-          description: Access is forbidden.
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ForbiddenError'
         '409':
-          description: The request conflicts with the current state of the server.
+          description: The request conflicts with the resource's current state.
           content:
             application/problem+json:
               schema:
@@ -128,19 +128,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Organization'
         '400':
-          description: The server could not understand the request due to invalid syntax.
+          description: The request is malformed or fails validation.
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/BadRequestError'
         '403':
-          description: Access is forbidden.
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ForbiddenError'
         '404':
-          description: The server cannot find the requested resource.
+          description: The caller is authorized for the requested resources, but this one does not exist.
           content:
             application/problem+json:
               schema:
@@ -171,19 +171,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Organization'
         '403':
-          description: Access is forbidden.
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ForbiddenError'
         '404':
-          description: The server cannot find the requested resource.
+          description: The caller is authorized for the requested resources, but this one does not exist.
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/NotFoundError'
         '409':
-          description: The request conflicts with the current state of the server.
+          description: The request conflicts with the resource's current state.
           content:
             application/problem+json:
               schema:
@@ -208,19 +208,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Organization'
         '403':
-          description: Access is forbidden.
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ForbiddenError'
         '404':
-          description: The server cannot find the requested resource.
+          description: The caller is authorized for the requested resources, but this one does not exist.
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/NotFoundError'
         '409':
-          description: The request conflicts with the current state of the server.
+          description: The request conflicts with the resource's current state.
           content:
             application/problem+json:
               schema:
@@ -249,6 +249,7 @@ components:
         detail:
           type: string
           description: Human-readable explanation specific to this occurrence.
+      description: The request is malformed or fails validation.
     ConflictError:
       type: object
       required:
@@ -269,9 +270,11 @@ components:
         detail:
           type: string
           description: Human-readable explanation specific to this occurrence.
+      description: The request conflicts with the resource's current state.
     DisplayName:
       type: string
       pattern: ^[^\n]{1,63}$
+      description: 'Human-readable name: 1-63 characters, single line.'
     ForbiddenError:
       type: object
       required:
@@ -292,6 +295,7 @@ components:
         detail:
           type: string
           description: Human-readable explanation specific to this occurrence.
+      description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
     ListOrganizationsResponse:
       type: object
       required:
@@ -341,6 +345,7 @@ components:
         detail:
           type: string
           description: Human-readable explanation specific to this occurrence.
+      description: The caller is authorized for the requested resources, but this one does not exist.
     Organization:
       type: object
       required:

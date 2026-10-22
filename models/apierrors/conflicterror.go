@@ -8,6 +8,7 @@ import (
 	"github.com/phren-io/phren-go-sdk/models/components"
 )
 
+// ConflictError - The request conflicts with the resource's current state.
 type ConflictError struct {
 	// URI identifying the problem type.
 	Type *string `json:"type,omitzero"`

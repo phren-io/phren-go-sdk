@@ -1,5 +1,7 @@
 # ForbiddenError
 
+The caller lacks permission for this resource, or it does not exist outside the caller's access.
+
 
 ## Fields
 

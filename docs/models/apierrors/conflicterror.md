@@ -1,5 +1,7 @@
 # ConflictError
 
+The request conflicts with the resource's current state.
+
 
 ## Fields
 

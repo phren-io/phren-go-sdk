@@ -1,5 +1,7 @@
 # NotFoundError
 
+The caller is authorized for the requested resources, but this one does not exist.
+
 
 ## Fields
 
