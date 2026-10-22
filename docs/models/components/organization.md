@@ -1,9 +1,18 @@
 # Organization
 
+An organization: the top-level container that owns all other resources.
+
 
 ## Fields
 
-| Field              | Type               | Required           | Description        |
-| ------------------ | ------------------ | ------------------ | ------------------ |
-| `Name`             | `string`           | :heavy_check_mark: | N/A                |
-| `DisplayName`      | `string`           | :heavy_check_mark: | N/A                |
+| Field                                                                          | Type                                                                           | Required                                                                       | Description                                                                    |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `Name`                                                                         | `string`                                                                       | :heavy_check_mark:                                                             | Resource name, `organizations/{organization_id}`. Set by the server on create. |
+| `UID`                                                                          | `string`                                                                       | :heavy_check_mark:                                                             | A system assigned unique identifier.                                           |
+| `DisplayName`                                                                  | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            |
+| `State`                                                                        | [components.OrganizationState](../../models/components/organizationstate.md)   | :heavy_check_mark:                                                             | Lifecycle state of an organization.                                            |
+| `Owner`                                                                        | `string`                                                                       | :heavy_check_mark:                                                             | Name of the user that owns the organization.                                   |
+| `CreatedAt`                                                                    | [time.Time](https://pkg.go.dev/time#Time)                                      | :heavy_check_mark:                                                             | When the organization was created.                                             |
+| `UpdatedAt`                                                                    | [time.Time](https://pkg.go.dev/time#Time)                                      | :heavy_check_mark:                                                             | When the organization was last updated.                                        |
+| `DeletedAt`                                                                    | [*time.Time](https://pkg.go.dev/time#Time)                                     | :heavy_minus_sign:                                                             | When the organization was soft-deleted. Set only while deleted.                |
+| `PurgesAt`                                                                     | [*time.Time](https://pkg.go.dev/time#Time)                                     | :heavy_minus_sign:                                                             | When a soft-deleted organization will be permanently purged.                   |

@@ -8,6 +8,26 @@ import (
 	"github.com/phren-io/phren-go-sdk/models/components"
 )
 
+type OrganizationsCreateRequest struct {
+	// ID of the new organization; becomes the last segment of its name.
+	OrganizationID string                       `queryParam:"style=form,explode=false,name=organization_id"`
+	Body           components.OrganizationInput `request:"mediaType=application/json"`
+}
+
+func (o *OrganizationsCreateRequest) GetOrganizationID() string {
+	if o == nil {
+		return ""
+	}
+	return o.OrganizationID
+}
+
+func (o *OrganizationsCreateRequest) GetBody() components.OrganizationInput {
+	if o == nil {
+		return components.OrganizationInput{}
+	}
+	return o.Body
+}
+
 type OrganizationsCreateResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
 	// The request has succeeded.

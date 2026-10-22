@@ -23,6 +23,7 @@ Developer-friendly & type-safe Go SDK specifically catered to leverage *phren* A
   * [SDK Installation](#sdk-installation)
   * [SDK Example Usage](#sdk-example-usage)
   * [Available Resources and Operations](#available-resources-and-operations)
+  * [Pagination](#pagination)
   * [Retries](#retries)
   * [Error Handling](#error-handling)
   * [Server Selection](#server-selection)
@@ -61,12 +62,24 @@ func main() {
 
 	s := phren.New()
 
-	res, err := s.Organizations.List(ctx)
+	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.Organizations != nil {
-		// handle response
+	if res.ListOrganizationsResponse != nil {
+		for {
+			// handle items
+
+			res, err = res.Next()
+
+			if err != nil {
+				// handle error
+			}
+
+			if res == nil {
+				break
+			}
+		}
 	}
 }
 
@@ -81,13 +94,60 @@ func main() {
 
 ### [Organizations](docs/sdks/organizations/README.md)
 
-* [List](docs/sdks/organizations/README.md#list)
-* [Create](docs/sdks/organizations/README.md#create)
-* [Get](docs/sdks/organizations/README.md#get)
-* [Delete](docs/sdks/organizations/README.md#delete)
+* [List](docs/sdks/organizations/README.md#list) - List the organizations the caller can access.
+* [Create](docs/sdks/organizations/README.md#create) - Create an organization.
+* [Get](docs/sdks/organizations/README.md#get) - Get an organization.
+* [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete an organization. It can be undeleted until `purges_at`.
+* [Undelete](docs/sdks/organizations/README.md#undelete) - Restore a soft-deleted organization (AIP-164).
 
 </details>
 <!-- End Available Resources and Operations [operations] -->
+
+<!-- Start Pagination [pagination] -->
+## Pagination
+
+Some of the endpoints in this SDK support pagination. To use pagination, you make your SDK calls as usual, but the
+returned response object will have a `Next` method that can be called to pull down the next group of results. If the
+return value of `Next` is `nil`, then there are no more pages to be fetched.
+
+Here's an example of one such pagination call:
+```go
+package main
+
+import (
+	"context"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+	ctx := context.Background()
+
+	s := phren.New()
+
+	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if res.ListOrganizationsResponse != nil {
+		for {
+			// handle items
+
+			res, err = res.Next()
+
+			if err != nil {
+				// handle error
+			}
+
+			if res == nil {
+				break
+			}
+		}
+	}
+}
+
+```
+<!-- End Pagination [pagination] -->
 
 <!-- Start Retries [retries] -->
 ## Retries
@@ -111,7 +171,7 @@ func main() {
 
 	s := phren.New()
 
-	res, err := s.Organizations.List(ctx, operations.WithRetries(
+	res, err := s.Organizations.List(ctx, nil, nil, nil, nil, operations.WithRetries(
 		retry.Config{
 			Strategy: "backoff",
 			Backoff: &retry.BackoffStrategy{
@@ -125,8 +185,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.Organizations != nil {
-		// handle response
+	if res.ListOrganizationsResponse != nil {
+		for {
+			// handle items
+
+			res, err = res.Next()
+
+			if err != nil {
+				// handle error
+			}
+
+			if res == nil {
+				break
+			}
+		}
 	}
 }
 
@@ -160,12 +232,24 @@ func main() {
 			}),
 	)
 
-	res, err := s.Organizations.List(ctx)
+	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.Organizations != nil {
-		// handle response
+	if res.ListOrganizationsResponse != nil {
+		for {
+			// handle items
+
+			res, err = res.Next()
+
+			if err != nil {
+				// handle error
+			}
+
+			if res == nil {
+				break
+			}
+		}
 	}
 }
 
@@ -181,9 +265,11 @@ By Default, an API error will return `apierrors.APIError`. When custom error res
 
 For example, the `List` function may return the following errors:
 
-| Error Type         | Status Code | Content Type |
-| ------------------ | ----------- | ------------ |
-| apierrors.APIError | 4XX, 5XX    | \*/\*        |
+| Error Type                | Status Code | Content Type             |
+| ------------------------- | ----------- | ------------------------ |
+| apierrors.BadRequestError | 400         | application/problem+json |
+| apierrors.ForbiddenError  | 403         | application/problem+json |
+| apierrors.APIError        | 4XX, 5XX    | \*/\*                    |
 
 ### Example
 
@@ -203,8 +289,20 @@ func main() {
 
 	s := phren.New()
 
-	res, err := s.Organizations.List(ctx)
+	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
 	if err != nil {
+
+		var e *apierrors.BadRequestError
+		if errors.As(err, &e) {
+			// handle error
+			log.Fatal(e.Error())
+		}
+
+		var e *apierrors.ForbiddenError
+		if errors.As(err, &e) {
+			// handle error
+			log.Fatal(e.Error())
+		}
 
 		var e *apierrors.APIError
 		if errors.As(err, &e) {
@@ -247,12 +345,24 @@ func main() {
 		phren.WithServerIndex(0),
 	)
 
-	res, err := s.Organizations.List(ctx)
+	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.Organizations != nil {
-		// handle response
+	if res.ListOrganizationsResponse != nil {
+		for {
+			// handle items
+
+			res, err = res.Next()
+
+			if err != nil {
+				// handle error
+			}
+
+			if res == nil {
+				break
+			}
+		}
 	}
 }
 
@@ -277,12 +387,24 @@ func main() {
 		phren.WithServerURL("https://staging.api.phren.io"),
 	)
 
-	res, err := s.Organizations.List(ctx)
+	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.Organizations != nil {
-		// handle response
+	if res.ListOrganizationsResponse != nil {
+		for {
+			// handle items
+
+			res, err = res.Next()
+
+			if err != nil {
+				// handle error
+			}
+
+			if res == nil {
+				break
+			}
+		}
 	}
 }
 

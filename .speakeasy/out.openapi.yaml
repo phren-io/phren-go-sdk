@@ -1,28 +1,82 @@
 openapi: 3.1.0
 info:
   title: Phren API
-  version: 0.0.0
+  version: v1
 tags:
   - name: organizations
 paths:
   /organizations:
     get:
       operationId: Organizations_list
-      parameters: []
+      description: List the organizations the caller can access.
+      parameters:
+        - name: page_size
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 500
+          explode: false
+        - name: page_token
+          in: query
+          required: false
+          description: Token from a previous page's links, to fetch the next page.
+          schema:
+            type: string
+          explode: false
+        - name: filter
+          in: query
+          required: false
+          description: AIP-160 filter expression.
+          schema:
+            type: string
+          explode: false
+        - name: show_deleted
+          in: query
+          required: false
+          description: Include soft-deleted resources in the results.
+          schema:
+            type: boolean
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Organization'
+                $ref: '#/components/schemas/ListOrganizationsResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
       tags:
         - organizations
+      x-speakeasy-pagination:
+        type: url
+        outputs:
+          nextUrl: $.next
     post:
       operationId: Organizations_create
-      parameters: []
+      description: Create an organization.
+      parameters:
+        - name: organization_id
+          in: query
+          required: true
+          description: ID of the new organization; becomes the last segment of its name.
+          schema:
+            $ref: '#/components/schemas/ResourceId'
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -30,6 +84,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
       tags:
         - organizations
       requestBody:
@@ -41,12 +113,13 @@ paths:
   /organizations/{organization}:
     get:
       operationId: Organizations_get
+      description: Get an organization.
       parameters:
         - name: organization
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ResourceId'
       responses:
         '200':
           description: The request has succeeded.
@@ -54,34 +127,285 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
       tags:
         - organizations
     delete:
       operationId: Organizations_delete
+      description: Soft-delete an organization. It can be undeleted until `purges_at`.
       parameters:
         - name: organization
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ResourceId'
+        - name: force
+          in: query
+          required: false
+          description: Also delete the organization's child resources.
+          schema:
+            type: boolean
+          explode: false
       responses:
-        '204':
-          description: 'There is no content to send for this request, but the headers may be useful. '
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+      tags:
+        - organizations
+  /organizations/{organization}:undelete:
+    post:
+      operationId: Organizations_undelete
+      description: Restore a soft-deleted organization (AIP-164).
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ResourceId'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
       tags:
         - organizations
 components:
   schemas:
+    BadRequestError:
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri
+          description: URI identifying the problem type.
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type.
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code.
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence.
+    ConflictError:
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri
+          description: URI identifying the problem type.
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type.
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code.
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence.
+    DisplayName:
+      type: string
+      pattern: ^[^\n]{1,63}$
+    ForbiddenError:
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri
+          description: URI identifying the problem type.
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type.
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code.
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence.
+    ListOrganizationsResponse:
+      type: object
+      required:
+        - self
+        - first
+        - organizations
+      properties:
+        self:
+          type: string
+          format: uri
+          description: URL of this page.
+        first:
+          type: string
+          format: uri
+          description: URL of the first page.
+        prev:
+          type: string
+          format: uri
+          description: URL of the previous page. Absent on the first page.
+        next:
+          type: string
+          format: uri
+          description: URL of the next page. Absent on the last page.
+        organizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Organization'
+          description: The organizations on this page.
+      description: A page of organizations.
+    NotFoundError:
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri
+          description: URI identifying the problem type.
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type.
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code.
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence.
     Organization:
       type: object
       required:
         - name
-        - displayName
+        - uid
+        - display_name
+        - state
+        - owner
+        - created_at
+        - updated_at
       properties:
         name:
           type: string
+          pattern: ^organizations/[a-z][a-z0-9-]{2,62}$
+          description: Resource name, `organizations/{organization_id}`. Set by the server on create.
           readOnly: true
-        displayName:
+        uid:
           type: string
+          description: A system assigned unique identifier.
+          readOnly: true
+        display_name:
+          $ref: '#/components/schemas/DisplayName'
+          description: Human-readable name.
+        state:
+          $ref: '#/components/schemas/OrganizationState'
+          description: Current lifecycle state.
+          readOnly: true
+        owner:
+          type: string
+          pattern: ^users/[a-z][a-z0-9-]{2,62}$
+          description: Name of the user that owns the organization.
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: When the organization was created.
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: When the organization was last updated.
+          readOnly: true
+        deleted_at:
+          type: string
+          format: date-time
+          description: When the organization was soft-deleted. Set only while deleted.
+          readOnly: true
+        purges_at:
+          type: string
+          format: date-time
+          description: When a soft-deleted organization will be permanently purged.
+          readOnly: true
+      description: 'An organization: the top-level container that owns all other resources.'
+    OrganizationState:
+      type: string
+      enum:
+        - ACTIVE
+        - DELETING
+        - DELETED
+        - RESTORING
+      description: Lifecycle state of an organization.
+    ResourceId:
+      type: string
+      pattern: ^[a-z][a-z0-9-]{2,62}$
+      description: The ID segment of a resource name, e.g. `acme` in `organizations/acme`.
 servers:
   - url: https://api.phren.io
     description: The production server
@@ -98,3 +422,5 @@ x-speakeasy-name-override:
     methodNameOverride: create
   - operationId: ^.+_delete$
     methodNameOverride: delete
+  - operationId: ^.+_undelete$
+    methodNameOverride: undelete

@@ -13,12 +13,24 @@ func main() {
 
 	s := phren.New()
 
-	res, err := s.Organizations.List(ctx)
+	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res.Organizations != nil {
-		// handle response
+	if res.ListOrganizationsResponse != nil {
+		for {
+			// handle items
+
+			res, err = res.Next()
+
+			if err != nil {
+				// handle error
+			}
+
+			if res == nil {
+				break
+			}
+		}
 	}
 }
 
