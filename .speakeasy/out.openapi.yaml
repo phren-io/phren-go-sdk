@@ -20,6 +20,13 @@ paths:
             minimum: 1
             maximum: 500
           explode: false
+          examples:
+            Fetch the next page of active organizations:
+              summary: Fetch the next page of active organizations
+              value: 50
+            List organizations:
+              summary: List organizations
+              value: 50
         - name: page_token
           in: query
           required: false
@@ -27,6 +34,10 @@ paths:
           schema:
             type: string
           explode: false
+          examples:
+            Fetch the next page of active organizations:
+              summary: Fetch the next page of active organizations
+              value: CiAKGjBpNDd2Nmp2
         - name: filter
           in: query
           required: false
@@ -34,6 +45,10 @@ paths:
           schema:
             type: string
           explode: false
+          examples:
+            Fetch the next page of active organizations:
+              summary: Fetch the next page of active organizations
+              value: state = "ACTIVE"
         - name: show_deleted
           in: query
           required: false
@@ -41,6 +56,10 @@ paths:
           schema:
             type: boolean
           explode: false
+          examples:
+            List organizations:
+              summary: List organizations
+              value: false
       responses:
         '200':
           description: The request has succeeded.
@@ -48,18 +67,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListOrganizationsResponse'
+              examples:
+                Fetch the next page of active organizations:
+                  summary: Fetch the next page of active organizations
+                  value:
+                    self: https://api.phren.io/organizations?page_size=50
+                    first: https://api.phren.io/organizations?page_size=50
+                    next: https://api.phren.io/organizations?page_size=50&page_token=CiAKGjBpNDd2Nmp2
+                    organizations:
+                      - name: organizations/acme
+                        uid: 0f8fad5b-d9cb-469f-a165-70867728950e
+                        display_name: Acme Corp
+                        state: ACTIVE
+                        owner: users/wile-e
+                        created_at: '2026-01-15T09:30:00Z'
+                        updated_at: '2026-03-02T14:05:00Z'
+                List organizations:
+                  summary: List organizations
+                  value:
+                    self: https://api.phren.io/organizations?page_size=50
+                    first: https://api.phren.io/organizations?page_size=50
+                    next: https://api.phren.io/organizations?page_size=50&page_token=CiAKGjBpNDd2Nmp2
+                    organizations:
+                      - name: organizations/acme
+                        uid: 0f8fad5b-d9cb-469f-a165-70867728950e
+                        display_name: Acme Corp
+                        state: ACTIVE
+                        owner: users/wile-e
+                        created_at: '2026-01-15T09:30:00Z'
+                        updated_at: '2026-03-02T14:05:00Z'
         '400':
           description: The request is malformed or fails validation.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/BadRequestError'
+                $ref: '#/components/schemas/Problem'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/schemas/Problem'
       tags:
         - organizations
       x-speakeasy-pagination:
@@ -77,6 +125,10 @@ paths:
           schema:
             $ref: '#/components/schemas/ResourceId'
           explode: false
+          examples:
+            Create an organization:
+              summary: Create an organization
+              value: acme
       responses:
         '200':
           description: The request has succeeded.
@@ -84,24 +136,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+              examples:
+                Create an organization:
+                  summary: Create an organization
+                  value:
+                    name: organizations/acme
+                    uid: 0f8fad5b-d9cb-469f-a165-70867728950e
+                    display_name: Acme Corp
+                    state: ACTIVE
+                    owner: users/wile-e
+                    created_at: '2026-01-15T09:30:00Z'
+                    updated_at: '2026-03-02T14:05:00Z'
         '400':
           description: The request is malformed or fails validation.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/BadRequestError'
+                $ref: '#/components/schemas/Problem'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/schemas/Problem'
         '409':
           description: The request conflicts with the resource's current state.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ConflictError'
+                $ref: '#/components/schemas/Problem'
       tags:
         - organizations
       requestBody:
@@ -110,6 +173,17 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Organization'
+            examples:
+              Create an organization:
+                summary: Create an organization
+                value:
+                  name: organizations/acme
+                  uid: 0f8fad5b-d9cb-469f-a165-70867728950e
+                  display_name: Acme Corp
+                  state: ACTIVE
+                  owner: users/wile-e
+                  created_at: '2026-01-15T09:30:00Z'
+                  updated_at: '2026-03-02T14:05:00Z'
   /organizations/{organization}:
     get:
       operationId: Organizations_get
@@ -120,6 +194,10 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/ResourceId'
+          examples:
+            Get an organization:
+              summary: Get an organization
+              value: acme
       responses:
         '200':
           description: The request has succeeded.
@@ -127,24 +205,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+              examples:
+                Get an organization:
+                  summary: Get an organization
+                  value:
+                    name: organizations/acme
+                    uid: 0f8fad5b-d9cb-469f-a165-70867728950e
+                    display_name: Acme Corp
+                    state: ACTIVE
+                    owner: users/wile-e
+                    created_at: '2026-01-15T09:30:00Z'
+                    updated_at: '2026-03-02T14:05:00Z'
         '400':
           description: The request is malformed or fails validation.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/BadRequestError'
+                $ref: '#/components/schemas/Problem'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/schemas/Problem'
         '404':
           description: The caller is authorized for the requested resources, but this one does not exist.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/NotFoundError'
+                $ref: '#/components/schemas/Problem'
       tags:
         - organizations
     delete:
@@ -156,6 +245,10 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/ResourceId'
+          examples:
+            Delete an organization:
+              summary: Delete an organization
+              value: acme
         - name: force
           in: query
           required: false
@@ -163,6 +256,10 @@ paths:
           schema:
             type: boolean
           explode: false
+          examples:
+            Delete an organization:
+              summary: Delete an organization
+              value: false
       responses:
         '200':
           description: The request has succeeded.
@@ -170,24 +267,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+              examples:
+                Delete an organization:
+                  summary: Delete an organization
+                  value:
+                    name: organizations/acme
+                    uid: 0f8fad5b-d9cb-469f-a165-70867728950e
+                    display_name: Acme Corp
+                    state: DELETED
+                    owner: users/wile-e
+                    created_at: '2026-01-15T09:30:00Z'
+                    updated_at: '2026-04-01T10:00:00Z'
+                    deleted_at: '2026-04-01T10:00:00Z'
+                    purges_at: '2026-05-01T10:00:00Z'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/schemas/Problem'
         '404':
           description: The caller is authorized for the requested resources, but this one does not exist.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/NotFoundError'
+                $ref: '#/components/schemas/Problem'
         '409':
           description: The request conflicts with the resource's current state.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ConflictError'
+                $ref: '#/components/schemas/Problem'
       tags:
         - organizations
   /organizations/{organization}:undelete:
@@ -200,6 +310,10 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/ResourceId'
+          examples:
+            Undelete an organization:
+              summary: Undelete an organization
+              value: acme
       responses:
         '200':
           description: The request has succeeded.
@@ -207,95 +321,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+              examples:
+                Undelete an organization:
+                  summary: Undelete an organization
+                  value:
+                    name: organizations/acme
+                    uid: 0f8fad5b-d9cb-469f-a165-70867728950e
+                    display_name: Acme Corp
+                    state: ACTIVE
+                    owner: users/wile-e
+                    created_at: '2026-01-15T09:30:00Z'
+                    updated_at: '2026-03-02T14:05:00Z'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ForbiddenError'
+                $ref: '#/components/schemas/Problem'
         '404':
           description: The caller is authorized for the requested resources, but this one does not exist.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/NotFoundError'
+                $ref: '#/components/schemas/Problem'
         '409':
           description: The request conflicts with the resource's current state.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ConflictError'
+                $ref: '#/components/schemas/Problem'
       tags:
         - organizations
 components:
   schemas:
-    BadRequestError:
-      type: object
-      required:
-        - title
-        - status
-      properties:
-        type:
-          type: string
-          format: uri
-          description: URI identifying the problem type.
-        title:
-          type: string
-          description: Short, human-readable summary of the problem type.
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code.
-        detail:
-          type: string
-          description: Human-readable explanation specific to this occurrence.
-      description: The request is malformed or fails validation.
-    ConflictError:
-      type: object
-      required:
-        - title
-        - status
-      properties:
-        type:
-          type: string
-          format: uri
-          description: URI identifying the problem type.
-        title:
-          type: string
-          description: Short, human-readable summary of the problem type.
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code.
-        detail:
-          type: string
-          description: Human-readable explanation specific to this occurrence.
-      description: The request conflicts with the resource's current state.
     DisplayName:
       type: string
       pattern: ^[^\n]{1,63}$
       description: 'Human-readable name: 1-63 characters, single line.'
-    ForbiddenError:
-      type: object
-      required:
-        - title
-        - status
-      properties:
-        type:
-          type: string
-          format: uri
-          description: URI identifying the problem type.
-        title:
-          type: string
-          description: Short, human-readable summary of the problem type.
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code.
-        detail:
-          type: string
-          description: Human-readable explanation specific to this occurrence.
-      description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+      examples:
+        - Acme Corp
     ListOrganizationsResponse:
       type: object
       required:
@@ -325,27 +389,18 @@ components:
             $ref: '#/components/schemas/Organization'
           description: The organizations on this page.
       description: A page of organizations.
-    NotFoundError:
-      type: object
-      required:
-        - title
-        - status
-      properties:
-        type:
-          type: string
-          format: uri
-          description: URI identifying the problem type.
-        title:
-          type: string
-          description: Short, human-readable summary of the problem type.
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code.
-        detail:
-          type: string
-          description: Human-readable explanation specific to this occurrence.
-      description: The caller is authorized for the requested resources, but this one does not exist.
+      examples:
+        - self: https://api.phren.io/organizations?page_size=50
+          first: https://api.phren.io/organizations?page_size=50
+          next: https://api.phren.io/organizations?page_size=50&page_token=CiAKGjBpNDd2Nmp2
+          organizations:
+            - name: organizations/acme
+              uid: 0f8fad5b-d9cb-469f-a165-70867728950e
+              display_name: Acme Corp
+              state: ACTIVE
+              owner: users/wile-e
+              created_at: '2026-01-15T09:30:00Z'
+              updated_at: '2026-03-02T14:05:00Z'
     Organization:
       type: object
       required:
@@ -399,6 +454,14 @@ components:
           description: When a soft-deleted organization will be permanently purged.
           readOnly: true
       description: 'An organization: the top-level container that owns all other resources.'
+      examples:
+        - name: organizations/acme
+          uid: 0f8fad5b-d9cb-469f-a165-70867728950e
+          display_name: Acme Corp
+          state: ACTIVE
+          owner: users/wile-e
+          created_at: '2026-01-15T09:30:00Z'
+          updated_at: '2026-03-02T14:05:00Z'
     OrganizationState:
       type: string
       enum:
@@ -407,10 +470,39 @@ components:
         - DELETED
         - RESTORING
       description: Lifecycle state of an organization.
+      examples:
+        - ACTIVE
+    Problem:
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri
+          description: URI identifying the problem type.
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type.
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code.
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence.
+      description: RFC 9457 Problem Details. The body of every error response.
+      examples:
+        - title: Not Found
+          status: 404
+          detail: organizations/acme does not exist.
     ResourceId:
       type: string
       pattern: ^[a-z][a-z0-9-]{2,62}$
       description: The ID segment of a resource name, e.g. `acme` in `organizations/acme`.
+      examples:
+        - acme
 servers:
   - url: https://api.phren.io
     description: The production server
@@ -418,6 +510,17 @@ servers:
   - url: https://staging.api.phren.io
     description: The staging server
     variables: {}
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 10
+    maxInterval: 200
+    maxElapsedTime: 1000
+    exponent: 1.5
+  statusCodes:
+    - '429'
+    - 5XX
+  retryConnectionErrors: true
 x-speakeasy-name-override:
   - operationId: ^.+_list$
     methodNameOverride: list

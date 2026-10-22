@@ -111,10 +111,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *Phren {
 	sdk := &Phren{
-		SDKVersion: "0.1.1",
+		SDKVersion: "0.1.2",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "speakeasy-sdk/go 0.1.1 2.950.2 v1 github.com/phren-io/phren-go-sdk",
-			SDKVersion:        "0.1.1",
+			UserAgent:         "speakeasy-sdk/go 0.1.2 2.950.2 v1 github.com/phren-io/phren-go-sdk",
+			SDKVersion:        "0.1.2",
 			GenVersion:        "2.950.2",
 			OpenAPIDocVersion: "v1",
 			ServerList:        ServerList,

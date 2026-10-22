@@ -62,7 +62,7 @@ func main() {
 
 	s := phren.New()
 
-	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
+	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -125,7 +125,7 @@ func main() {
 
 	s := phren.New()
 
-	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
+	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -171,7 +171,7 @@ func main() {
 
 	s := phren.New()
 
-	res, err := s.Organizations.List(ctx, nil, nil, nil, nil, operations.WithRetries(
+	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false), operations.WithRetries(
 		retry.Config{
 			Strategy: "backoff",
 			Backoff: &retry.BackoffStrategy{
@@ -232,7 +232,7 @@ func main() {
 			}),
 	)
 
-	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
+	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -265,11 +265,10 @@ By Default, an API error will return `apierrors.APIError`. When custom error res
 
 For example, the `List` function may return the following errors:
 
-| Error Type                | Status Code | Content Type             |
-| ------------------------- | ----------- | ------------------------ |
-| apierrors.BadRequestError | 400         | application/problem+json |
-| apierrors.ForbiddenError  | 403         | application/problem+json |
-| apierrors.APIError        | 4XX, 5XX    | \*/\*                    |
+| Error Type             | Status Code | Content Type             |
+| ---------------------- | ----------- | ------------------------ |
+| apierrors.ProblemError | 400, 403    | application/problem+json |
+| apierrors.APIError     | 4XX, 5XX    | \*/\*                    |
 
 ### Example
 
@@ -289,16 +288,10 @@ func main() {
 
 	s := phren.New()
 
-	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
+	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
 	if err != nil {
 
-		var e *apierrors.BadRequestError
-		if errors.As(err, &e) {
-			// handle error
-			log.Fatal(e.Error())
-		}
-
-		var e *apierrors.ForbiddenError
+		var e *apierrors.ProblemError
 		if errors.As(err, &e) {
 			// handle error
 			log.Fatal(e.Error())
@@ -345,7 +338,7 @@ func main() {
 		phren.WithServerIndex(0),
 	)
 
-	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
+	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -387,7 +380,7 @@ func main() {
 		phren.WithServerURL("https://staging.api.phren.io"),
 	)
 
-	res, err := s.Organizations.List(ctx, nil, nil, nil, nil)
+	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
 	if err != nil {
 		log.Fatal(err)
 	}
