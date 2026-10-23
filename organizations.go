@@ -61,7 +61,7 @@ func (s *Organizations) List(ctx context.Context, pageSize *int, pageToken *stri
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/organizations")
+	opURL, err := url.JoinPath(baseURL, "/v1/organizations")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -348,7 +348,7 @@ func (s *Organizations) Create(ctx context.Context, organizationID string, body 
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/organizations")
+	opURL, err := url.JoinPath(baseURL, "/v1/organizations")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -599,7 +599,7 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/organizations/{organization}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -840,7 +840,7 @@ func (s *Organizations) Delete(ctx context.Context, organization string, force *
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/organizations/{organization}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -1084,7 +1084,7 @@ func (s *Organizations) Undelete(ctx context.Context, organization string, opts 
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/organizations/{organization}:undelete", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}:undelete", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
