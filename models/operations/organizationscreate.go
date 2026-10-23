@@ -10,7 +10,7 @@ import (
 
 type OrganizationsCreateRequest struct {
 	// ID of the new organization; becomes the last segment of its name.
-	OrganizationID string                       `queryParam:"style=form,explode=false,name=organization_id"`
+	OrganizationID string                       `queryParam:"style=form,explode=false,name=organizationId"`
 	Body           components.OrganizationInput `request:"mediaType=application/json"`
 }
 
