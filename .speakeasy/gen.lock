@@ -1,18 +1,18 @@
 lockVersion: 2.0.0
 id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
 management:
-  docChecksum: 8b3a5932e5b22861354fd0e4a7ef2cb0
-  docVersion: v1
+  docChecksum: 7f45eec64433ed18206759d2479b3ed8
+  docVersion: 0.0.0
   speakeasyVersion: 1.803.1
   generationVersion: 2.950.2
-  releaseVersion: 0.1.2
-  configChecksum: 49fbea5fa197a3a92118d94bd734c384
+  releaseVersion: 0.1.3
+  configChecksum: af270480e1a53df1d44b252e0e458558
   repoURL: https://github.com/phren-io/phren-go-sdk.git
   installationURL: https://github.com/phren-io/phren-go-sdk
 persistentEdits:
-  generation_id: 38559b75-004c-41ab-958d-59d1b9f6603b
-  pristine_commit_hash: 4202f3b7b71721d57f773895398cf86f4d10070e
-  pristine_tree_hash: 5810cd4a137036b3040f997b9bf69777b74a5e4b
+  generation_id: a9072731-6525-4798-b67a-c2fb6c9c040d
+  pristine_commit_hash: d8c23751dc5655a6e8c5bee694b67c39ec0b5b78
+  pristine_tree_hash: f0c6fdddb013b436a0d67b21926e4ffbc8f05b94
 features:
   go:
     additionalDependencies: 0.1.0
@@ -121,8 +121,8 @@ trackedFiles:
     pristine_git_object: 3b6cad67695436d590f7245fceff74b6419aec54
   docs/sdks/organizations/README.md:
     id: 3425667a2db5
-    last_write_checksum: sha1:24b43af5e3d1dfe355636a1e5096a58555ef87a0
-    pristine_git_object: 6135cdcb54bb92f3b4a8c57329ab30f06d69e5b4
+    last_write_checksum: sha1:cca56d396f27dec5c44caa4ff06e8e14652b6dd0
+    pristine_git_object: 49f9ee97f66437a9094de2c4147eab9b82627643
   go.mod:
     id: c47645c391ad
     last_write_checksum: sha1:e16bc1cd75f029659f2be127a328fa74a5a636f6
@@ -253,12 +253,12 @@ trackedFiles:
     pristine_git_object: 580b326eeb779b223b7d9208a4af43e56adcdfeb
   organizations.go:
     id: c466ebb9a97c
-    last_write_checksum: sha1:65da91b005fe03168cf1d0caf1fb8a0d2edca324
-    pristine_git_object: 5952f40908607027fe94ee85ecfe2145f6af94b2
+    last_write_checksum: sha1:6229694c44e0c67d5a2db9bc954565562dae74b8
+    pristine_git_object: 4db5b7e145c6df52482438ca2c616107794943c9
   phren.go:
     id: 3c886eef84be
-    last_write_checksum: sha1:6b1d73c7be5650f88ac7986fef1af7c027e90545
-    pristine_git_object: 3f3138a0e628ea8c9232a26eecc48d49ba576375
+    last_write_checksum: sha1:3376f315f2d4cbc132e926f8dd75cf01e7314ae3
+    pristine_git_object: f21919d813ceea1aa4cde5ed9c052533e14f0c81
   retry/config.go:
     id: 82d673cb0389
     last_write_checksum: sha1:f9dc77730a0f04d6353cf996e65b36c89e83fb0e

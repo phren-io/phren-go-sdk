@@ -1,11 +1,11 @@
 openapi: 3.1.0
 info:
   title: Phren API
-  version: v1
+  version: 0.0.0
 tags:
   - name: organizations
 paths:
-  /organizations:
+  /v1/organizations:
     get:
       operationId: Organizations_list
       description: List the organizations the caller can access.
@@ -184,7 +184,7 @@ paths:
                   owner: users/wile-e
                   created_at: '2026-01-15T09:30:00Z'
                   updated_at: '2026-03-02T14:05:00Z'
-  /organizations/{organization}:
+  /v1/organizations/{organization}:
     get:
       operationId: Organizations_get
       description: Get an organization.
@@ -300,7 +300,7 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - organizations
-  /organizations/{organization}:undelete:
+  /v1/organizations/{organization}:undelete:
     post:
       operationId: Organizations_undelete
       description: Restore a soft-deleted organization (AIP-164).

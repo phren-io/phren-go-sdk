@@ -16,7 +16,7 @@ List the organizations the caller can access.
 
 ### Example Usage: Fetch the next page of active organizations
 
-<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/organizations" example="Fetch the next page of active organizations" -->
+<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/v1/organizations" example="Fetch the next page of active organizations" -->
 ```go
 package main
 
@@ -54,7 +54,7 @@ func main() {
 ```
 ### Example Usage: List organizations
 
-<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/organizations" example="List organizations" -->
+<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/v1/organizations" example="List organizations" -->
 ```go
 package main
 
@@ -119,7 +119,7 @@ Create an organization.
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_create" method="post" path="/organizations" example="Create an organization" -->
+<!-- UsageSnippet language="go" operationID="Organizations_create" method="post" path="/v1/organizations" example="Create an organization" -->
 ```go
 package main
 
@@ -174,7 +174,7 @@ Get an organization.
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_get" method="get" path="/organizations/{organization}" example="Get an organization" -->
+<!-- UsageSnippet language="go" operationID="Organizations_get" method="get" path="/v1/organizations/{organization}" example="Get an organization" -->
 ```go
 package main
 
@@ -224,7 +224,7 @@ Soft-delete an organization. It can be undeleted until `purges_at`.
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_delete" method="delete" path="/organizations/{organization}" example="Delete an organization" -->
+<!-- UsageSnippet language="go" operationID="Organizations_delete" method="delete" path="/v1/organizations/{organization}" example="Delete an organization" -->
 ```go
 package main
 
@@ -275,7 +275,7 @@ Restore a soft-deleted organization (AIP-164).
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_undelete" method="post" path="/organizations/{organization}:undelete" example="Undelete an organization" -->
+<!-- UsageSnippet language="go" operationID="Organizations_undelete" method="post" path="/v1/organizations/{organization}:undelete" example="Undelete an organization" -->
 ```go
 package main
 
