@@ -17,6 +17,8 @@ import (
 	"github.com/spyzhov/ajson"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 type Organizations struct {
@@ -46,7 +48,6 @@ func (s *Organizations) List(ctx context.Context, pageSize *int, pageToken *stri
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
 		operations.SupportedOptionTimeout,
-		operations.SupportedOptionURLOverride,
 	}
 
 	for _, opt := range opts {
@@ -64,10 +65,6 @@ func (s *Organizations) List(ctx context.Context, pageSize *int, pageToken *stri
 	opURL, err := url.JoinPath(baseURL, "/v1/organizations")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
-	}
-
-	if o.URLOverride != nil {
-		opURL = *o.URLOverride
 	}
 
 	hookCtx := hooks.HookContext{
@@ -220,30 +217,37 @@ func (s *Organizations) List(ctx context.Context, pageSize *int, pageToken *stri
 		if err != nil {
 			return nil, err
 		}
+		nC, err := ajson.Eval(b, "$.nextPageToken")
+		if err != nil {
+			return nil, err
+		}
+		var nCVal string
 
-		nextURLNode, err := ajson.Eval(b, "$.next")
-		if err != nil {
-			return nil, fmt.Errorf("error evaluating next URL: %w", err)
+		if nC.IsNumeric() {
+			numVal, err := nC.GetNumeric()
+			if err != nil {
+				return nil, err
+			}
+			// GetNumeric returns as float64 so convert to the appropriate type.
+			nCVal = strconv.FormatFloat(numVal, 'f', 0, 64)
+		} else {
+			val, err := nC.Value()
+			if err != nil {
+				return nil, err
+			}
+			if val == nil {
+				return nil, nil
+			}
+			nCVal = val.(string)
+			if strings.TrimSpace(nCVal) == "" {
+				return nil, nil
+			}
 		}
-		if !nextURLNode.IsString() {
-			return nil, nil
-		}
-		nextURL, err := nextURLNode.GetString()
-		if err != nil {
-			return nil, fmt.Errorf("error getting next URL string: %w", err)
-		}
-		if nextURL == "" {
-			return nil, nil
-		}
-		if nextURL[0] == '/' {
-			nextURL = baseURL + nextURL
-		}
-		opts = append(opts, operations.WithURLOverride(nextURL))
 
 		return s.List(
 			paginationCtx,
 			pageSize,
-			pageToken,
+			&nCVal,
 			filter,
 			showDeleted,
 			opts...,
@@ -815,7 +819,7 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 
 }
 
-// Delete - Soft-delete an organization. It can be undeleted until `purges_at`.
+// Delete - Soft-delete an organization. It can be undeleted until `purgesAt`.
 func (s *Organizations) Delete(ctx context.Context, organization string, force *bool, opts ...operations.Option) (*operations.OrganizationsDeleteResponse, error) {
 	request := operations.OrganizationsDeleteRequest{
 		Organization: organization,

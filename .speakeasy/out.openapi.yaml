@@ -10,7 +10,7 @@ paths:
       operationId: Organizations_list
       description: List the organizations the caller can access.
       parameters:
-        - name: page_size
+        - name: pageSize
           in: query
           required: false
           description: Maximum number of results to return.
@@ -18,7 +18,8 @@ paths:
             type: integer
             format: int32
             minimum: 1
-            maximum: 500
+            maximum: 100
+            default: 50
           explode: false
           examples:
             Fetch the next page of active organizations:
@@ -27,10 +28,10 @@ paths:
             List organizations:
               summary: List organizations
               value: 50
-        - name: page_token
+        - name: pageToken
           in: query
           required: false
-          description: Token from a previous page's links, to fetch the next page.
+          description: Token from a previous response's nextPageToken.
           schema:
             type: string
           explode: false
@@ -44,17 +45,19 @@ paths:
           description: AIP-160 filter expression.
           schema:
             type: string
+            maxLength: 1024
           explode: false
           examples:
             Fetch the next page of active organizations:
               summary: Fetch the next page of active organizations
               value: state = "ACTIVE"
-        - name: show_deleted
+        - name: showDeleted
           in: query
           required: false
           description: Include soft-deleted resources in the results.
           schema:
             type: boolean
+            default: false
           explode: false
           examples:
             List organizations:
@@ -71,31 +74,26 @@ paths:
                 Fetch the next page of active organizations:
                   summary: Fetch the next page of active organizations
                   value:
-                    self: https://api.phren.io/organizations?page_size=50
-                    first: https://api.phren.io/organizations?page_size=50
-                    next: https://api.phren.io/organizations?page_size=50&page_token=CiAKGjBpNDd2Nmp2
                     organizations:
                       - name: organizations/acme
                         uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-                        display_name: Acme Corp
+                        displayName: Acme Corp
                         state: ACTIVE
                         owner: users/wile-e
-                        created_at: '2026-01-15T09:30:00Z'
-                        updated_at: '2026-03-02T14:05:00Z'
+                        createdAt: '2026-01-15T09:30:00Z'
+                        updatedAt: '2026-03-02T14:05:00Z'
                 List organizations:
                   summary: List organizations
                   value:
-                    self: https://api.phren.io/organizations?page_size=50
-                    first: https://api.phren.io/organizations?page_size=50
-                    next: https://api.phren.io/organizations?page_size=50&page_token=CiAKGjBpNDd2Nmp2
                     organizations:
                       - name: organizations/acme
                         uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-                        display_name: Acme Corp
+                        displayName: Acme Corp
                         state: ACTIVE
                         owner: users/wile-e
-                        created_at: '2026-01-15T09:30:00Z'
-                        updated_at: '2026-03-02T14:05:00Z'
+                        createdAt: '2026-01-15T09:30:00Z'
+                        updatedAt: '2026-03-02T14:05:00Z'
+                    nextPageToken: CiAKGjBpNDd2Nmp2
         '400':
           description: The request is malformed or fails validation.
           content:
@@ -111,14 +109,18 @@ paths:
       tags:
         - organizations
       x-speakeasy-pagination:
-        type: url
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
         outputs:
-          nextUrl: $.next
+          nextCursor: $.nextPageToken
     post:
       operationId: Organizations_create
       description: Create an organization.
       parameters:
-        - name: organization_id
+        - name: organizationId
           in: query
           required: true
           description: ID of the new organization; becomes the last segment of its name.
@@ -142,11 +144,11 @@ paths:
                   value:
                     name: organizations/acme
                     uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-                    display_name: Acme Corp
+                    displayName: Acme Corp
                     state: ACTIVE
                     owner: users/wile-e
-                    created_at: '2026-01-15T09:30:00Z'
-                    updated_at: '2026-03-02T14:05:00Z'
+                    createdAt: '2026-01-15T09:30:00Z'
+                    updatedAt: '2026-03-02T14:05:00Z'
         '400':
           description: The request is malformed or fails validation.
           content:
@@ -179,11 +181,11 @@ paths:
                 value:
                   name: organizations/acme
                   uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-                  display_name: Acme Corp
+                  displayName: Acme Corp
                   state: ACTIVE
                   owner: users/wile-e
-                  created_at: '2026-01-15T09:30:00Z'
-                  updated_at: '2026-03-02T14:05:00Z'
+                  createdAt: '2026-01-15T09:30:00Z'
+                  updatedAt: '2026-03-02T14:05:00Z'
   /v1/organizations/{organization}:
     get:
       operationId: Organizations_get
@@ -211,11 +213,11 @@ paths:
                   value:
                     name: organizations/acme
                     uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-                    display_name: Acme Corp
+                    displayName: Acme Corp
                     state: ACTIVE
                     owner: users/wile-e
-                    created_at: '2026-01-15T09:30:00Z'
-                    updated_at: '2026-03-02T14:05:00Z'
+                    createdAt: '2026-01-15T09:30:00Z'
+                    updatedAt: '2026-03-02T14:05:00Z'
         '400':
           description: The request is malformed or fails validation.
           content:
@@ -238,7 +240,7 @@ paths:
         - organizations
     delete:
       operationId: Organizations_delete
-      description: Soft-delete an organization. It can be undeleted until `purges_at`.
+      description: Soft-delete an organization. It can be undeleted until `purgesAt`.
       parameters:
         - name: organization
           in: path
@@ -273,13 +275,13 @@ paths:
                   value:
                     name: organizations/acme
                     uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-                    display_name: Acme Corp
+                    displayName: Acme Corp
                     state: DELETED
                     owner: users/wile-e
-                    created_at: '2026-01-15T09:30:00Z'
-                    updated_at: '2026-04-01T10:00:00Z'
-                    deleted_at: '2026-04-01T10:00:00Z'
-                    purges_at: '2026-05-01T10:00:00Z'
+                    createdAt: '2026-01-15T09:30:00Z'
+                    updatedAt: '2026-04-01T10:00:00Z'
+                    deletedAt: '2026-04-01T10:00:00Z'
+                    purgesAt: '2026-05-01T10:00:00Z'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
@@ -327,11 +329,11 @@ paths:
                   value:
                     name: organizations/acme
                     uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-                    display_name: Acme Corp
+                    displayName: Acme Corp
                     state: ACTIVE
                     owner: users/wile-e
-                    created_at: '2026-01-15T09:30:00Z'
-                    updated_at: '2026-03-02T14:05:00Z'
+                    createdAt: '2026-01-15T09:30:00Z'
+                    updatedAt: '2026-03-02T14:05:00Z'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
@@ -363,65 +365,48 @@ components:
     ListOrganizationsResponse:
       type: object
       required:
-        - self
-        - first
         - organizations
       properties:
-        self:
-          type: string
-          format: uri
-          description: URL of this page.
-        first:
-          type: string
-          format: uri
-          description: URL of the first page.
-        prev:
-          type: string
-          format: uri
-          description: URL of the previous page. Absent on the first page.
-        next:
-          type: string
-          format: uri
-          description: URL of the next page. Absent on the last page.
         organizations:
           type: array
           items:
             $ref: '#/components/schemas/Organization'
           description: The organizations on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
       description: A page of organizations.
       examples:
-        - self: https://api.phren.io/organizations?page_size=50
-          first: https://api.phren.io/organizations?page_size=50
-          next: https://api.phren.io/organizations?page_size=50&page_token=CiAKGjBpNDd2Nmp2
-          organizations:
+        - organizations:
             - name: organizations/acme
               uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-              display_name: Acme Corp
+              displayName: Acme Corp
               state: ACTIVE
               owner: users/wile-e
-              created_at: '2026-01-15T09:30:00Z'
-              updated_at: '2026-03-02T14:05:00Z'
+              createdAt: '2026-01-15T09:30:00Z'
+              updatedAt: '2026-03-02T14:05:00Z'
+          nextPageToken: CiAKGjBpNDd2Nmp2
     Organization:
       type: object
       required:
         - name
         - uid
-        - display_name
+        - displayName
         - state
         - owner
-        - created_at
-        - updated_at
+        - createdAt
+        - updatedAt
       properties:
         name:
           type: string
           pattern: ^organizations/[a-z][a-z0-9-]{2,62}$
-          description: Resource name, `organizations/{organization_id}`. Set by the server on create.
+          description: Resource name, `organizations/{organizationId}`. Set by the server on create.
           readOnly: true
         uid:
           type: string
           description: A system assigned unique identifier.
           readOnly: true
-        display_name:
+        displayName:
           $ref: '#/components/schemas/DisplayName'
           description: Human-readable name.
         state:
@@ -433,22 +418,22 @@ components:
           pattern: ^users/[a-z][a-z0-9-]{2,62}$
           description: Name of the user that owns the organization.
           readOnly: true
-        created_at:
+        createdAt:
           type: string
           format: date-time
           description: When the organization was created.
           readOnly: true
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           description: When the organization was last updated.
           readOnly: true
-        deleted_at:
+        deletedAt:
           type: string
           format: date-time
           description: When the organization was soft-deleted. Set only while deleted.
           readOnly: true
-        purges_at:
+        purgesAt:
           type: string
           format: date-time
           description: When a soft-deleted organization will be permanently purged.
@@ -457,11 +442,11 @@ components:
       examples:
         - name: organizations/acme
           uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-          display_name: Acme Corp
+          displayName: Acme Corp
           state: ACTIVE
           owner: users/wile-e
-          created_at: '2026-01-15T09:30:00Z'
-          updated_at: '2026-03-02T14:05:00Z'
+          createdAt: '2026-01-15T09:30:00Z'
+          updatedAt: '2026-03-02T14:05:00Z'
     OrganizationState:
       type: string
       enum:

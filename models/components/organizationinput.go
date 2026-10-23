@@ -6,7 +6,7 @@ package components
 // OrganizationInput - An organization: the top-level container that owns all other resources.
 type OrganizationInput struct {
 	// Human-readable name: 1-63 characters, single line.
-	DisplayName string `json:"display_name"`
+	DisplayName string `json:"displayName"`
 	// Lifecycle state of an organization.
 	State OrganizationState `json:"state"`
 }

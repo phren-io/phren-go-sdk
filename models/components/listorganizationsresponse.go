@@ -5,44 +5,10 @@ package components
 
 // ListOrganizationsResponse - A page of organizations.
 type ListOrganizationsResponse struct {
-	// URL of this page.
-	Self string `json:"self"`
-	// URL of the first page.
-	First string `json:"first"`
-	// URL of the previous page. Absent on the first page.
-	Prev *string `json:"prev,omitzero"`
-	// URL of the next page. Absent on the last page.
-	Next *string `json:"next,omitzero"`
 	// The organizations on this page.
 	Organizations []Organization `json:"organizations"`
-}
-
-func (l *ListOrganizationsResponse) GetSelf() string {
-	if l == nil {
-		return ""
-	}
-	return l.Self
-}
-
-func (l *ListOrganizationsResponse) GetFirst() string {
-	if l == nil {
-		return ""
-	}
-	return l.First
-}
-
-func (l *ListOrganizationsResponse) GetPrev() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Prev
-}
-
-func (l *ListOrganizationsResponse) GetNext() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Next
+	// Token for the next page. Absent on the last page.
+	NextPageToken *string `json:"nextPageToken,omitzero"`
 }
 
 func (l *ListOrganizationsResponse) GetOrganizations() []Organization {
@@ -50,4 +16,11 @@ func (l *ListOrganizationsResponse) GetOrganizations() []Organization {
 		return []Organization{}
 	}
 	return l.Organizations
+}
+
+func (l *ListOrganizationsResponse) GetNextPageToken() *string {
+	if l == nil {
+		return nil
+	}
+	return l.NextPageToken
 }

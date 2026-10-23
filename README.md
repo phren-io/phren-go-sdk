@@ -97,7 +97,7 @@ func main() {
 * [List](docs/sdks/organizations/README.md#list) - List the organizations the caller can access.
 * [Create](docs/sdks/organizations/README.md#create) - Create an organization.
 * [Get](docs/sdks/organizations/README.md#get) - Get an organization.
-* [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete an organization. It can be undeleted until `purges_at`.
+* [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete an organization. It can be undeleted until `purgesAt`.
 * [Undelete](docs/sdks/organizations/README.md#undelete) - Restore a soft-deleted organization (AIP-164).
 
 </details>

@@ -10,24 +10,24 @@ import (
 
 // Organization - An organization: the top-level container that owns all other resources.
 type Organization struct {
-	// Resource name, `organizations/{organization_id}`. Set by the server on create.
+	// Resource name, `organizations/{organizationId}`. Set by the server on create.
 	Name string `json:"name"`
 	// A system assigned unique identifier.
 	UID string `json:"uid"`
 	// Human-readable name: 1-63 characters, single line.
-	DisplayName string `json:"display_name"`
+	DisplayName string `json:"displayName"`
 	// Lifecycle state of an organization.
 	State OrganizationState `json:"state"`
 	// Name of the user that owns the organization.
 	Owner string `json:"owner"`
 	// When the organization was created.
-	CreatedAt time.Time `json:"created_at"`
+	CreatedAt time.Time `json:"createdAt"`
 	// When the organization was last updated.
-	UpdatedAt time.Time `json:"updated_at"`
+	UpdatedAt time.Time `json:"updatedAt"`
 	// When the organization was soft-deleted. Set only while deleted.
-	DeletedAt *time.Time `json:"deleted_at,omitzero"`
+	DeletedAt *time.Time `json:"deletedAt,omitzero"`
 	// When a soft-deleted organization will be permanently purged.
-	PurgesAt *time.Time `json:"purges_at,omitzero"`
+	PurgesAt *time.Time `json:"purgesAt,omitzero"`
 }
 
 func (o Organization) MarshalJSON() ([]byte, error) {

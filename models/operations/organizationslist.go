@@ -10,13 +10,24 @@ import (
 
 type OrganizationsListRequest struct {
 	// Maximum number of results to return.
-	PageSize *int `queryParam:"style=form,explode=false,name=page_size"`
-	// Token from a previous page's links, to fetch the next page.
-	PageToken *string `queryParam:"style=form,explode=false,name=page_token"`
+	PageSize *int `default:"50" queryParam:"style=form,explode=false,name=pageSize"`
+	// Token from a previous response's nextPageToken.
+	PageToken *string `queryParam:"style=form,explode=false,name=pageToken"`
 	// AIP-160 filter expression.
 	Filter *string `queryParam:"style=form,explode=false,name=filter"`
 	// Include soft-deleted resources in the results.
-	ShowDeleted *bool `queryParam:"style=form,explode=false,name=show_deleted"`
+	ShowDeleted *bool `default:"false" queryParam:"style=form,explode=false,name=showDeleted"`
+}
+
+func (o OrganizationsListRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(o, "", false)
+}
+
+func (o *OrganizationsListRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &o, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *OrganizationsListRequest) GetPageSize() *int {
