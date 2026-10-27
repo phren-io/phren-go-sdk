@@ -20,7 +20,7 @@ custom := components.OrganizationState("custom_value")
 
 | Name                         | Value                        |
 | ---------------------------- | ---------------------------- |
-| `OrganizationStateActive`    | ACTIVE                       |
-| `OrganizationStateDeleting`  | DELETING                     |
-| `OrganizationStateDeleted`   | DELETED                      |
-| `OrganizationStateRestoring` | RESTORING                    |
+| `OrganizationStateActive`    | active                       |
+| `OrganizationStateDeleting`  | deleting                     |
+| `OrganizationStateDeleted`   | deleted                      |
+| `OrganizationStateRestoring` | restoring                    |

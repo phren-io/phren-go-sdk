@@ -7,10 +7,10 @@ package components
 type OrganizationState string
 
 const (
-	OrganizationStateActive    OrganizationState = "ACTIVE"
-	OrganizationStateDeleting  OrganizationState = "DELETING"
-	OrganizationStateDeleted   OrganizationState = "DELETED"
-	OrganizationStateRestoring OrganizationState = "RESTORING"
+	OrganizationStateActive    OrganizationState = "active"
+	OrganizationStateDeleting  OrganizationState = "deleting"
+	OrganizationStateDeleted   OrganizationState = "deleted"
+	OrganizationStateRestoring OrganizationState = "restoring"
 )
 
 func (e OrganizationState) ToPointer() *OrganizationState {
@@ -21,7 +21,7 @@ func (e OrganizationState) ToPointer() *OrganizationState {
 func (e *OrganizationState) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "ACTIVE", "DELETING", "DELETED", "RESTORING":
+		case "active", "deleting", "deleted", "restoring":
 			return true
 		}
 	}
