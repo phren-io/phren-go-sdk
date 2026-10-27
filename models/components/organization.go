@@ -18,8 +18,8 @@ type Organization struct {
 	DisplayName string `json:"displayName"`
 	// Lifecycle state of an organization.
 	State OrganizationState `json:"state"`
-	// Name of the user that owns the organization.
-	Owner string `json:"owner"`
+	// Name of the user that created the organization.
+	CreatedBy string `json:"createdBy"`
 	// When the organization was created.
 	CreatedAt time.Time `json:"createdAt"`
 	// When the organization was last updated.
@@ -69,11 +69,11 @@ func (o *Organization) GetState() OrganizationState {
 	return o.State
 }
 
-func (o *Organization) GetOwner() string {
+func (o *Organization) GetCreatedBy() string {
 	if o == nil {
 		return ""
 	}
-	return o.Owner
+	return o.CreatedBy
 }
 
 func (o *Organization) GetCreatedAt() time.Time {

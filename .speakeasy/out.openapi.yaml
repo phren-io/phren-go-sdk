@@ -78,8 +78,8 @@ paths:
                       - name: organizations/acme
                         uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                         displayName: Acme Corp
-                        state: ACTIVE
-                        owner: users/wile-e
+                        state: active
+                        createdBy: users/wile-e
                         createdAt: '2026-01-15T09:30:00Z'
                         updatedAt: '2026-03-02T14:05:00Z'
                 List organizations:
@@ -89,8 +89,8 @@ paths:
                       - name: organizations/acme
                         uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                         displayName: Acme Corp
-                        state: ACTIVE
-                        owner: users/wile-e
+                        state: active
+                        createdBy: users/wile-e
                         createdAt: '2026-01-15T09:30:00Z'
                         updatedAt: '2026-03-02T14:05:00Z'
                     nextPageToken: CiAKGjBpNDd2Nmp2
@@ -145,8 +145,8 @@ paths:
                     name: organizations/acme
                     uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                     displayName: Acme Corp
-                    state: ACTIVE
-                    owner: users/wile-e
+                    state: active
+                    createdBy: users/wile-e
                     createdAt: '2026-01-15T09:30:00Z'
                     updatedAt: '2026-03-02T14:05:00Z'
         '400':
@@ -182,8 +182,8 @@ paths:
                   name: organizations/acme
                   uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                   displayName: Acme Corp
-                  state: ACTIVE
-                  owner: users/wile-e
+                  state: active
+                  createdBy: users/wile-e
                   createdAt: '2026-01-15T09:30:00Z'
                   updatedAt: '2026-03-02T14:05:00Z'
   /v1/organizations/{organization}:
@@ -214,8 +214,8 @@ paths:
                     name: organizations/acme
                     uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                     displayName: Acme Corp
-                    state: ACTIVE
-                    owner: users/wile-e
+                    state: active
+                    createdBy: users/wile-e
                     createdAt: '2026-01-15T09:30:00Z'
                     updatedAt: '2026-03-02T14:05:00Z'
         '400':
@@ -276,8 +276,8 @@ paths:
                     name: organizations/acme
                     uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                     displayName: Acme Corp
-                    state: DELETED
-                    owner: users/wile-e
+                    state: deleted
+                    createdBy: users/wile-e
                     createdAt: '2026-01-15T09:30:00Z'
                     updatedAt: '2026-04-01T10:00:00Z'
                     deletedAt: '2026-04-01T10:00:00Z'
@@ -330,8 +330,8 @@ paths:
                     name: organizations/acme
                     uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                     displayName: Acme Corp
-                    state: ACTIVE
-                    owner: users/wile-e
+                    state: active
+                    createdBy: users/wile-e
                     createdAt: '2026-01-15T09:30:00Z'
                     updatedAt: '2026-03-02T14:05:00Z'
         '403':
@@ -381,8 +381,8 @@ components:
             - name: organizations/acme
               uid: 0f8fad5b-d9cb-469f-a165-70867728950e
               displayName: Acme Corp
-              state: ACTIVE
-              owner: users/wile-e
+              state: active
+              createdBy: users/wile-e
               createdAt: '2026-01-15T09:30:00Z'
               updatedAt: '2026-03-02T14:05:00Z'
           nextPageToken: CiAKGjBpNDd2Nmp2
@@ -393,7 +393,7 @@ components:
         - uid
         - displayName
         - state
-        - owner
+        - createdBy
         - createdAt
         - updatedAt
       properties:
@@ -413,10 +413,10 @@ components:
           $ref: '#/components/schemas/OrganizationState'
           description: Current lifecycle state.
           readOnly: true
-        owner:
+        createdBy:
           type: string
           pattern: ^users/[a-z][a-z0-9-]{2,62}$
-          description: Name of the user that owns the organization.
+          description: Name of the user that created the organization.
           readOnly: true
         createdAt:
           type: string
@@ -443,20 +443,20 @@ components:
         - name: organizations/acme
           uid: 0f8fad5b-d9cb-469f-a165-70867728950e
           displayName: Acme Corp
-          state: ACTIVE
-          owner: users/wile-e
+          state: active
+          createdBy: users/wile-e
           createdAt: '2026-01-15T09:30:00Z'
           updatedAt: '2026-03-02T14:05:00Z'
     OrganizationState:
       type: string
       enum:
-        - ACTIVE
-        - DELETING
-        - DELETED
-        - RESTORING
+        - active
+        - deleting
+        - deleted
+        - restoring
       description: Lifecycle state of an organization.
       examples:
-        - ACTIVE
+        - active
     Problem:
       type: object
       required:
