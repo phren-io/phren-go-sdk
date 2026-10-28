@@ -6,12 +6,15 @@ import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
+	"os"
 )
 
 func main() {
 	ctx := context.Background()
 
-	s := phren.New()
+	s := phren.New(
+		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+	)
 
 	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
 	if err != nil {

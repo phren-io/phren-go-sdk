@@ -100,6 +100,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
@@ -116,76 +122,6 @@ paths:
             type: cursor
         outputs:
           nextCursor: $.nextPageToken
-    post:
-      operationId: Organizations_create
-      description: Create an organization.
-      parameters:
-        - name: organizationId
-          in: query
-          required: true
-          description: ID of the new organization; becomes the last segment of its name.
-          schema:
-            $ref: '#/components/schemas/ResourceId'
-          explode: false
-          examples:
-            Create an organization:
-              summary: Create an organization
-              value: acme
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Organization'
-              examples:
-                Create an organization:
-                  summary: Create an organization
-                  value:
-                    name: organizations/acme
-                    uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-                    displayName: Acme Corp
-                    state: active
-                    createdBy: users/wile-e
-                    createdAt: '2026-01-15T09:30:00Z'
-                    updatedAt: '2026-03-02T14:05:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '409':
-          description: The request conflicts with the resource's current state.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - organizations
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Organization'
-            examples:
-              Create an organization:
-                summary: Create an organization
-                value:
-                  name: organizations/acme
-                  uid: 0f8fad5b-d9cb-469f-a165-70867728950e
-                  displayName: Acme Corp
-                  state: active
-                  createdBy: users/wile-e
-                  createdAt: '2026-01-15T09:30:00Z'
-                  updatedAt: '2026-03-02T14:05:00Z'
   /v1/organizations/{organization}:
     get:
       operationId: Organizations_get
@@ -224,6 +160,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
@@ -238,6 +180,81 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - organizations
+    put:
+      operationId: Organizations_create
+      description: Create an organization. Repeating the same request is idempotent.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          description: ID of the new organization; becomes the last segment of its name.
+          schema:
+            $ref: '#/components/schemas/ResourceId'
+          examples:
+            Create an organization:
+              summary: Create an organization
+              value: acme
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+              examples:
+                Create an organization:
+                  summary: Create an organization
+                  value:
+                    name: organizations/acme
+                    uid: 0f8fad5b-d9cb-469f-a165-70867728950e
+                    displayName: Acme Corp
+                    state: active
+                    createdBy: users/wile-e
+                    createdAt: '2026-01-15T09:30:00Z'
+                    updatedAt: '2026-03-02T14:05:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - organizations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganization'
+            examples:
+              Create an organization:
+                summary: Create an organization
+                value:
+                  displayName: Acme Corp
     delete:
       operationId: Organizations_delete
       description: Soft-delete an organization. It can be undeleted until `purgesAt`.
@@ -282,6 +299,12 @@ paths:
                     updatedAt: '2026-04-01T10:00:00Z'
                     deletedAt: '2026-04-01T10:00:00Z'
                     purgesAt: '2026-05-01T10:00:00Z'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
@@ -334,6 +357,12 @@ paths:
                     createdBy: users/wile-e
                     createdAt: '2026-01-15T09:30:00Z'
                     updatedAt: '2026-03-02T14:05:00Z'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         '403':
           description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
           content:
@@ -354,8 +383,21 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - organizations
+security:
+  - BearerAuth: []
 components:
   schemas:
+    CreateOrganization:
+      type: object
+      required:
+        - displayName
+      properties:
+        displayName:
+          $ref: '#/components/schemas/DisplayName'
+          description: Human-readable name.
+      description: 'An organization: the top-level container that owns all other resources.'
+      examples:
+        - displayName: Acme Corp
     DisplayName:
       type: string
       pattern: ^[^\n]{1,63}$
@@ -488,6 +530,10 @@ components:
       description: The ID segment of a resource name, e.g. `acme` in `organizations/acme`.
       examples:
         - acme
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: Bearer
 servers:
   - url: https://api.phren.io
     description: The production server

@@ -22,6 +22,7 @@ Developer-friendly & type-safe Go SDK specifically catered to leverage *phren* A
 * [phren](#phren)
   * [SDK Installation](#sdk-installation)
   * [SDK Example Usage](#sdk-example-usage)
+  * [Authentication](#authentication)
   * [Available Resources and Operations](#available-resources-and-operations)
   * [Pagination](#pagination)
   * [Retries](#retries)
@@ -55,12 +56,15 @@ import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
+	"os"
 )
 
 func main() {
 	ctx := context.Background()
 
-	s := phren.New()
+	s := phren.New(
+		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+	)
 
 	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
 	if err != nil {
@@ -86,6 +90,59 @@ func main() {
 ```
 <!-- End SDK Example Usage [usage] -->
 
+<!-- Start Authentication [security] -->
+## Authentication
+
+### Per-Client Security Schemes
+
+This SDK supports the following security scheme globally:
+
+| Name         | Type | Scheme      | Environment Variable |
+| ------------ | ---- | ----------- | -------------------- |
+| `BearerAuth` | http | HTTP Bearer | `PHREN_BEARER_AUTH`  |
+
+You can configure it using the `WithSecurity` option when initializing the SDK client instance. For example:
+```go
+package main
+
+import (
+	"context"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+	"os"
+)
+
+func main() {
+	ctx := context.Background()
+
+	s := phren.New(
+		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+	)
+
+	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+	if err != nil {
+		log.Fatal(err)
+	}
+	if res.ListOrganizationsResponse != nil {
+		for {
+			// handle items
+
+			res, err = res.Next()
+
+			if err != nil {
+				// handle error
+			}
+
+			if res == nil {
+				break
+			}
+		}
+	}
+}
+
+```
+<!-- End Authentication [security] -->
+
 <!-- Start Available Resources and Operations [operations] -->
 ## Available Resources and Operations
 
@@ -95,8 +152,8 @@ func main() {
 ### [Organizations](docs/sdks/organizations/README.md)
 
 * [List](docs/sdks/organizations/README.md#list) - List the organizations the caller can access.
-* [Create](docs/sdks/organizations/README.md#create) - Create an organization.
 * [Get](docs/sdks/organizations/README.md#get) - Get an organization.
+* [Create](docs/sdks/organizations/README.md#create) - Create an organization. Repeating the same request is idempotent.
 * [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete an organization. It can be undeleted until `purgesAt`.
 * [Undelete](docs/sdks/organizations/README.md#undelete) - Restore a soft-deleted organization (AIP-164).
 
@@ -118,12 +175,15 @@ import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
+	"os"
 )
 
 func main() {
 	ctx := context.Background()
 
-	s := phren.New()
+	s := phren.New(
+		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+	)
 
 	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
 	if err != nil {
@@ -164,12 +224,15 @@ import (
 	"github.com/phren-io/phren-go-sdk/retry"
 	"log"
 	"models/operations"
+	"os"
 )
 
 func main() {
 	ctx := context.Background()
 
-	s := phren.New()
+	s := phren.New(
+		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+	)
 
 	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false), operations.WithRetries(
 		retry.Config{
@@ -213,6 +276,7 @@ import (
 	phren "github.com/phren-io/phren-go-sdk"
 	"github.com/phren-io/phren-go-sdk/retry"
 	"log"
+	"os"
 )
 
 func main() {
@@ -230,6 +294,7 @@ func main() {
 				},
 				RetryConnectionErrors: false,
 			}),
+		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
 	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
@@ -265,10 +330,10 @@ By Default, an API error will return `apierrors.APIError`. When custom error res
 
 For example, the `List` function may return the following errors:
 
-| Error Type             | Status Code | Content Type             |
-| ---------------------- | ----------- | ------------------------ |
-| apierrors.ProblemError | 400, 403    | application/problem+json |
-| apierrors.APIError     | 4XX, 5XX    | \*/\*                    |
+| Error Type             | Status Code   | Content Type             |
+| ---------------------- | ------------- | ------------------------ |
+| apierrors.ProblemError | 400, 401, 403 | application/problem+json |
+| apierrors.APIError     | 4XX, 5XX      | \*/\*                    |
 
 ### Example
 
@@ -281,12 +346,15 @@ import (
 	phren "github.com/phren-io/phren-go-sdk"
 	"github.com/phren-io/phren-go-sdk/models/apierrors"
 	"log"
+	"os"
 )
 
 func main() {
 	ctx := context.Background()
 
-	s := phren.New()
+	s := phren.New(
+		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+	)
 
 	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
 	if err != nil {
@@ -329,6 +397,7 @@ import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
+	"os"
 )
 
 func main() {
@@ -336,6 +405,7 @@ func main() {
 
 	s := phren.New(
 		phren.WithServerIndex(0),
+		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
 	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
@@ -371,6 +441,7 @@ import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
+	"os"
 )
 
 func main() {
@@ -378,6 +449,7 @@ func main() {
 
 	s := phren.New(
 		phren.WithServerURL("https://staging.api.phren.io"),
+		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
 	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))

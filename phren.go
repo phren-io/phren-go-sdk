@@ -6,10 +6,12 @@ package phren
 // Generated from OpenAPI doc version 0.0.0 and generator version 2.952.5
 
 import (
+	"context"
 	"fmt"
 	"github.com/phren-io/phren-go-sdk/internal/config"
 	"github.com/phren-io/phren-go-sdk/internal/hooks"
 	"github.com/phren-io/phren-go-sdk/internal/utils"
+	"github.com/phren-io/phren-go-sdk/models/components"
 	"github.com/phren-io/phren-go-sdk/retry"
 	"net/http"
 	"time"
@@ -95,6 +97,23 @@ func WithClient(client HTTPClient) SDKOption {
 	}
 }
 
+// WithSecurity configures the SDK to use the provided security details
+func WithSecurity(bearerAuth string) SDKOption {
+	return func(sdk *Phren) {
+		security := components.Security{BearerAuth: &bearerAuth}
+		sdk.sdkConfiguration.Security = utils.AsSecuritySource(&security)
+	}
+}
+
+// WithSecuritySource configures the SDK to invoke the Security Source function on each method call to determine authentication
+func WithSecuritySource(security func(context.Context) (components.Security, error)) SDKOption {
+	return func(sdk *Phren) {
+		sdk.sdkConfiguration.Security = func(ctx context.Context) (interface{}, error) {
+			return security(ctx)
+		}
+	}
+}
+
 func WithRetryConfig(retryConfig retry.Config) SDKOption {
 	return func(sdk *Phren) {
 		sdk.sdkConfiguration.RetryConfig = &retryConfig
@@ -111,10 +130,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *Phren {
 	sdk := &Phren{
-		SDKVersion: "0.2.1",
+		SDKVersion: "0.3.0",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "speakeasy-sdk/go 0.2.1 2.952.5 0.0.0 github.com/phren-io/phren-go-sdk",
-			SDKVersion:        "0.2.1",
+			UserAgent:         "speakeasy-sdk/go 0.3.0 2.952.5 0.0.0 github.com/phren-io/phren-go-sdk",
+			SDKVersion:        "0.3.0",
 			GenVersion:        "2.952.5",
 			OpenAPIDocVersion: "0.0.0",
 			ServerList:        ServerList,
@@ -123,6 +142,13 @@ func New(opts ...SDKOption) *Phren {
 	}
 	for _, opt := range opts {
 		opt(sdk)
+	}
+
+	if sdk.sdkConfiguration.Security == nil {
+		var envVarSecurity components.Security
+		if utils.PopulateSecurityFromEnv(&envVarSecurity) {
+			sdk.sdkConfiguration.Security = utils.AsSecuritySource(envVarSecurity)
+		}
 	}
 
 	// Use WithClient to override the default client if you would like to customize the timeout
