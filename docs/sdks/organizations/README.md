@@ -5,8 +5,8 @@
 ### Available Operations
 
 * [List](#list) - List the organizations the caller can access.
-* [Create](#create) - Create an organization.
 * [Get](#get) - Get an organization.
+* [Create](#create) - Create an organization. Repeating the same request is idempotent.
 * [Delete](#delete) - Soft-delete an organization. It can be undeleted until `purgesAt`.
 * [Undelete](#undelete) - Restore a soft-deleted organization (AIP-164).
 
@@ -22,6 +22,7 @@ package main
 
 import(
 	"context"
+	"os"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
 )
@@ -29,7 +30,9 @@ import(
 func main() {
     ctx := context.Background()
 
-    s := phren.New()
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
 
     res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
     if err != nil {
@@ -60,6 +63,7 @@ package main
 
 import(
 	"context"
+	"os"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
 )
@@ -67,7 +71,9 @@ import(
 func main() {
     ctx := context.Background()
 
-    s := phren.New()
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
 
     res, err := s.Organizations.List(ctx, phren.Pointer[int](50), nil, nil, phren.Pointer(false))
     if err != nil {
@@ -110,62 +116,7 @@ func main() {
 
 | Error Type               | Status Code              | Content Type             |
 | ------------------------ | ------------------------ | ------------------------ |
-| apierrors.ProblemError   | 400, 403                 | application/problem+json |
-| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
-
-## Create
-
-Create an organization.
-
-### Example Usage
-
-<!-- UsageSnippet language="go" operationID="Organizations_create" method="post" path="/v1/organizations" example="Create an organization" -->
-```go
-package main
-
-import(
-	"context"
-	phren "github.com/phren-io/phren-go-sdk"
-	"github.com/phren-io/phren-go-sdk/models/components"
-	"log"
-)
-
-func main() {
-    ctx := context.Background()
-
-    s := phren.New()
-
-    res, err := s.Organizations.Create(ctx, "acme", components.OrganizationInput{
-        DisplayName: "Acme Corp",
-        State: components.OrganizationStateActive,
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    if res.Organization != nil {
-        // handle response
-    }
-}
-```
-
-### Parameters
-
-| Parameter                                                                                                                                                                                                                             | Type                                                                                                                                                                                                                                  | Required                                                                                                                                                                                                                              | Description                                                                                                                                                                                                                           | Example                                                                                                                                                                                                                               |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                                                                                                                                                 | [context.Context](https://pkg.go.dev/context#Context)                                                                                                                                                                                 | :heavy_check_mark:                                                                                                                                                                                                                    | The context to use for the request.                                                                                                                                                                                                   |                                                                                                                                                                                                                                       |
-| `organizationID`                                                                                                                                                                                                                      | `string`                                                                                                                                                                                                                              | :heavy_check_mark:                                                                                                                                                                                                                    | ID of the new organization; becomes the last segment of its name.                                                                                                                                                                     | acme                                                                                                                                                                                                                                  |
-| `body`                                                                                                                                                                                                                                | [components.OrganizationInput](../../models/components/organizationinput.md)                                                                                                                                                          | :heavy_check_mark:                                                                                                                                                                                                                    | N/A                                                                                                                                                                                                                                   | {<br/>"name": "organizations/acme",<br/>"uid": "0f8fad5b-d9cb-469f-a165-70867728950e",<br/>"displayName": "Acme Corp",<br/>"state": "active",<br/>"createdBy": "users/wile-e",<br/>"createdAt": "2026-01-15T09:30:00Z",<br/>"updatedAt": "2026-03-02T14:05:00Z"<br/>} |
-| `opts`                                                                                                                                                                                                                                | [][operations.Option](../../models/operations/option.md)                                                                                                                                                                              | :heavy_minus_sign:                                                                                                                                                                                                                    | The options for this request.                                                                                                                                                                                                         |                                                                                                                                                                                                                                       |
-
-### Response
-
-**[*operations.OrganizationsCreateResponse](../../models/operations/organizationscreateresponse.md), error**
-
-### Errors
-
-| Error Type               | Status Code              | Content Type             |
-| ------------------------ | ------------------------ | ------------------------ |
-| apierrors.ProblemError   | 400, 403, 409            | application/problem+json |
+| apierrors.ProblemError   | 400, 401, 403            | application/problem+json |
 | apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
 
 ## Get
@@ -180,6 +131,7 @@ package main
 
 import(
 	"context"
+	"os"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
 )
@@ -187,7 +139,9 @@ import(
 func main() {
     ctx := context.Background()
 
-    s := phren.New()
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
 
     res, err := s.Organizations.Get(ctx, "acme")
     if err != nil {
@@ -215,7 +169,64 @@ func main() {
 
 | Error Type               | Status Code              | Content Type             |
 | ------------------------ | ------------------------ | ------------------------ |
-| apierrors.ProblemError   | 400, 403, 404            | application/problem+json |
+| apierrors.ProblemError   | 400, 401, 403, 404       | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
+## Create
+
+Create an organization. Repeating the same request is idempotent.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="Organizations_create" method="put" path="/v1/organizations/{organization}" example="Create an organization" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Organizations.Create(ctx, "acme", components.CreateOrganization{
+        DisplayName: "Acme Corp",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.Organization != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    | Example                                                                        |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |                                                                                |
+| `organization`                                                                 | `string`                                                                       | :heavy_check_mark:                                                             | ID of the new organization; becomes the last segment of its name.              | acme                                                                           |
+| `body`                                                                         | [components.CreateOrganization](../../models/components/createorganization.md) | :heavy_check_mark:                                                             | N/A                                                                            | {<br/>"displayName": "Acme Corp"<br/>}                                         |
+| `opts`                                                                         | [][operations.Option](../../models/operations/option.md)                       | :heavy_minus_sign:                                                             | The options for this request.                                                  |                                                                                |
+
+### Response
+
+**[*operations.OrganizationsCreateResponse](../../models/operations/organizationscreateresponse.md), error**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 409       | application/problem+json |
 | apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
 
 ## Delete
@@ -230,6 +241,7 @@ package main
 
 import(
 	"context"
+	"os"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
 )
@@ -237,7 +249,9 @@ import(
 func main() {
     ctx := context.Background()
 
-    s := phren.New()
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
 
     res, err := s.Organizations.Delete(ctx, "acme", phren.Pointer(false))
     if err != nil {
@@ -266,7 +280,7 @@ func main() {
 
 | Error Type               | Status Code              | Content Type             |
 | ------------------------ | ------------------------ | ------------------------ |
-| apierrors.ProblemError   | 403, 404, 409            | application/problem+json |
+| apierrors.ProblemError   | 401, 403, 404, 409       | application/problem+json |
 | apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
 
 ## Undelete
@@ -281,6 +295,7 @@ package main
 
 import(
 	"context"
+	"os"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
 )
@@ -288,7 +303,9 @@ import(
 func main() {
     ctx := context.Background()
 
-    s := phren.New()
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
 
     res, err := s.Organizations.Undelete(ctx, "acme")
     if err != nil {
@@ -316,5 +333,5 @@ func main() {
 
 | Error Type               | Status Code              | Content Type             |
 | ------------------------ | ------------------------ | ------------------------ |
-| apierrors.ProblemError   | 403, 404, 409            | application/problem+json |
+| apierrors.ProblemError   | 401, 403, 404, 409       | application/problem+json |
 | apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |

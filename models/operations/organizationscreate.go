@@ -10,20 +10,20 @@ import (
 
 type OrganizationsCreateRequest struct {
 	// ID of the new organization; becomes the last segment of its name.
-	OrganizationID string                       `queryParam:"style=form,explode=false,name=organizationId"`
-	Body           components.OrganizationInput `request:"mediaType=application/json"`
+	Organization string                        `pathParam:"style=simple,explode=false,name=organization"`
+	Body         components.CreateOrganization `request:"mediaType=application/json"`
 }
 
-func (o *OrganizationsCreateRequest) GetOrganizationID() string {
+func (o *OrganizationsCreateRequest) GetOrganization() string {
 	if o == nil {
 		return ""
 	}
-	return o.OrganizationID
+	return o.Organization
 }
 
-func (o *OrganizationsCreateRequest) GetBody() components.OrganizationInput {
+func (o *OrganizationsCreateRequest) GetBody() components.CreateOrganization {
 	if o == nil {
-		return components.OrganizationInput{}
+		return components.CreateOrganization{}
 	}
 	return o.Body
 }
