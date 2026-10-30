@@ -76,7 +76,6 @@ paths:
                   value:
                     organizations:
                       - name: organizations/acme
-                        uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                         displayName: Acme Corp
                         state: active
                         createdBy: users/wile-e
@@ -87,7 +86,6 @@ paths:
                   value:
                     organizations:
                       - name: organizations/acme
-                        uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                         displayName: Acme Corp
                         state: active
                         createdBy: users/wile-e
@@ -148,7 +146,6 @@ paths:
                   summary: Get an organization
                   value:
                     name: organizations/acme
-                    uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                     displayName: Acme Corp
                     state: active
                     createdBy: users/wile-e
@@ -212,7 +209,6 @@ paths:
                   summary: Create an organization
                   value:
                     name: organizations/acme
-                    uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                     displayName: Acme Corp
                     state: active
                     createdBy: users/wile-e
@@ -291,7 +287,6 @@ paths:
                   summary: Delete an organization
                   value:
                     name: organizations/acme
-                    uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                     displayName: Acme Corp
                     state: deleted
                     createdBy: users/wile-e
@@ -351,7 +346,6 @@ paths:
                   summary: Undelete an organization
                   value:
                     name: organizations/acme
-                    uid: 0f8fad5b-d9cb-469f-a165-70867728950e
                     displayName: Acme Corp
                     state: active
                     createdBy: users/wile-e
@@ -421,7 +415,6 @@ components:
       examples:
         - organizations:
             - name: organizations/acme
-              uid: 0f8fad5b-d9cb-469f-a165-70867728950e
               displayName: Acme Corp
               state: active
               createdBy: users/wile-e
@@ -432,7 +425,6 @@ components:
       type: object
       required:
         - name
-        - uid
         - displayName
         - state
         - createdBy
@@ -443,10 +435,6 @@ components:
           type: string
           pattern: ^organizations/[a-z][a-z0-9-]{2,62}$
           description: Resource name, `organizations/{organizationId}`. Set by the server on create.
-          readOnly: true
-        uid:
-          type: string
-          description: A system assigned unique identifier.
           readOnly: true
         displayName:
           $ref: '#/components/schemas/DisplayName'
@@ -483,7 +471,6 @@ components:
       description: 'An organization: the top-level container that owns all other resources.'
       examples:
         - name: organizations/acme
-          uid: 0f8fad5b-d9cb-469f-a165-70867728950e
           displayName: Acme Corp
           state: active
           createdBy: users/wile-e

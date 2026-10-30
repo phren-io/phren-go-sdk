@@ -12,8 +12,6 @@ import (
 type Organization struct {
 	// Resource name, `organizations/{organizationId}`. Set by the server on create.
 	Name string `json:"name"`
-	// A system assigned unique identifier.
-	UID string `json:"uid"`
 	// Human-readable name: 1-63 characters, single line.
 	DisplayName string `json:"displayName"`
 	// Lifecycle state of an organization.
@@ -46,13 +44,6 @@ func (o *Organization) GetName() string {
 		return ""
 	}
 	return o.Name
-}
-
-func (o *Organization) GetUID() string {
-	if o == nil {
-		return ""
-	}
-	return o.UID
 }
 
 func (o *Organization) GetDisplayName() string {
