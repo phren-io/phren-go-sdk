@@ -9,15 +9,15 @@ import (
 )
 
 type OrganizationsCreateRequest struct {
-	Organization string                        `pathParam:"style=simple,explode=false,name=organization"`
-	Body         components.CreateOrganization `request:"mediaType=application/json"`
+	OrganizationID string                        `queryParam:"style=form,explode=false,name=organizationId"`
+	Body           components.CreateOrganization `request:"mediaType=application/json"`
 }
 
-func (o *OrganizationsCreateRequest) GetOrganization() string {
+func (o *OrganizationsCreateRequest) GetOrganizationID() string {
 	if o == nil {
 		return ""
 	}
-	return o.Organization
+	return o.OrganizationID
 }
 
 func (o *OrganizationsCreateRequest) GetBody() components.CreateOrganization {
@@ -29,7 +29,7 @@ func (o *OrganizationsCreateRequest) GetBody() components.CreateOrganization {
 
 type OrganizationsCreateResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
-	// The request has succeeded.
+	// The request has succeeded and a new resource has been created as a result.
 	Organization *components.Organization
 }
 

@@ -78,7 +78,7 @@ paths:
                       - name: organizations/acme
                         displayName: Acme Corp
                         state: active
-                        createdBy: users/wile-e
+                        createdBy: users/alice
                         createdAt: '2026-01-15T09:30:00Z'
                         updatedAt: '2026-03-02T14:05:00Z'
                 First page:
@@ -88,7 +88,7 @@ paths:
                       - name: organizations/acme
                         displayName: Acme Corp
                         state: active
-                        createdBy: users/wile-e
+                        createdBy: users/alice
                         createdAt: '2026-01-15T09:30:00Z'
                         updatedAt: '2026-03-02T14:05:00Z'
                     nextPageToken: CiAKGjBpNDd2Nmp2
@@ -120,74 +120,18 @@ paths:
             type: cursor
         outputs:
           nextCursor: $.nextPageToken
-  /v1/organizations/{organization}:
-    get:
-      operationId: Organizations_get
-      description: Get
-      parameters:
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-          example: acme
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Organization'
-              example:
-                name: organizations/acme
-                displayName: Acme Corp
-                state: active
-                createdBy: users/wile-e
-                createdAt: '2026-01-15T09:30:00Z'
-                updatedAt: '2026-03-02T14:05:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '404':
-          description: The caller is authorized for the requested resources, but this one does not exist.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - organizations
-    put:
+    post:
       operationId: Organizations_create
       description: Create
       parameters:
-        - name: organization
-          in: path
+        - name: organizationId
+          in: query
           required: true
           schema:
             type: string
+          explode: false
           example: acme
       responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Organization'
         '201':
           description: The request has succeeded and a new resource has been created as a result.
           content:
@@ -198,7 +142,7 @@ paths:
                 name: organizations/acme
                 displayName: Acme Corp
                 state: active
-                createdBy: users/wile-e
+                createdBy: users/alice
                 createdAt: '2026-01-15T09:30:00Z'
                 updatedAt: '2026-03-02T14:05:00Z'
         '400':
@@ -235,6 +179,57 @@ paths:
               $ref: '#/components/schemas/CreateOrganization'
             example:
               displayName: Acme Corp
+  /v1/organizations/{organization}:
+    get:
+      operationId: Organizations_get
+      description: Get
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+              example:
+                name: organizations/acme
+                displayName: Acme Corp
+                state: active
+                createdBy: users/alice
+                createdAt: '2026-01-15T09:30:00Z'
+                updatedAt: '2026-03-02T14:05:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - organizations
     delete:
       operationId: Organizations_delete
       description: Soft-delete
@@ -263,11 +258,17 @@ paths:
                 name: organizations/acme
                 displayName: Acme Corp
                 state: deleted
-                createdBy: users/wile-e
+                createdBy: users/alice
                 createdAt: '2026-01-15T09:30:00Z'
                 updatedAt: '2026-04-01T10:00:00Z'
                 deletedAt: '2026-04-01T10:00:00Z'
                 purgesAt: '2026-05-01T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         '401':
           description: The request has no bearer token, or the token is invalid or expired.
           content:
@@ -316,9 +317,15 @@ paths:
                 name: organizations/acme
                 displayName: Acme Corp
                 state: active
-                createdBy: users/wile-e
+                createdBy: users/alice
                 createdAt: '2026-01-15T09:30:00Z'
                 updatedAt: '2026-03-02T14:05:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         '401':
           description: The request has no bearer token, or the token is invalid or expired.
           content:
@@ -379,7 +386,7 @@ components:
             - name: organizations/acme
               displayName: Acme Corp
               state: active
-              createdBy: users/wile-e
+              createdBy: users/alice
               createdAt: '2026-01-15T09:30:00Z'
               updatedAt: '2026-03-02T14:05:00Z'
           nextPageToken: CiAKGjBpNDd2Nmp2
@@ -432,7 +439,7 @@ components:
         - name: organizations/acme
           displayName: Acme Corp
           state: active
-          createdBy: users/wile-e
+          createdBy: users/alice
           createdAt: '2026-01-15T09:30:00Z'
           updatedAt: '2026-03-02T14:05:00Z'
     OrganizationState:

@@ -1,18 +1,18 @@
 lockVersion: 2.0.0
 id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
 management:
-  docChecksum: 4dee9d7324910d2d459ee979e48cbb62
+  docChecksum: b322ac12c91d1394439df2d2aa9cb0ad
   docVersion: 0.0.0
   speakeasyVersion: 1.808.0
   generationVersion: 2.960.7
-  releaseVersion: 0.3.3
-  configChecksum: bb9a91cdb442760690ce4e08762c028d
+  releaseVersion: 0.3.4
+  configChecksum: 091d001b3d04709bb21e0dec68bb5f88
   repoURL: https://github.com/phren-io/phren-go-sdk.git
   installationURL: https://github.com/phren-io/phren-go-sdk
 persistentEdits:
-  generation_id: 679d4417-505c-48af-916e-94737c698901
-  pristine_commit_hash: 3973e2e1092ce51be560c2df194ae124859ae54f
-  pristine_tree_hash: c55ac9d2353b00f1996b782d3ccb2be68957fb1d
+  generation_id: 80773538-4c97-4b05-90a6-8ca5473d6999
+  pristine_commit_hash: 3712ddb79f522caee7b5ab6a8a3aa3dec57fb0e4
+  pristine_tree_hash: 4bbee8dd35891d6bfb09669b1460a64be1df6723
 features:
   go:
     additionalDependencies: 0.1.0
@@ -87,48 +87,48 @@ trackedFiles:
     pristine_git_object: 89502101ee1e8656ae3bcb2e85636afb2149c6d7
   docs/models/operations/organizationscreaterequest.md:
     id: 8cc01ad30c83
-    last_write_checksum: sha1:c455ae45ffacd676873c3be6e6e25d72596b87ee
-    pristine_git_object: b67891f7e805f4938dedce1d2d508ccf33e0c1f9
+    last_write_checksum: sha1:23a8783336c2e6a0daa405ed22fa06e68e7f4b36
+    pristine_git_object: 762f5dbb3b37b33ba560dd9d31445e35c39a1fe0
   docs/models/operations/organizationscreateresponse.md:
     id: 4b058b16abed
-    last_write_checksum: sha1:8a5193fb97e9451ee2cf9c25546750cc350ebd8a
-    pristine_git_object: e70b29a05e65f268a8015881f26776bba2d4ea4a
+    last_write_checksum: sha1:4bad2a27da13293727f33f8a7db24a41f76e6499
+    pristine_git_object: af8d6b3d453976350d3d44bcab4b51fac565cf7c
   docs/models/operations/organizationsdeleterequest.md:
     id: 797ad67062e7
     last_write_checksum: sha1:692d16c658e5368ff27b1d0a8f1318b57844136a
     pristine_git_object: 83587357b9d9c6798c108311fc55a4c595166041
   docs/models/operations/organizationsdeleteresponse.md:
     id: cd58441925a9
-    last_write_checksum: sha1:08d8382e891a615f35fd6d10e39e4b5796848c71
-    pristine_git_object: 2681383d44f88e0e11b403d1dd28af202ed3a3b0
+    last_write_checksum: sha1:12111f7abcee1dd231ea83761f052a44d4c704a2
+    pristine_git_object: 0f961165217c38d682aa3a0d2b6e1bd8e22eaab8
   docs/models/operations/organizationsgetrequest.md:
     id: 63560bebe0e6
     last_write_checksum: sha1:54275e84d2dd62f0dbdf04a24b39e839ff193f57
     pristine_git_object: 8f5896efa0aa4f0eabdb247f0e624aef11d64dfc
   docs/models/operations/organizationsgetresponse.md:
     id: bfe868e87462
-    last_write_checksum: sha1:bb0c49053d0ceb9069557fe848b43b750d66364f
-    pristine_git_object: 331e23db2af8f9c9d82084664098056329fffd53
+    last_write_checksum: sha1:1694a12462eeda16d15a70b158c3335eb7e91487
+    pristine_git_object: 305c0cc122f3ed84b2a79383606ae1a22ce252b7
   docs/models/operations/organizationslistrequest.md:
     id: d8e946bb0476
     last_write_checksum: sha1:5e8f222e291e06d0bbc68a471c4bd2b210dba87f
     pristine_git_object: 0531b23143fce35180a348cf04375ea6576f8c0b
   docs/models/operations/organizationslistresponse.md:
     id: 9c89c09fe161
-    last_write_checksum: sha1:6a52eb1a431066f059b16150826b74455dae97b3
-    pristine_git_object: c955d2ed24043f45244b6aaf702aed04e2be15f9
+    last_write_checksum: sha1:d05eeafe78b3ced108fc2f55dde2222f581fbcb5
+    pristine_git_object: 646dbd6fba10b85d8e5aedc60902dd0d055ef413
   docs/models/operations/organizationsundeleterequest.md:
     id: cb3f2dd2297e
     last_write_checksum: sha1:439380c9adbe28b0e943d3db4efca1ae339c14f4
     pristine_git_object: 8edcb7cee10231a3193bbc375dc3912493fa4302
   docs/models/operations/organizationsundeleteresponse.md:
     id: b2bdbff8724e
-    last_write_checksum: sha1:538bae33c50fde6e24d69b7c596abf0c9f3a50fd
-    pristine_git_object: 0931f0ac72c3fc87d04837f7e4ec205ae5c151ce
+    last_write_checksum: sha1:e74d620b720e47ad07409ba9c36a321a1ec9365c
+    pristine_git_object: 5fc468c11a009eb553b6e7fde273221d8ff1ca31
   docs/sdks/organizations/README.md:
     id: 3425667a2db5
-    last_write_checksum: sha1:3b9d3bfe95e0902a4911b7dc8b4736468efc9818
-    pristine_git_object: cf083f4b67a558ae4adfe71204063f38be57ee55
+    last_write_checksum: sha1:0136b5fb108e60dba08acc719bec8330ef03a543
+    pristine_git_object: ece4664b38dfea740d0e0bf216a153d1ec204e3d
   go.mod:
     id: c47645c391ad
     last_write_checksum: sha1:e05c5281120ac5615edc8333ef284e86272b5e8b
@@ -235,8 +235,8 @@ trackedFiles:
     pristine_git_object: f1d11eddba40130ff0f4cc18682148a8e6611dc2
   models/operations/organizationscreate.go:
     id: e220446fc498
-    last_write_checksum: sha1:be6cfae93abf24478706b4779d9edfb5ed173ed1
-    pristine_git_object: 916283f168fae989ba939ad184c76326132474f1
+    last_write_checksum: sha1:d40fc02b70e11592c149e34aeb3e903abe3bfc9c
+    pristine_git_object: d1298a62c2ed8f1ddc6d28ee155cf9b9ca5fb3a9
   models/operations/organizationsdelete.go:
     id: 301afcfed166
     last_write_checksum: sha1:9e1218d5cc3eb619e198a6141c2b2ea21bfed6d4
@@ -263,12 +263,12 @@ trackedFiles:
     pristine_git_object: 580b326eeb779b223b7d9208a4af43e56adcdfeb
   organizations.go:
     id: c466ebb9a97c
-    last_write_checksum: sha1:628c3f6164828aa92a008831d7f669123add586d
-    pristine_git_object: c6dc2b2a2accaf7ff145bdd0a34276c7d6639839
+    last_write_checksum: sha1:942426308b313a0fe1e7e436f343eb973652cc41
+    pristine_git_object: a9564097f6af778d554c4361eb4d03833430549f
   phren.go:
     id: 3c886eef84be
-    last_write_checksum: sha1:8637d090c9b7ffdafb770560464a1a9fbabb681a
-    pristine_git_object: d64d644f5b9c6b3e69fbfb952d538bd209bb9263
+    last_write_checksum: sha1:696b9cc570bb0687fff2701d10ac130401facec6
+    pristine_git_object: 054e84cf8dc3e3affe19780a84e836af65d9442c
   retry/config.go:
     id: 82d673cb0389
     last_write_checksum: sha1:f9dc77730a0f04d6353cf996e65b36c89e83fb0e
@@ -411,7 +411,7 @@ examples:
           showDeleted: false
       responses:
         "200":
-          application/json: {"organizations": [{"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/wile-e", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}]}
+          application/json: {"organizations": [{"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/alice", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}]}
     First page:
       parameters:
         query:
@@ -419,7 +419,7 @@ examples:
           showDeleted: false
       responses:
         "200":
-          application/json: {"organizations": [{"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/wile-e", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}], "nextPageToken": "CiAKGjBpNDd2Nmp2"}
+          application/json: {"organizations": [{"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/alice", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}], "nextPageToken": "CiAKGjBpNDd2Nmp2"}
   Organizations_create:
     speakeasy-default-organizations-create:
       parameters:
@@ -427,6 +427,7 @@ examples:
           organization: "acme"
         query:
           organization_id: "<id>"
+          organizationId: "acme"
       requestBody:
         application/json: {"displayName": "Acme Corp"}
       responses:
@@ -438,6 +439,8 @@ examples:
           application/problem+json: {"title": "<value>", "status": 521068}
         "409":
           application/problem+json: {"title": "<value>", "status": 375370}
+        "201":
+          application/json: {"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/alice", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}
     Create an organization:
       parameters:
         path:
@@ -459,7 +462,7 @@ examples:
           organization: "<value>"
       responses:
         "200":
-          application/json: {"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/wile-e", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}
+          application/json: {"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/alice", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
         "403":
@@ -482,7 +485,7 @@ examples:
           force: false
       responses:
         "200":
-          application/json: {"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/wile-e", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}
+          application/json: {"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/alice", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}
         "403":
           application/problem+json: {"title": "<value>", "status": 441167}
         "404":
@@ -490,6 +493,8 @@ examples:
         "409":
           application/problem+json: {"title": "<value>", "status": 359249}
         "401":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+        "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
     Delete an organization:
       parameters:
@@ -507,7 +512,7 @@ examples:
           organization: "<value>"
       responses:
         "200":
-          application/json: {"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/wile-e", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}
+          application/json: {"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/alice", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}
         "403":
           application/problem+json: {"title": "<value>", "status": 993762}
         "404":
@@ -515,6 +520,8 @@ examples:
         "409":
           application/problem+json: {"title": "<value>", "status": 117065}
         "401":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+        "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
     Undelete an organization:
       parameters:
@@ -524,3 +531,4 @@ examples:
         "200":
           application/json: {"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/wile-e", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}
 examplesVersion: 1.0.2
+releaseNotes: "## Go SDK Changes:\n* `Phren.Organizations.Create()`: \n  *  `request` **Changed** (Breaking ⚠️)\n  *  `response.status[200]` **Removed** (Breaking ⚠️)\n* `Phren.Organizations.Delete()`:  `error.status[400]` **Added**\n* `Phren.Organizations.Undelete()`:  `error.status[400]` **Added**\n"

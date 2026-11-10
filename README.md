@@ -152,8 +152,8 @@ func main() {
 ### [Organizations](docs/sdks/organizations/README.md)
 
 * [List](docs/sdks/organizations/README.md#list) - List
-* [Get](docs/sdks/organizations/README.md#get) - Get
 * [Create](docs/sdks/organizations/README.md#create) - Create
+* [Get](docs/sdks/organizations/README.md#get) - Get
 * [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete
 * [Undelete](docs/sdks/organizations/README.md#undelete) - Undelete
 
