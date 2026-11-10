@@ -5,7 +5,7 @@ package components
 
 // CreateOrganization - An organization: the top-level container that owns all other resources.
 type CreateOrganization struct {
-	// Human-readable name: 1-63 characters, single line.
+	// Human-readable name.
 	DisplayName string `json:"displayName"`
 }
 

@@ -394,8 +394,7 @@ components:
         - displayName: Acme Corp
     DisplayName:
       type: string
-      pattern: ^[^\n]{1,63}$
-      description: 'Human-readable name: 1-63 characters, single line.'
+      description: Human-readable name.
       examples:
         - Acme Corp
     ListOrganizationsResponse:
@@ -433,7 +432,6 @@ components:
       properties:
         name:
           type: string
-          pattern: ^organizations/[a-z][a-z0-9-]{2,62}$
           description: Resource name, `organizations/{organizationId}`. Set by the server on create.
           readOnly: true
         displayName:
@@ -445,7 +443,6 @@ components:
           readOnly: true
         createdBy:
           type: string
-          pattern: ^users/[a-z][a-z0-9-]{2,62}$
           description: Name of the user that created the organization.
           readOnly: true
         createdAt:
@@ -513,7 +510,6 @@ components:
           detail: organizations/acme does not exist.
     ResourceId:
       type: string
-      pattern: ^[a-z][a-z0-9-]{2,62}$
       description: The ID segment of a resource name, e.g. `acme` in `organizations/acme`.
       examples:
         - acme
