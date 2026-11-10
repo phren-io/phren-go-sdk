@@ -10,7 +10,6 @@ import (
 
 // Organization - An organization: the top-level container that owns all other resources.
 type Organization struct {
-	// Resource name, `organizations/{organizationId}`. Set by the server on create.
 	Name string `json:"name"`
 	// Human-readable name.
 	DisplayName string `json:"displayName"`
