@@ -418,21 +418,25 @@ components:
           type: string
           format: date-time
           description: When the organization was created.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
           readOnly: true
         updatedAt:
           type: string
           format: date-time
           description: When the organization was last updated.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
           readOnly: true
         deletedAt:
           type: string
           format: date-time
           description: When the organization was soft-deleted. Set only while deleted.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
           readOnly: true
         purgesAt:
           type: string
           format: date-time
           description: When a soft-deleted organization will be permanently purged.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
           readOnly: true
       description: 'An organization: the top-level container that owns all other resources.'
       examples:

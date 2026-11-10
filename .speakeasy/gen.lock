@@ -1,18 +1,18 @@
 lockVersion: 2.0.0
 id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
 management:
-  docChecksum: b322ac12c91d1394439df2d2aa9cb0ad
+  docChecksum: 32732a50fe3eda26b9482e425b20bc1b
   docVersion: 0.0.0
-  speakeasyVersion: 1.808.0
-  generationVersion: 2.960.7
-  releaseVersion: 0.3.4
-  configChecksum: 091d001b3d04709bb21e0dec68bb5f88
+  speakeasyVersion: 1.808.1
+  generationVersion: 2.960.8
+  releaseVersion: 0.3.5
+  configChecksum: 0b56d8ac7228be9dc1be9b8ba2a72a4e
   repoURL: https://github.com/phren-io/phren-go-sdk.git
   installationURL: https://github.com/phren-io/phren-go-sdk
 persistentEdits:
-  generation_id: 80773538-4c97-4b05-90a6-8ca5473d6999
-  pristine_commit_hash: 3712ddb79f522caee7b5ab6a8a3aa3dec57fb0e4
-  pristine_tree_hash: 4bbee8dd35891d6bfb09669b1460a64be1df6723
+  generation_id: bdcb0471-2e9a-4b61-8560-dfaf5f39bf7c
+  pristine_commit_hash: e0ebfb12a255555db321a275e2f0c4cb788ceca8
+  pristine_tree_hash: 54f37859a61353e051552935affe82d1defad992
 features:
   go:
     additionalDependencies: 0.1.0
@@ -267,8 +267,8 @@ trackedFiles:
     pristine_git_object: a9564097f6af778d554c4361eb4d03833430549f
   phren.go:
     id: 3c886eef84be
-    last_write_checksum: sha1:696b9cc570bb0687fff2701d10ac130401facec6
-    pristine_git_object: 054e84cf8dc3e3affe19780a84e836af65d9442c
+    last_write_checksum: sha1:3445294ba4b27843224c3e165a0170b1988c3894
+    pristine_git_object: a57d157cac57e1a80fbcab84714bca5e8d32373b
   retry/config.go:
     id: 82d673cb0389
     last_write_checksum: sha1:f9dc77730a0f04d6353cf996e65b36c89e83fb0e
@@ -531,4 +531,3 @@ examples:
         "200":
           application/json: {"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/wile-e", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}
 examplesVersion: 1.0.2
-releaseNotes: "## Go SDK Changes:\n* `Phren.Organizations.Create()`: \n  *  `request` **Changed** (Breaking ⚠️)\n  *  `response.status[200]` **Removed** (Breaking ⚠️)\n* `Phren.Organizations.Delete()`:  `error.status[400]` **Added**\n* `Phren.Organizations.Undelete()`:  `error.status[400]` **Added**\n"
