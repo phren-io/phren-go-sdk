@@ -12,7 +12,7 @@ import (
 type Organization struct {
 	// Resource name, `organizations/{organizationId}`. Set by the server on create.
 	Name string `json:"name"`
-	// Human-readable name: 1-63 characters, single line.
+	// Human-readable name.
 	DisplayName string `json:"displayName"`
 	// Lifecycle state of an organization.
 	State OrganizationState `json:"state"`
