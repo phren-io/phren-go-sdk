@@ -10,8 +10,7 @@ import (
 
 type OrganizationsDeleteRequest struct {
 	Organization string `pathParam:"style=simple,explode=false,name=organization"`
-	// Also delete the organization's child resources.
-	Force *bool `queryParam:"style=form,explode=false,name=force"`
+	Force        *bool  `queryParam:"style=form,explode=false,name=force"`
 }
 
 func (o *OrganizationsDeleteRequest) GetOrganization() string {

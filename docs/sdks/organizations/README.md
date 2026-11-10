@@ -4,15 +4,15 @@
 
 ### Available Operations
 
-* [List](#list) - List the organizations the caller can access.
-* [Get](#get) - Get an organization.
-* [Create](#create) - Create an organization. Repeating the same request is idempotent.
-* [Delete](#delete) - Soft-delete an organization. It can be undeleted until `purgesAt`.
-* [Undelete](#undelete) - Restore a soft-deleted organization (AIP-164).
+* [List](#list) - List
+* [Get](#get) - Get
+* [Create](#create) - Create
+* [Delete](#delete) - Soft-delete
+* [Undelete](#undelete) - Undelete
 
 ## List
 
-List the organizations the caller can access.
+List
 
 ### Example Usage: Fetch the next page of active organizations
 
@@ -35,6 +35,47 @@ func main() {
     )
 
     res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.ListOrganizationsResponse != nil {
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
+    }
+}
+```
+### Example Usage: First page
+
+<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/v1/organizations" example="First page" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Organizations.List(ctx, phren.Pointer[int](50), nil, nil, phren.Pointer(false))
     if err != nil {
         log.Fatal(err)
     }
@@ -96,6 +137,47 @@ func main() {
     }
 }
 ```
+### Example Usage: Next page
+
+<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/v1/organizations" example="Next page" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.ListOrganizationsResponse != nil {
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
+    }
+}
+```
 
 ### Parameters
 
@@ -121,7 +203,7 @@ func main() {
 
 ## Get
 
-Get an organization.
+Get
 
 ### Example Usage
 
@@ -174,7 +256,7 @@ func main() {
 
 ## Create
 
-Create an organization. Repeating the same request is idempotent.
+Create
 
 ### Example Usage
 
@@ -214,7 +296,7 @@ func main() {
 | Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    | Example                                                                        |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
 | `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |                                                                                |
-| `organization`                                                                 | `string`                                                                       | :heavy_check_mark:                                                             | ID of the new organization; becomes the last segment of its name.              | acme                                                                           |
+| `organization`                                                                 | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | acme                                                                           |
 | `body`                                                                         | [components.CreateOrganization](../../models/components/createorganization.md) | :heavy_check_mark:                                                             | N/A                                                                            | {<br/>"displayName": "Acme Corp"<br/>}                                         |
 | `opts`                                                                         | [][operations.Option](../../models/operations/option.md)                       | :heavy_minus_sign:                                                             | The options for this request.                                                  |                                                                                |
 
@@ -231,7 +313,7 @@ func main() {
 
 ## Delete
 
-Soft-delete an organization. It can be undeleted until `purgesAt`.
+Soft-delete
 
 ### Example Usage
 
@@ -269,7 +351,7 @@ func main() {
 | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
 | `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
 | `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
-| `force`                                                  | `*bool`                                                  | :heavy_minus_sign:                                       | Also delete the organization's child resources.          |                                                          |
+| `force`                                                  | `*bool`                                                  | :heavy_minus_sign:                                       | N/A                                                      | false                                                    |
 | `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
 
 ### Response
@@ -285,7 +367,7 @@ func main() {
 
 ## Undelete
 
-Restore a soft-deleted organization (AIP-164).
+Undelete
 
 ### Example Usage
 

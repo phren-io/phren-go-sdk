@@ -35,7 +35,7 @@ func newOrganizations(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *
 	}
 }
 
-// List the organizations the caller can access.
+// List
 func (s *Organizations) List(ctx context.Context, pageSize *int, pageToken *string, filter *string, showDeleted *bool, opts ...operations.Option) (*operations.OrganizationsListResponse, error) {
 	request := operations.OrganizationsListRequest{
 		PageSize:    pageSize,
@@ -333,7 +333,7 @@ func (s *Organizations) List(ctx context.Context, pageSize *int, pageToken *stri
 
 }
 
-// Get an organization.
+// Get
 func (s *Organizations) Get(ctx context.Context, organization string, opts ...operations.Option) (*operations.OrganizationsGetResponse, error) {
 	request := operations.OrganizationsGetRequest{
 		Organization: organization,
@@ -579,7 +579,7 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 
 }
 
-// Create an organization. Repeating the same request is idempotent.
+// Create
 func (s *Organizations) Create(ctx context.Context, organization string, body components.CreateOrganization, opts ...operations.Option) (*operations.OrganizationsCreateResponse, error) {
 	request := operations.OrganizationsCreateRequest{
 		Organization: organization,
@@ -835,7 +835,7 @@ func (s *Organizations) Create(ctx context.Context, organization string, body co
 
 }
 
-// Delete - Soft-delete an organization. It can be undeleted until `purgesAt`.
+// Delete - Soft-delete
 func (s *Organizations) Delete(ctx context.Context, organization string, force *bool, opts ...operations.Option) (*operations.OrganizationsDeleteResponse, error) {
 	request := operations.OrganizationsDeleteRequest{
 		Organization: organization,
@@ -1086,7 +1086,7 @@ func (s *Organizations) Delete(ctx context.Context, organization string, force *
 
 }
 
-// Undelete - Restore a soft-deleted organization (AIP-164).
+// Undelete
 func (s *Organizations) Undelete(ctx context.Context, organization string, opts ...operations.Option) (*operations.OrganizationsUndeleteResponse, error) {
 	request := operations.OrganizationsUndeleteRequest{
 		Organization: organization,

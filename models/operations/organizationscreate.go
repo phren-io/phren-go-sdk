@@ -9,7 +9,6 @@ import (
 )
 
 type OrganizationsCreateRequest struct {
-	// ID of the new organization; becomes the last segment of its name.
 	Organization string                        `pathParam:"style=simple,explode=false,name=organization"`
 	Body         components.CreateOrganization `request:"mediaType=application/json"`
 }

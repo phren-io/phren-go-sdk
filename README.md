@@ -151,11 +151,11 @@ func main() {
 
 ### [Organizations](docs/sdks/organizations/README.md)
 
-* [List](docs/sdks/organizations/README.md#list) - List the organizations the caller can access.
-* [Get](docs/sdks/organizations/README.md#get) - Get an organization.
-* [Create](docs/sdks/organizations/README.md#create) - Create an organization. Repeating the same request is idempotent.
-* [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete an organization. It can be undeleted until `purgesAt`.
-* [Undelete](docs/sdks/organizations/README.md#undelete) - Restore a soft-deleted organization (AIP-164).
+* [List](docs/sdks/organizations/README.md#list) - List
+* [Get](docs/sdks/organizations/README.md#get) - Get
+* [Create](docs/sdks/organizations/README.md#create) - Create
+* [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete
+* [Undelete](docs/sdks/organizations/README.md#undelete) - Undelete
 
 </details>
 <!-- End Available Resources and Operations [operations] -->
