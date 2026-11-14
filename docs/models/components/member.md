@@ -1,0 +1,15 @@
+# Member
+
+A user's membership in an organization.
+
+
+## Fields
+
+| Field                                                            | Type                                                             | Required                                                         | Description                                                      |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `Name`                                                           | `string`                                                         | :heavy_check_mark:                                               | Resource name: `organizations/{organization}/members/{member}`.  |
+| `User`                                                           | `string`                                                         | :heavy_check_mark:                                               | Name of the member's user: `users/{user}`.                       |
+| `Email`                                                          | `string`                                                         | :heavy_check_mark:                                               | The user's email when they joined.                               |
+| `DisplayName`                                                    | `string`                                                         | :heavy_check_mark:                                               | The user's name when they joined.                                |
+| `Roles`                                                          | [][components.MemberRole](../../models/components/memberrole.md) | :heavy_check_mark:                                               | Roles the member holds. Empty for a plain member.                |
+| `CreatedAt`                                                      | [time.Time](https://pkg.go.dev/time#Time)                        | :heavy_check_mark:                                               | When the user joined the organization.                           |

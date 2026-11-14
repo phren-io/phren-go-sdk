@@ -149,6 +149,26 @@ func main() {
 <details open>
 <summary>Available methods</summary>
 
+### [Invitations](docs/sdks/invitations/README.md)
+
+* [List](docs/sdks/invitations/README.md#list) - List. Admins list an organization's invitations. With `-` as the
+organization, lists the pending invitations addressed to the caller's
+email, across organizations.
+* [Create](docs/sdks/invitations/README.md#create) - Invite someone by email. Fails with 409 if they're already a member or
+already have a pending invitation.
+* [Get](docs/sdks/invitations/README.md#get) - Get
+* [Delete](docs/sdks/invitations/README.md#delete) - Revoke
+* [Accept](docs/sdks/invitations/README.md#accept) - Accept, joining the organization. Only the invitee can accept, while the
+invitation is pending and unexpired; otherwise it fails with 409.
+* [Decline](docs/sdks/invitations/README.md#decline) - Decline. Only the invitee can decline, while the invitation is pending.
+
+### [Members](docs/sdks/members/README.md)
+
+* [List](docs/sdks/members/README.md#list) - List
+* [Get](docs/sdks/members/README.md#get) - Get
+* [Delete](docs/sdks/members/README.md#delete) - Remove a member. Admins remove anyone, and members remove themselves to
+leave. Removing the organization's last admin fails with 409.
+
 ### [Organizations](docs/sdks/organizations/README.md)
 
 * [List](docs/sdks/organizations/README.md#list) - List

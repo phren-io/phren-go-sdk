@@ -4,6 +4,8 @@ info:
   version: 0.0.0
 tags:
   - name: organizations
+  - name: members
+  - name: invitations
 paths:
   /v1/organizations:
     get:
@@ -295,6 +297,624 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - organizations
+  /v1/organizations/{organization}/invitations:
+    get:
+      operationId: Invitations_list
+      description: |-
+        List. Admins list an organization's invitations. With `-` as the
+        organization, lists the pending invitations addressed to the caller's
+        email, across organizations.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          examples:
+            Addressed to me:
+              summary: Addressed to me
+              value: 50
+            An organization's:
+              summary: An organization's
+              value: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: filter
+          in: query
+          required: false
+          description: AIP-160 filter expression.
+          schema:
+            type: string
+            maxLength: 1024
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            Addressed to me:
+              summary: Addressed to me
+              value: '-'
+            An organization's:
+              summary: An organization's
+              value: acme
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListInvitationsResponse'
+              examples:
+                Addressed to me:
+                  summary: Addressed to me
+                  value:
+                    invitations:
+                      - name: organizations/acme/invitations/0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+                        email: bob@acme.example
+                        state: pending
+                        organizationDisplayName: Acme Corp
+                        invitedBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+                        inviterEmail: alice@acme.example
+                        createdAt: '2026-02-01T10:00:00Z'
+                        updatedAt: '2026-02-01T10:00:00Z'
+                        expiresAt: '2026-02-15T10:00:00Z'
+                An organization's:
+                  summary: An organization's
+                  value:
+                    invitations:
+                      - name: organizations/acme/invitations/0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+                        email: bob@acme.example
+                        state: pending
+                        organizationDisplayName: Acme Corp
+                        invitedBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+                        inviterEmail: alice@acme.example
+                        createdAt: '2026-02-01T10:00:00Z'
+                        updatedAt: '2026-02-01T10:00:00Z'
+                        expiresAt: '2026-02-15T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - invitations
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+    post:
+      operationId: Invitations_create
+      description: |-
+        Invite someone by email. Fails with 409 if they're already a member or
+        already have a pending invitation.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+              example:
+                name: organizations/acme/invitations/0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+                email: bob@acme.example
+                state: pending
+                organizationDisplayName: Acme Corp
+                invitedBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+                inviterEmail: alice@acme.example
+                createdAt: '2026-02-01T10:00:00Z'
+                updatedAt: '2026-02-01T10:00:00Z'
+                expiresAt: '2026-02-15T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - invitations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInvitation'
+            example:
+              email: bob@acme.example
+  /v1/organizations/{organization}/invitations/{invitation}:
+    get:
+      operationId: Invitations_get
+      description: Get
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: invitation
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+              example:
+                name: organizations/acme/invitations/0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+                email: bob@acme.example
+                state: pending
+                organizationDisplayName: Acme Corp
+                invitedBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+                inviterEmail: alice@acme.example
+                createdAt: '2026-02-01T10:00:00Z'
+                updatedAt: '2026-02-01T10:00:00Z'
+                expiresAt: '2026-02-15T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - invitations
+    delete:
+      operationId: Invitations_delete
+      description: Revoke
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: invitation
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: There is no content to send for this request, but the headers may be useful.
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - invitations
+  /v1/organizations/{organization}/invitations/{invitation}:accept:
+    post:
+      operationId: Invitations_accept
+      description: |-
+        Accept, joining the organization. Only the invitee can accept, while the
+        invitation is pending and unexpired; otherwise it fails with 409.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: invitation
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+              example:
+                name: organizations/acme/invitations/0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+                email: bob@acme.example
+                state: accepted
+                organizationDisplayName: Acme Corp
+                invitedBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+                inviterEmail: alice@acme.example
+                createdAt: '2026-02-01T10:00:00Z'
+                updatedAt: '2026-02-03T11:00:00Z'
+                expiresAt: '2026-02-15T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - invitations
+  /v1/organizations/{organization}/invitations/{invitation}:decline:
+    post:
+      operationId: Invitations_decline
+      description: Decline. Only the invitee can decline, while the invitation is pending.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: invitation
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+              example:
+                name: organizations/acme/invitations/0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+                email: bob@acme.example
+                state: declined
+                organizationDisplayName: Acme Corp
+                invitedBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+                inviterEmail: alice@acme.example
+                createdAt: '2026-02-01T10:00:00Z'
+                updatedAt: '2026-02-03T11:00:00Z'
+                expiresAt: '2026-02-15T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - invitations
+  /v1/organizations/{organization}/members:
+    get:
+      operationId: Members_list
+      description: List
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          example: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: filter
+          in: query
+          required: false
+          description: AIP-160 filter expression.
+          schema:
+            type: string
+            maxLength: 1024
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListMembersResponse'
+              example:
+                members:
+                  - name: organizations/acme/members/0196f1a2-7c3e-7d4a-9b1e-3f2a6c8d9e01
+                    user: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+                    email: alice@acme.example
+                    displayName: Alice Smith
+                    roles:
+                      - admin
+                    createdAt: '2026-01-15T09:30:00Z'
+                  - name: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+                    user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                    email: bob@acme.example
+                    displayName: Bob Jones
+                    roles: []
+                    createdAt: '2026-02-03T11:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - members
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+  /v1/organizations/{organization}/members/{member}:
+    get:
+      operationId: Members_get
+      description: Get
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: member
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 0196f1a2-7c3e-7d4a-9b1e-3f2a6c8d9e01
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+              example:
+                name: organizations/acme/members/0196f1a2-7c3e-7d4a-9b1e-3f2a6c8d9e01
+                user: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+                email: alice@acme.example
+                displayName: Alice Smith
+                roles:
+                  - admin
+                createdAt: '2026-01-15T09:30:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - members
+    delete:
+      operationId: Members_delete
+      description: |-
+        Remove a member. Admins remove anyone, and members remove themselves to
+        leave. Removing the organization's last admin fails with 409.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: member
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: There is no content to send for this request, but the headers may be useful.
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - members
   /v1/organizations/{organization}:undelete:
     post:
       operationId: Organizations_undelete
@@ -356,6 +976,20 @@ security:
   - BearerAuth: []
 components:
   schemas:
+    CreateInvitation:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email of the person invited.
+      description: |-
+        An invitation to join an organization, addressed by email. The invitee
+        accepts it by signing in with that email.
+      examples:
+        - email: bob@acme.example
     CreateOrganization:
       type: object
       required:
@@ -367,6 +1001,137 @@ components:
       description: 'An organization: the top-level container that owns all other resources.'
       examples:
         - displayName: Acme Corp
+    Invitation:
+      type: object
+      required:
+        - name
+        - email
+        - state
+        - organizationDisplayName
+        - invitedBy
+        - inviterEmail
+        - createdAt
+        - updatedAt
+        - expiresAt
+      properties:
+        name:
+          type: string
+          description: 'Resource name: `organizations/{organization}/invitations/{invitation}`.'
+          readOnly: true
+        email:
+          type: string
+          format: email
+          description: Email of the person invited.
+        state:
+          $ref: '#/components/schemas/InvitationState'
+          description: Where the invitation stands.
+          readOnly: true
+        organizationDisplayName:
+          type: string
+          description: The organization's name when the invitation was sent.
+          readOnly: true
+        invitedBy:
+          type: string
+          description: 'Name of the user who sent it: `users/{user}`.'
+          readOnly: true
+        inviterEmail:
+          type: string
+          description: Email of the user who sent it.
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          description: When the invitation was sent.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the invitation was last updated.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+        expiresAt:
+          type: string
+          format: date-time
+          description: After this, the invitation can no longer be accepted.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+      description: |-
+        An invitation to join an organization, addressed by email. The invitee
+        accepts it by signing in with that email.
+      examples:
+        - name: organizations/acme/invitations/0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+          email: bob@acme.example
+          state: pending
+          organizationDisplayName: Acme Corp
+          invitedBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+          inviterEmail: alice@acme.example
+          createdAt: '2026-02-01T10:00:00Z'
+          updatedAt: '2026-02-01T10:00:00Z'
+          expiresAt: '2026-02-15T10:00:00Z'
+    InvitationState:
+      type: string
+      enum:
+        - pending
+        - accepted
+        - declined
+      description: Where an invitation stands.
+      examples:
+        - pending
+    ListInvitationsResponse:
+      type: object
+      required:
+        - invitations
+      properties:
+        invitations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invitation'
+          description: The invitations on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of invitations.
+      examples:
+        - invitations:
+            - name: organizations/acme/invitations/0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+              email: bob@acme.example
+              state: pending
+              organizationDisplayName: Acme Corp
+              invitedBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+              inviterEmail: alice@acme.example
+              createdAt: '2026-02-01T10:00:00Z'
+              updatedAt: '2026-02-01T10:00:00Z'
+              expiresAt: '2026-02-15T10:00:00Z'
+    ListMembersResponse:
+      type: object
+      required:
+        - members
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+          description: The members on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of members.
+      examples:
+        - members:
+            - name: organizations/acme/members/0196f1a2-7c3e-7d4a-9b1e-3f2a6c8d9e01
+              user: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+              email: alice@acme.example
+              displayName: Alice Smith
+              roles:
+                - admin
+              createdAt: '2026-01-15T09:30:00Z'
+            - name: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+              user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+              email: bob@acme.example
+              displayName: Bob Jones
+              roles: []
+              createdAt: '2026-02-03T11:00:00Z'
     ListOrganizationsResponse:
       type: object
       required:
@@ -390,6 +1155,60 @@ components:
               createdAt: '2026-01-15T09:30:00Z'
               updatedAt: '2026-03-02T14:05:00Z'
           nextPageToken: CiAKGjBpNDd2Nmp2
+    Member:
+      type: object
+      required:
+        - name
+        - user
+        - email
+        - displayName
+        - roles
+        - createdAt
+      properties:
+        name:
+          type: string
+          description: 'Resource name: `organizations/{organization}/members/{member}`.'
+          readOnly: true
+        user:
+          type: string
+          description: "Name of the member's user: `users/{user}`."
+          readOnly: true
+        email:
+          type: string
+          description: The user's email when they joined.
+          readOnly: true
+        displayName:
+          type: string
+          description: The user's name when they joined.
+          readOnly: true
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberRole'
+          description: Roles the member holds. Empty for a plain member.
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          description: When the user joined the organization.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+      description: A user's membership in an organization.
+      examples:
+        - name: organizations/acme/members/0196f1a2-7c3e-7d4a-9b1e-3f2a6c8d9e01
+          user: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
+          email: alice@acme.example
+          displayName: Alice Smith
+          roles:
+            - admin
+          createdAt: '2026-01-15T09:30:00Z'
+    MemberRole:
+      type: string
+      enum:
+        - admin
+      description: A role a member holds in its organization.
+      examples:
+        - admin
     Organization:
       type: object
       required:
@@ -514,3 +1333,7 @@ x-speakeasy-name-override:
     methodNameOverride: delete
   - operationId: ^.+_undelete$
     methodNameOverride: undelete
+  - operationId: ^.+_accept$
+    methodNameOverride: accept
+  - operationId: ^.+_decline$
+    methodNameOverride: decline
