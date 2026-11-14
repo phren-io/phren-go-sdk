@@ -9,6 +9,8 @@ tags:
   - name: teams
   - name: teamMembers
   - name: projects
+  - name: spaces
+  - name: memories
 paths:
   /v1/organizations:
     get:
@@ -918,6 +920,469 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - members
+  /v1/organizations/{organization}/spaces:
+    get:
+      operationId: Spaces_list
+      description: List the spaces in the organization the caller can see.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          example: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: filter
+          in: query
+          required: false
+          description: AIP-160 filter expression.
+          schema:
+            type: string
+            maxLength: 1024
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSpacesResponse'
+              example:
+                spaces:
+                  - name: organizations/acme/spaces/notes
+                    project: organizations/acme/teams/core/projects/agent
+                    displayName: Notes
+                    createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                    createdAt: '2026-02-07T11:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaces
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+    post:
+      operationId: Spaces_create
+      description: Create. The project's admins create spaces in it.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: spaceId
+          in: query
+          required: true
+          schema:
+            type: string
+          explode: false
+          example: notes
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Space'
+              example:
+                name: organizations/acme/spaces/notes
+                project: organizations/acme/teams/core/projects/agent
+                displayName: Notes
+                createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                createdAt: '2026-02-07T11:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaces
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSpace'
+            example:
+              project: organizations/acme/teams/core/projects/agent
+              displayName: Notes
+  /v1/organizations/{organization}/spaces/{space}:
+    get:
+      operationId: Spaces_get
+      description: Get
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Space'
+              example:
+                name: organizations/acme/spaces/notes
+                project: organizations/acme/teams/core/projects/agent
+                displayName: Notes
+                createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                createdAt: '2026-02-07T11:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaces
+  /v1/organizations/{organization}/spaces/{space}/memories:
+    get:
+      operationId: Memories_list
+      description: List, newest first.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          example: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: filter
+          in: query
+          required: false
+          description: AIP-160 filter expression.
+          schema:
+            type: string
+            maxLength: 1024
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListMemoriesResponse'
+              example:
+                memories:
+                  - name: organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
+                    content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+                    createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                    createdAt: '2026-02-07T11:30:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - memories
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+    post:
+      operationId: Memories_create
+      description: Create. The space's editors create memories.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Memory'
+              example:
+                name: organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
+                content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+                createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                createdAt: '2026-02-07T11:30:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - memories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemory'
+            example:
+              content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+  /v1/organizations/{organization}/spaces/{space}/memories/{memory}:
+    get:
+      operationId: Memories_get
+      description: Get
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+        - name: memory
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Memory'
+              example:
+                name: organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
+                content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+                createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                createdAt: '2026-02-07T11:30:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - memories
+    delete:
+      operationId: Memories_delete
+      description: Delete. Its vectors are removed from the space in the background.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: memory
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: There is no content to send for this request, but the headers may be useful.
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - memories
   /v1/organizations/{organization}/teams:
     get:
       operationId: Teams_list
@@ -1686,6 +2151,21 @@ components:
         accepts it by signing in with that email.
       examples:
         - email: bob@acme.example
+    CreateMemory:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 32768
+          description: Plain text, at most 32 KiB in UTF-8.
+      description: |-
+        A piece of text an agent remembers. Creating one indexes it for the space's
+        queries in the background; its content can't be changed.
+      examples:
+        - content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
     CreateOrganization:
       type: object
       required:
@@ -1708,6 +2188,27 @@ components:
       description: A project in a team. Its spaces hold memories.
       examples:
         - displayName: Agent
+    CreateSpace:
+      type: object
+      required:
+        - project
+        - displayName
+      properties:
+        project:
+          type: string
+          description: |-
+            The project the space belongs to:
+            `organizations/{organization}/teams/{team}/projects/{project}`. It can't
+            be changed later.
+        displayName:
+          type: string
+          description: Human-readable name.
+      description: |-
+        A space holds memories, and is what agents query. Its ID is unique in the
+        organization, and it belongs to a project, which decides who can use it.
+      examples:
+        - project: organizations/acme/teams/core/projects/agent
+          displayName: Notes
     CreateTeam:
       type: object
       required:
@@ -1874,6 +2375,26 @@ components:
               displayName: Bob Jones
               roles: []
               createdAt: '2026-02-03T11:00:00Z'
+    ListMemoriesResponse:
+      type: object
+      required:
+        - memories
+      properties:
+        memories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Memory'
+          description: The memories on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of memories, newest first.
+      examples:
+        - memories:
+            - name: organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
+              content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+              createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+              createdAt: '2026-02-07T11:30:00Z'
     ListOrganizationsResponse:
       type: object
       required:
@@ -1917,6 +2438,27 @@ components:
               displayName: Agent
               createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
               createdAt: '2026-02-06T10:00:00Z'
+    ListSpacesResponse:
+      type: object
+      required:
+        - spaces
+      properties:
+        spaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Space'
+          description: The spaces on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of spaces.
+      examples:
+        - spaces:
+            - name: organizations/acme/spaces/notes
+              project: organizations/acme/teams/core/projects/agent
+              displayName: Notes
+              createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+              createdAt: '2026-02-07T11:00:00Z'
     ListTeamMembersResponse:
       type: object
       required:
@@ -2015,6 +2557,41 @@ components:
       description: A role a member holds in its organization.
       examples:
         - admin
+    Memory:
+      type: object
+      required:
+        - name
+        - content
+        - createdBy
+        - createdAt
+      properties:
+        name:
+          type: string
+          description: 'Resource name: `organizations/{organization}/spaces/{space}/memories/{memory}`.'
+          readOnly: true
+        content:
+          type: string
+          minLength: 1
+          maxLength: 32768
+          description: Plain text, at most 32 KiB in UTF-8.
+        createdBy:
+          type: string
+          description: Name of the user that created the memory.
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          description: When the memory was created.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+      description: |-
+        A piece of text an agent remembers. Creating one indexes it for the space's
+        queries in the background; its content can't be changed.
+      examples:
+        - name: organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
+          content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+          createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+          createdAt: '2026-02-07T11:30:00Z'
     Organization:
       type: object
       required:
@@ -2137,6 +2714,47 @@ components:
           displayName: Agent
           createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
           createdAt: '2026-02-06T10:00:00Z'
+    Space:
+      type: object
+      required:
+        - name
+        - project
+        - displayName
+        - createdBy
+        - createdAt
+      properties:
+        name:
+          type: string
+          description: 'Resource name: `organizations/{organization}/spaces/{space}`.'
+          readOnly: true
+        project:
+          type: string
+          description: |-
+            The project the space belongs to:
+            `organizations/{organization}/teams/{team}/projects/{project}`. It can't
+            be changed later.
+        displayName:
+          type: string
+          description: Human-readable name.
+        createdBy:
+          type: string
+          description: Name of the user that created the space.
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          description: When the space was created.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+      description: |-
+        A space holds memories, and is what agents query. Its ID is unique in the
+        organization, and it belongs to a project, which decides who can use it.
+      examples:
+        - name: organizations/acme/spaces/notes
+          project: organizations/acme/teams/core/projects/agent
+          displayName: Notes
+          createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+          createdAt: '2026-02-07T11:00:00Z'
     Team:
       type: object
       required:

@@ -169,6 +169,13 @@ invitation is pending and unexpired; otherwise it fails with 409.
 * [Delete](docs/sdks/members/README.md#delete) - Remove a member. Admins remove anyone, and members remove themselves to
 leave. Removing the organization's last admin fails with 409.
 
+### [Memories](docs/sdks/memories/README.md)
+
+* [List](docs/sdks/memories/README.md#list) - List, newest first.
+* [Create](docs/sdks/memories/README.md#create) - Create. The space's editors create memories.
+* [Get](docs/sdks/memories/README.md#get) - Get
+* [Delete](docs/sdks/memories/README.md#delete) - Delete. Its vectors are removed from the space in the background.
+
 ### [Organizations](docs/sdks/organizations/README.md)
 
 * [List](docs/sdks/organizations/README.md#list) - List
@@ -182,6 +189,12 @@ leave. Removing the organization's last admin fails with 409.
 * [List](docs/sdks/projects/README.md#list) - List. The team's members can list its projects.
 * [Create](docs/sdks/projects/README.md#create) - Create. Team admins create projects.
 * [Get](docs/sdks/projects/README.md#get) - Get
+
+### [Spaces](docs/sdks/spaces/README.md)
+
+* [List](docs/sdks/spaces/README.md#list) - List the spaces in the organization the caller can see.
+* [Create](docs/sdks/spaces/README.md#create) - Create. The project's admins create spaces in it.
+* [Get](docs/sdks/spaces/README.md#get) - Get
 
 ### [TeamMembers](docs/sdks/teammembers/README.md)
 

@@ -1,18 +1,18 @@
 lockVersion: 2.0.0
 id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
 management:
-  docChecksum: 827a1999d9c59304a8714953a91d2da5
+  docChecksum: ccec3e900891f8ca1d91d393819e7986
   docVersion: 0.0.0
   speakeasyVersion: 1.809.0
   generationVersion: 2.961.1
-  releaseVersion: 0.3.7
-  configChecksum: 62abb17c8e5741d4dcd2aa7ce915cf59
+  releaseVersion: 0.3.8
+  configChecksum: f3780ac957516411dadee13316321097
   repoURL: https://github.com/phren-io/phren-go-sdk.git
   installationURL: https://github.com/phren-io/phren-go-sdk
 persistentEdits:
-  generation_id: 6d9f815e-1371-4237-b864-105ebd4e9a38
-  pristine_commit_hash: bc7f6c5e1070e56020cbb710529181fa956c8f88
-  pristine_tree_hash: a44dbe724fa881d0eb4d252296164542d6003b42
+  generation_id: b9fedbfa-2347-4074-8d71-19ffef02b0c1
+  pristine_commit_hash: a875a2842461684b01ce37d7c1c240f883b019ec
+  pristine_tree_hash: 9708b456c961a35d805c03dcef759166ce9e1bef
 features:
   go:
     additionalDependencies: 0.1.0
@@ -61,6 +61,10 @@ trackedFiles:
     id: cfa564f19b68
     last_write_checksum: sha1:8dde909ed67cb2fd0a2f0c917361336a0672dfeb
     pristine_git_object: a05a0a651f58e3bae46ea14f507551fab5a37966
+  docs/models/components/creatememory.md:
+    id: b96ed6721ce9
+    last_write_checksum: sha1:7b15bea473158f096f197643bc94f191d4d05449
+    pristine_git_object: 9f6d372666891c581ebc57de3e15e06fc6b45e94
   docs/models/components/createorganization.md:
     id: 8cb7392e99d0
     last_write_checksum: sha1:13e9c39696dd46921fb59cbcdb22c2d68a51bd90
@@ -69,6 +73,10 @@ trackedFiles:
     id: 43f2d83145e0
     last_write_checksum: sha1:4decb97ce4a82b4b705bd61bf0c919af8b673ca5
     pristine_git_object: 018b67754ffa6953bb24ba2118f4c5dd0daaf55e
+  docs/models/components/createspace.md:
+    id: c8bf2c7f7b30
+    last_write_checksum: sha1:7fd77c111395090b207b05c616f488c51f19a177
+    pristine_git_object: 439875d7a699a41e0e7ae9d9f26b1d617c1a4cc7
   docs/models/components/createteam.md:
     id: dfcf32eabe6d
     last_write_checksum: sha1:22a681577faf0634afeaef2bdec3520ed4b6e906
@@ -97,6 +105,10 @@ trackedFiles:
     id: fef5afe8f36b
     last_write_checksum: sha1:150c2d8353be9cf8e24721ec33cfb2c00a61d719
     pristine_git_object: 97d0ac5f7ba5a65a050ef5142bb054cfbb796822
+  docs/models/components/listmemoriesresponse.md:
+    id: 75c63bda0090
+    last_write_checksum: sha1:240a43788b650e415871f95bb59b8c755e248cad
+    pristine_git_object: 4765fcf4f8e632d3eeeec2840c14526b15b4f7dd
   docs/models/components/listorganizationsresponse.md:
     id: b950ff70dbff
     last_write_checksum: sha1:56b8938b1c955e55bad459705ca4ccfe2f8c68d1
@@ -105,6 +117,10 @@ trackedFiles:
     id: 6e98ee7cf341
     last_write_checksum: sha1:caf19cd9d47f498b4bee91276b0bf32ba2bf837b
     pristine_git_object: 549da5f38505048ff1f0821b1ef5b0914123df7b
+  docs/models/components/listspacesresponse.md:
+    id: 7bbf0069bc5c
+    last_write_checksum: sha1:8da019fc6fba9d1fd23918d31035e43f7ab02e47
+    pristine_git_object: 38163519b7a37daf983ec352d57e7d667e84a723
   docs/models/components/listteammembersresponse.md:
     id: 49c7eafa891f
     last_write_checksum: sha1:85af81844380a9dfc79044a7ac73ee08e358ac48
@@ -121,6 +137,10 @@ trackedFiles:
     id: c4728f64b168
     last_write_checksum: sha1:dc993db1fb4cacee0e9058319fbf50f4b14aa6d6
     pristine_git_object: f9f841a163be20cab720f3e105cde8532496aa8a
+  docs/models/components/memory.md:
+    id: 6eeb194c31b3
+    last_write_checksum: sha1:a0a8ba33b655b3f25afaec9baeafc8f82736a190
+    pristine_git_object: e8d9205b0c8ac12c5ec95225810c3be84f1d1719
   docs/models/components/organization.md:
     id: 288ce68f18e3
     last_write_checksum: sha1:08f22b34bae7bcb8b5fbdd0a155e97cb25a5cf02
@@ -137,6 +157,10 @@ trackedFiles:
     id: 54906b49ea28
     last_write_checksum: sha1:3d20d8f28e0ecfee6550ce09129b5ec06e25c24d
     pristine_git_object: c15c11e5000d4802bfc26a199e249e734ad2b549
+  docs/models/components/space.md:
+    id: dfed15c46571
+    last_write_checksum: sha1:d1c659b62f74bc02e3cf2d9e1629c58b7f65e0b4
+    pristine_git_object: 7830730f00807cf6674156a2511c83e2b1e6855a
   docs/models/components/team.md:
     id: 84b630e07a50
     last_write_checksum: sha1:c93851368d267d5c29b245f48ebd7d94ba0a9555
@@ -217,6 +241,38 @@ trackedFiles:
     id: 3108c564ecba
     last_write_checksum: sha1:6f171544d8bb1c082469acc63e5435f593bd1c63
     pristine_git_object: 84b684c00fd5ff633097bf082111fae0f8534502
+  docs/models/operations/memoriescreaterequest.md:
+    id: f16ce4c07051
+    last_write_checksum: sha1:c78b66e66c1398a43299a692455fe2b59bce2566
+    pristine_git_object: 2269ba464173760621e1aeebac027c8b5a3faee7
+  docs/models/operations/memoriescreateresponse.md:
+    id: 7fd343580abe
+    last_write_checksum: sha1:ba0472c377010fc9be56188afe08b6e1da8e3948
+    pristine_git_object: 0466512f360d353b26431164c0d3325cb1d84c2d
+  docs/models/operations/memoriesdeleterequest.md:
+    id: 5820a421691b
+    last_write_checksum: sha1:e7c2dbd2c00d47d59636a9a56fbf5186c2e588e6
+    pristine_git_object: 2e94b5c495f6a1365d356ece8b26dd6ebd590923
+  docs/models/operations/memoriesdeleteresponse.md:
+    id: 84840e14a268
+    last_write_checksum: sha1:7d400b82009735fc1cf0f093313793a97ab3568a
+    pristine_git_object: 6ce2c126752b311a076a7f0565637a0483db53d8
+  docs/models/operations/memoriesgetrequest.md:
+    id: 09d992aa1d90
+    last_write_checksum: sha1:41377a3d61b5ba12f5c7c11942b991199cf66c7a
+    pristine_git_object: 11a78ecaa1ab139b584558ef893997172da6a16c
+  docs/models/operations/memoriesgetresponse.md:
+    id: 8caa3af70af4
+    last_write_checksum: sha1:ed1a53a4cbd48a9460256342d3664b16c2ed76f2
+    pristine_git_object: 991482d8436df49043ff8b1576f95568d17123df
+  docs/models/operations/memorieslistrequest.md:
+    id: d29af480c64c
+    last_write_checksum: sha1:587d952417b593714096c992c5a68a340fb3c9c6
+    pristine_git_object: 55ca2aebd4b1013553a4d8706c6709ad1d3f348a
+  docs/models/operations/memorieslistresponse.md:
+    id: ca0b6786d499
+    last_write_checksum: sha1:3f35bc990dbfb76932867bcf241e10bab23ba9a4
+    pristine_git_object: ae0b8a5b0eedb94f5f6f5d858f0914998c465dd5
   docs/models/operations/option.md:
     id: 2ac1bd52a5fb
     last_write_checksum: sha1:7b8e83408a0b64359e0781519774c974a937686c
@@ -285,6 +341,30 @@ trackedFiles:
     id: 710a74f0e0ff
     last_write_checksum: sha1:44daee2846ebe17a6f750d6523482951892e955b
     pristine_git_object: 0910be84a649e446af50bbcd54ddc1f3a2215433
+  docs/models/operations/spacescreaterequest.md:
+    id: 4678a7969b4e
+    last_write_checksum: sha1:e526e25baf1c878fb55306ceb39cd5c165863ac4
+    pristine_git_object: 9c2b38dba13469919d62511eb90e779356d13bda
+  docs/models/operations/spacescreateresponse.md:
+    id: c482655861de
+    last_write_checksum: sha1:5244b287b5a056f04ac67b3ce352c7528d6cadd8
+    pristine_git_object: 9962714cbaca4235ea55078491aee38d3fb8f893
+  docs/models/operations/spacesgetrequest.md:
+    id: 6f2af3fd047c
+    last_write_checksum: sha1:b49b99ce0787e4efcc48df32995fd66f096aa837
+    pristine_git_object: 74eeb7ae5900b26a8d9b4eced2f2a925126ef08c
+  docs/models/operations/spacesgetresponse.md:
+    id: 81425f9dfcc7
+    last_write_checksum: sha1:d0b6a917ccd8dc077c7f80baaa6ce1ea055e73d0
+    pristine_git_object: 0a91d03c8e9b1cdf8ec8d0c18ae6c53a79573181
+  docs/models/operations/spaceslistrequest.md:
+    id: 91386834a6f4
+    last_write_checksum: sha1:70a2ce5a1c02dfce70aaa3e35ca9741591f2a433
+    pristine_git_object: 3a732e0324f9f771173acb24df26c8253fd10716
+  docs/models/operations/spaceslistresponse.md:
+    id: 4757b8738376
+    last_write_checksum: sha1:e5e8ad01c08896fba2b796b27d5c02652e0926f3
+    pristine_git_object: 51d9c12b80bc8d55a8edd6d5af0e584875efb73c
   docs/models/operations/teammemberscreaterequest.md:
     id: e1c797d84359
     last_write_checksum: sha1:fded733a855331961a8ea95ffa2cb23d1df6ef70
@@ -349,6 +429,10 @@ trackedFiles:
     id: efb92d440525
     last_write_checksum: sha1:772f834ac5c8da62c9ae268e01593a9e66495bc1
     pristine_git_object: f5a1072c60c7d657482193513bcf34122632a876
+  docs/sdks/memories/README.md:
+    id: f9e56b27b7fe
+    last_write_checksum: sha1:1f3e3703ff13e97cffa19833b96b151e0f1162a0
+    pristine_git_object: e242a47a5f86e05242ea9cf40c9ecf5802ac0a53
   docs/sdks/organizations/README.md:
     id: 3425667a2db5
     last_write_checksum: sha1:0136b5fb108e60dba08acc719bec8330ef03a543
@@ -357,6 +441,10 @@ trackedFiles:
     id: 1c5f71754e17
     last_write_checksum: sha1:52743d74dc74cccd4e1fb5ddb939c439a20e5e3a
     pristine_git_object: 938083a08df1364d08200b8a3bdd4305afc7b9f6
+  docs/sdks/spaces/README.md:
+    id: 0e054ac466b4
+    last_write_checksum: sha1:94b9efa7e16fb7b58311d5ff39db588ce58fe88b
+    pristine_git_object: 8b79882e9483b8004bee169ab1f8e5b5abb823cd
   docs/sdks/teammembers/README.md:
     id: 542da4114bf0
     last_write_checksum: sha1:df2e2a2e57c155d796ba9dd360ce0f0d646eef2b
@@ -437,6 +525,10 @@ trackedFiles:
     id: 7c9b6f8ae265
     last_write_checksum: sha1:96672ada396d1fdc88b09a681bf9003273c6a03f
     pristine_git_object: 853164f4ea475082bb0efecd304f18c9fdcf67f2
+  memories.go:
+    id: 9b57ebe03ad3
+    last_write_checksum: sha1:d038a4264ee4796c040c94cc2385da90edcf6841
+    pristine_git_object: 201655fca72629cc3b089dd6837f3fc019ed2f31
   models/apierrors/apierror.go:
     id: 4cecf27a5a54
     last_write_checksum: sha1:bdfed9d7fe645715fc71b2d3bbfd5eb382601552
@@ -453,6 +545,10 @@ trackedFiles:
     id: b3504a06cb99
     last_write_checksum: sha1:b478a481dc09958e04e334861fd067f49449500e
     pristine_git_object: 483f5ce103de01feca521cc6a8e3b98e57b5cbc4
+  models/components/creatememory.go:
+    id: dad945f06142
+    last_write_checksum: sha1:aa5c059c2796c8b6b5716dee967e56df948bc010
+    pristine_git_object: c2d16ad3675de67415f4700a5151db9524ce2c96
   models/components/createorganization.go:
     id: 016cedc1d9f8
     last_write_checksum: sha1:6e8382144688cb9dd1005571d476c9920b3fd381
@@ -461,6 +557,10 @@ trackedFiles:
     id: 453cd5df45b2
     last_write_checksum: sha1:451806f730d86acb8838839c1f1a0922bdc0f298
     pristine_git_object: 535aa2697c39fbdd2dec2895a0db46c0ba48451d
+  models/components/createspace.go:
+    id: 13893b5ee8a1
+    last_write_checksum: sha1:e8c057854d29fb458bbaa5ebb46f9e709858a525
+    pristine_git_object: 3cae8e01f0a2200a9a60cf50eca71623aaeeac2a
   models/components/createteam.go:
     id: 0607afe77315
     last_write_checksum: sha1:7402912211ebb3b78abf0f83dc97db400cda349e
@@ -489,6 +589,10 @@ trackedFiles:
     id: 5a1aa8fffe45
     last_write_checksum: sha1:e90c7bc5213fd5be884592af77b3dd6e5c6e39d1
     pristine_git_object: 7cc408a418a48644d70e863638291c4f23d70e84
+  models/components/listmemoriesresponse.go:
+    id: 7f12da7b8c6c
+    last_write_checksum: sha1:b3968e298605992b07621d857526f9822e2b6c6e
+    pristine_git_object: 32b7643ce0def079d1e68d2bae71c769f09f7ecc
   models/components/listorganizationsresponse.go:
     id: c09fb3b345a6
     last_write_checksum: sha1:038b0181f39fc930efc1618cc743923e8542e9c8
@@ -497,6 +601,10 @@ trackedFiles:
     id: 71f34241e41b
     last_write_checksum: sha1:027fe69092ed1a3096e7881a4a7958b6bf721dd2
     pristine_git_object: 9fe26fe13dcc87369dedf89595e20ba9c08414f7
+  models/components/listspacesresponse.go:
+    id: ff8e07f12038
+    last_write_checksum: sha1:d6e4408e2ce0c63023fe811dbaa2fb3799a332ce
+    pristine_git_object: 1fda14718970db7c6e5c47eb09b3b2fc48b3a69c
   models/components/listteammembersresponse.go:
     id: 5863f7873d94
     last_write_checksum: sha1:547239904069283a256560c21644785305956c44
@@ -513,6 +621,10 @@ trackedFiles:
     id: 6395e174488a
     last_write_checksum: sha1:bac80b3f11f271d1b3a3c92dff336545905e51ec
     pristine_git_object: 3365b5b481c033f68fd8c7fa3c1f140801f16de4
+  models/components/memory.go:
+    id: 408d8dfd0e69
+    last_write_checksum: sha1:6181a8327ed454e2b98079bf01cafca3aa4ff968
+    pristine_git_object: d1cd19a0a74272b65380f3a37c59ad28a9fdfa04
   models/components/organization.go:
     id: 0a5779f28941
     last_write_checksum: sha1:c7421957b1f34a92583bf7cc4ced57e90533b10e
@@ -529,6 +641,10 @@ trackedFiles:
     id: 3a5eba5fe9e0
     last_write_checksum: sha1:aeb2b9b2248a3fbdf9e076fbd851def863708148
     pristine_git_object: f621d27cdd2b11a110b8b72ff0956f92a6a049cd
+  models/components/space.go:
+    id: 5112f00d12c3
+    last_write_checksum: sha1:0d41e27420087f2dbcb96eec34c9cd5aa0c98221
+    pristine_git_object: 4021ebf056b7371d13e22abd8417a6ca943480fd
   models/components/team.go:
     id: 4a0769c90ba2
     last_write_checksum: sha1:314099d4b21b0830c088997dcadbcf787e090c7b
@@ -573,6 +689,22 @@ trackedFiles:
     id: d9c002324c41
     last_write_checksum: sha1:4174a412918266930e4d7d5c3cb8f08c42dca2ae
     pristine_git_object: 36e25489fc642cebfd27ef37b1e5b8eba15a0f66
+  models/operations/memoriescreate.go:
+    id: 6782f84854c2
+    last_write_checksum: sha1:f35f35ac5e05b81b8c8ac5b13b41ca4db3d81ab3
+    pristine_git_object: 3ada46de3c509f63c7b032165e445bf2e922df02
+  models/operations/memoriesdelete.go:
+    id: ebc10d426b6c
+    last_write_checksum: sha1:e57861886adeee1f4b397a604e84f326b645c8b5
+    pristine_git_object: 65164965a1bf717501d591c60a65e6c491666836
+  models/operations/memoriesget.go:
+    id: aa7eb315a226
+    last_write_checksum: sha1:1a9569c83c2c437969d4ba2c218ee8f3e43b179e
+    pristine_git_object: f3721bcac479c0cb5d85daf5b28b3485ec29e843
+  models/operations/memorieslist.go:
+    id: 357516e77050
+    last_write_checksum: sha1:83123a1e69f23e6a7de713a5cfbe8326ee253742
+    pristine_git_object: f31379bd58406638dc5b686f73e95de21871cf24
   models/operations/options.go:
     id: d20dd4db9865
     last_write_checksum: sha1:db51b12e9d1e21ef6e52d9f796f941137b4bc1b0
@@ -609,6 +741,18 @@ trackedFiles:
     id: 9281a38f89ec
     last_write_checksum: sha1:9d3daf82752c60bf7c0a413c7d3a060c0a6bd229
     pristine_git_object: f59d43d018f2fa848969badff2ae65da6cb319ae
+  models/operations/spacescreate.go:
+    id: 45b39d36d61d
+    last_write_checksum: sha1:4f66b2d5d7af31d2b3640c9281f2a38dad1d9010
+    pristine_git_object: 01a72a7a50e6dead184ea1758dc848c08cea9a7b
+  models/operations/spacesget.go:
+    id: 4f1b3f80f476
+    last_write_checksum: sha1:5f20fbde9044f5ca8b2e483089b40c51c7dff476
+    pristine_git_object: e866a30b3e64b5404e659d66454a989e1aa46305
+  models/operations/spaceslist.go:
+    id: be6be31c247f
+    last_write_checksum: sha1:ce82ff8be7ed0fcf29050caa07acfd039af009a3
+    pristine_git_object: 2899ae34e67c89a5329700d46a3b0210bb954ec7
   models/operations/teammemberscreate.go:
     id: a41416970ebb
     last_write_checksum: sha1:157570c9d20a669d49f54b37138167c5f394886d
@@ -651,8 +795,8 @@ trackedFiles:
     pristine_git_object: a9564097f6af778d554c4361eb4d03833430549f
   phren.go:
     id: 3c886eef84be
-    last_write_checksum: sha1:44dae0dd7c6794fd62587d7117f632f1268d92f8
-    pristine_git_object: bd638e2fe63bf5d19c7e1c06c85040368fbd4fec
+    last_write_checksum: sha1:bd40697c6fa307212de72477bb128c06e79de819
+    pristine_git_object: 4b48992eed54c5cb82cd1c20c49bc2e77ee8abad
   projects.go:
     id: 18025b258b56
     last_write_checksum: sha1:55680898e7cea70a2505a3aa8f01a083bbe7e388
@@ -661,6 +805,10 @@ trackedFiles:
     id: 82d673cb0389
     last_write_checksum: sha1:f9dc77730a0f04d6353cf996e65b36c89e83fb0e
     pristine_git_object: 41b99806908e2adeaa2c0bcfb601c08b8064eae6
+  spaces.go:
+    id: b90c9b8b3435
+    last_write_checksum: sha1:eb5ba7d564c43e96024d889499937d131c7a6f59
+    pristine_git_object: 3fc0659e7265d5ec6213ff193f6602f5596adc87
   teammembers.go:
     id: fac4d4067f1d
     last_write_checksum: sha1:b7e0e32af62ecc084e5b4eed4c76b3da37208441
@@ -1156,16 +1304,98 @@ examples:
           application/json: {"name": "organizations/acme/teams/core/projects/agent", "displayName": "Agent", "createdBy": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "createdAt": "2026-02-06T10:00:00Z"}
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+  Spaces_list:
+    speakeasy-default-spaces-list:
+      parameters:
+        path:
+          organization: "acme"
+        query:
+          pageSize: 50
+      responses:
+        "200":
+          application/json: {"spaces": [{"name": "organizations/acme/spaces/notes", "project": "organizations/acme/teams/core/projects/agent", "displayName": "Notes", "createdBy": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "createdAt": "2026-02-07T11:00:00Z"}]}
+        "400":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+  Spaces_create:
+    speakeasy-default-spaces-create:
+      parameters:
+        path:
+          organization: "acme"
+        query:
+          spaceId: "notes"
+      requestBody:
+        application/json: {"project": "organizations/acme/teams/core/projects/agent", "displayName": "Notes"}
+      responses:
+        "201":
+          application/json: {"name": "organizations/acme/spaces/notes", "project": "organizations/acme/teams/core/projects/agent", "displayName": "Notes", "createdBy": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "createdAt": "2026-02-07T11:00:00Z"}
+        "400":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+  Spaces_get:
+    speakeasy-default-spaces-get:
+      parameters:
+        path:
+          organization: "acme"
+          space: "notes"
+      responses:
+        "200":
+          application/json: {"name": "organizations/acme/spaces/notes", "project": "organizations/acme/teams/core/projects/agent", "displayName": "Notes", "createdBy": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "createdAt": "2026-02-07T11:00:00Z"}
+        "400":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+  Memories_list:
+    speakeasy-default-memories-list:
+      parameters:
+        path:
+          organization: "acme"
+          space: "notes"
+        query:
+          pageSize: 50
+      responses:
+        "200":
+          application/json: {"memories": [{"name": "organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01", "content": "Deploys go through Flux; never kubectl apply to the dev cluster by hand.", "createdBy": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "createdAt": "2026-02-07T11:30:00Z"}]}
+        "400":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+  Memories_create:
+    speakeasy-default-memories-create:
+      parameters:
+        path:
+          organization: "acme"
+          space: "notes"
+      requestBody:
+        application/json: {"content": "Deploys go through Flux; never kubectl apply to the dev cluster by hand."}
+      responses:
+        "201":
+          application/json: {"name": "organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01", "content": "Deploys go through Flux; never kubectl apply to the dev cluster by hand.", "createdBy": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "createdAt": "2026-02-07T11:30:00Z"}
+        "400":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+  Memories_get:
+    speakeasy-default-memories-get:
+      parameters:
+        path:
+          organization: "acme"
+          space: "notes"
+          memory: "0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01"
+      responses:
+        "200":
+          application/json: {"name": "organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01", "content": "Deploys go through Flux; never kubectl apply to the dev cluster by hand.", "createdBy": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "createdAt": "2026-02-07T11:30:00Z"}
+        "400":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+  Memories_delete:
+    speakeasy-default-memories-delete:
+      parameters:
+        path:
+          organization: "<value>"
+          space: "<value>"
+          memory: "<value>"
+      responses:
+        "400":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
 examplesVersion: 1.0.2
 releaseNotes: |
   ## Go SDK Changes:
-  * `Phren.Teams.List()`: **Added**
-  * `Phren.Teams.Create()`: **Added**
-  * `Phren.Teams.Get()`: **Added**
-  * `Phren.TeamMembers.List()`: **Added**
-  * `Phren.TeamMembers.Create()`: **Added**
-  * `Phren.TeamMembers.Get()`: **Added**
-  * `Phren.TeamMembers.Delete()`: **Added**
-  * `Phren.Projects.List()`: **Added**
-  * `Phren.Projects.Create()`: **Added**
-  * `Phren.Projects.Get()`: **Added**
+  * `Phren.Spaces.List()`: **Added**
+  * `Phren.Spaces.Create()`: **Added**
+  * `Phren.Spaces.Get()`: **Added**
+  * `Phren.Memories.List()`: **Added**
+  * `Phren.Memories.Create()`: **Added**
+  * `Phren.Memories.Get()`: **Added**
+  * `Phren.Memories.Delete()`: **Added**
