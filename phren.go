@@ -3,7 +3,7 @@
 
 package phren
 
-// Generated from OpenAPI doc version 0.0.0 and generator version 2.960.8
+// Generated from OpenAPI doc version 0.0.0 and generator version 2.961.1
 
 import (
 	"context"
@@ -54,6 +54,8 @@ func Pointer[T any](v T) *T { return &v }
 type Phren struct {
 	SDKVersion    string
 	Organizations *Organizations
+	Invitations   *Invitations
+	Members       *Members
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -130,11 +132,11 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *Phren {
 	sdk := &Phren{
-		SDKVersion: "0.3.5",
+		SDKVersion: "0.3.6",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "speakeasy-sdk/go 0.3.5 2.960.8 0.0.0 github.com/phren-io/phren-go-sdk",
-			SDKVersion:        "0.3.5",
-			GenVersion:        "2.960.8",
+			UserAgent:         "speakeasy-sdk/go 0.3.6 2.961.1 0.0.0 github.com/phren-io/phren-go-sdk",
+			SDKVersion:        "0.3.6",
+			GenVersion:        "2.961.1",
 			OpenAPIDocVersion: "0.0.0",
 			ServerList:        ServerList,
 		},
@@ -159,6 +161,8 @@ func New(opts ...SDKOption) *Phren {
 	sdk.sdkConfiguration = sdk.hooks.SDKInit(sdk.sdkConfiguration)
 
 	sdk.Organizations = newOrganizations(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Invitations = newInvitations(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Members = newMembers(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }
