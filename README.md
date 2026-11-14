@@ -177,6 +177,28 @@ leave. Removing the organization's last admin fails with 409.
 * [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete
 * [Undelete](docs/sdks/organizations/README.md#undelete) - Undelete
 
+### [Projects](docs/sdks/projects/README.md)
+
+* [List](docs/sdks/projects/README.md#list) - List. The team's members can list its projects.
+* [Create](docs/sdks/projects/README.md#create) - Create. Team admins create projects.
+* [Get](docs/sdks/projects/README.md#get) - Get
+
+### [TeamMembers](docs/sdks/teammembers/README.md)
+
+* [List](docs/sdks/teammembers/README.md#list) - List
+* [Create](docs/sdks/teammembers/README.md#create) - Add an organization member to the team. Team admins add members; adding
+one as an admin needs the right to grant admin. Fails with 409 if they're
+already in the team.
+* [Get](docs/sdks/teammembers/README.md#get) - Get
+* [Delete](docs/sdks/teammembers/README.md#delete) - Remove a member. Team admins remove anyone; members remove themselves.
+
+### [Teams](docs/sdks/teams/README.md)
+
+* [List](docs/sdks/teams/README.md#list) - List. Every organization member can list its teams.
+* [Create](docs/sdks/teams/README.md#create) - Create. Organization admins create teams, and manage them without joining:
+add a member as the team's admin to hand it over.
+* [Get](docs/sdks/teams/README.md#get) - Get
+
 </details>
 <!-- End Available Resources and Operations [operations] -->
 
