@@ -1,6 +1,7 @@
 # CreateProject
 
-A project in a team. Its spaces hold memories.
+A project in an organization. Its members use its spaces, which hold
+memories.
 
 
 ## Fields

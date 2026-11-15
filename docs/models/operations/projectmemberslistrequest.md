@@ -1,4 +1,4 @@
-# TeamMembersListRequest
+# ProjectMembersListRequest
 
 
 ## Fields
@@ -9,4 +9,4 @@
 | `PageToken`                                     | `*string`                                       | :heavy_minus_sign:                              | Token from a previous response's nextPageToken. |                                                 |
 | `Filter`                                        | `*string`                                       | :heavy_minus_sign:                              | AIP-160 filter expression.                      |                                                 |
 | `Organization`                                  | `string`                                        | :heavy_check_mark:                              | N/A                                             | acme                                            |
-| `Team`                                          | `string`                                        | :heavy_check_mark:                              | N/A                                             | core                                            |
+| `Project`                                       | `string`                                        | :heavy_check_mark:                              | N/A                                             | agent                                           |

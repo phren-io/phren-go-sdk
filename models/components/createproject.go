@@ -3,7 +3,8 @@
 
 package components
 
-// CreateProject - A project in a team. Its spaces hold memories.
+// CreateProject - A project in an organization. Its members use its spaces, which hold
+// memories.
 type CreateProject struct {
 	// Human-readable name.
 	DisplayName string `json:"displayName"`
