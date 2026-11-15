@@ -36,14 +36,7 @@ func newProjects(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *hooks
 
 // List the projects in the organization the caller is a member of.
 // Organization admins see every project.
-func (s *Projects) List(ctx context.Context, organization string, pageSize *int, pageToken *string, filter *string, opts ...operations.Option) (*operations.ProjectsListResponse, error) {
-	request := operations.ProjectsListRequest{
-		PageSize:     pageSize,
-		PageToken:    pageToken,
-		Filter:       filter,
-		Organization: organization,
-	}
-
+func (s *Projects) List(ctx context.Context, request operations.ProjectsListRequest, opts ...operations.Option) (*operations.ProjectsListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -247,13 +240,11 @@ func (s *Projects) List(ctx context.Context, organization string, pageSize *int,
 				return nil, nil
 			}
 		}
+		request.PageToken = &nCVal
 
 		return s.List(
 			paginationCtx,
-			organization,
-			pageSize,
-			&nCVal,
-			filter,
+			request,
 			opts...,
 		)
 	}
@@ -594,10 +585,11 @@ func (s *Projects) Create(ctx context.Context, organization string, projectID st
 }
 
 // Get
-func (s *Projects) Get(ctx context.Context, organization string, project string, opts ...operations.Option) (*operations.ProjectsGetResponse, error) {
+func (s *Projects) Get(ctx context.Context, organization string, project string, include *components.Include, opts ...operations.Option) (*operations.ProjectsGetResponse, error) {
 	request := operations.ProjectsGetRequest{
 		Organization: organization,
 		Project:      project,
+		Include:      include,
 	}
 
 	o := operations.Options{}
@@ -649,6 +641,10 @@ func (s *Projects) Get(ctx context.Context, organization string, project string,
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
 
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
 		return nil, err

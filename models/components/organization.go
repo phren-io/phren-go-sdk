@@ -25,6 +25,9 @@ type Organization struct {
 	DeletedAt *time.Time `json:"deletedAt,omitzero"`
 	// When a soft-deleted organization will be permanently purged.
 	PurgesAt *time.Time `json:"purgesAt,omitzero"`
+	// The methods the caller may call on this resource, such as `delete`.
+	// Returned only with `include=permissions`.
+	Permissions []string `json:"permissions,omitzero"`
 }
 
 func (o Organization) MarshalJSON() ([]byte, error) {
@@ -92,4 +95,11 @@ func (o *Organization) GetPurgesAt() *time.Time {
 		return nil
 	}
 	return o.PurgesAt
+}
+
+func (o *Organization) GetPermissions() []string {
+	if o == nil {
+		return nil
+	}
+	return o.Permissions
 }

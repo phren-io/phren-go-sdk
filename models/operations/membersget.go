@@ -11,6 +11,11 @@ import (
 type MembersGetRequest struct {
 	Organization string `pathParam:"style=simple,explode=false,name=organization"`
 	Member       string `pathParam:"style=simple,explode=false,name=member"`
+	// Extra data to return. With `permissions`, each resource lists the methods
+	// the caller may call on it, and a list response the methods on the
+	// collection. Rules that depend on data, such as keeping the last admin, are
+	// still checked when the method is called.
+	Include *components.Include `queryParam:"style=form,explode=false,name=include"`
 }
 
 func (m *MembersGetRequest) GetOrganization() string {
@@ -25,6 +30,13 @@ func (m *MembersGetRequest) GetMember() string {
 		return ""
 	}
 	return m.Member
+}
+
+func (m *MembersGetRequest) GetInclude() *components.Include {
+	if m == nil {
+		return nil
+	}
+	return m.Include
 }
 
 type MembersGetResponse struct {

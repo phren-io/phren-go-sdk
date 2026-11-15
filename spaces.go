@@ -38,15 +38,9 @@ func newSpaces(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *hooks.H
 //
 // `filter` takes an AIP-160 expression on `project`, the only field it
 // supports: `project = "organizations/{organization}/projects/{project}"`
-// lists that project's spaces.
-func (s *Spaces) List(ctx context.Context, organization string, pageSize *int, pageToken *string, filter *string, opts ...operations.Option) (*operations.SpacesListResponse, error) {
-	request := operations.SpacesListRequest{
-		PageSize:     pageSize,
-		PageToken:    pageToken,
-		Filter:       filter,
-		Organization: organization,
-	}
-
+// lists that project's spaces. With `include=permissions`, the list's
+// `create` is known only when `filter` names the project.
+func (s *Spaces) List(ctx context.Context, request operations.SpacesListRequest, opts ...operations.Option) (*operations.SpacesListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -250,13 +244,11 @@ func (s *Spaces) List(ctx context.Context, organization string, pageSize *int, p
 				return nil, nil
 			}
 		}
+		request.PageToken = &nCVal
 
 		return s.List(
 			paginationCtx,
-			organization,
-			pageSize,
-			&nCVal,
-			filter,
+			request,
 			opts...,
 		)
 	}
@@ -596,10 +588,11 @@ func (s *Spaces) Create(ctx context.Context, organization string, spaceID string
 }
 
 // Get
-func (s *Spaces) Get(ctx context.Context, organization string, space string, opts ...operations.Option) (*operations.SpacesGetResponse, error) {
+func (s *Spaces) Get(ctx context.Context, organization string, space string, include *components.Include, opts ...operations.Option) (*operations.SpacesGetResponse, error) {
 	request := operations.SpacesGetRequest{
 		Organization: organization,
 		Space:        space,
+		Include:      include,
 	}
 
 	o := operations.Options{}
@@ -651,6 +644,10 @@ func (s *Spaces) Get(ctx context.Context, organization string, space string, opt
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
 
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
 		return nil, err

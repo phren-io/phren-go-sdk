@@ -29,6 +29,9 @@ type Invitation struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 	// After this, the invitation can no longer be accepted.
 	ExpiresAt time.Time `json:"expiresAt"`
+	// The methods the caller may call on this resource, such as `delete`.
+	// Returned only with `include=permissions`.
+	Permissions []string `json:"permissions,omitzero"`
 }
 
 func (i Invitation) MarshalJSON() ([]byte, error) {
@@ -103,4 +106,11 @@ func (i *Invitation) GetExpiresAt() time.Time {
 		return time.Time{}
 	}
 	return i.ExpiresAt
+}
+
+func (i *Invitation) GetPermissions() []string {
+	if i == nil {
+		return nil
+	}
+	return i.Permissions
 }

@@ -3,12 +3,31 @@
 
 package components
 
+import (
+	"github.com/phren-io/phren-go-sdk/internal/utils"
+)
+
 // ListProjectMembersResponse - A page of project members.
 type ListProjectMembersResponse struct {
 	// The members on this page.
 	Members []ProjectMember `json:"members"`
 	// Token for the next page. Absent on the last page.
 	NextPageToken *string `json:"nextPageToken,omitzero"`
+	// The methods the caller may call on the collection, such as `create`.
+	// Returned only with `include=permissions`, on every page, even when it has
+	// no items.
+	Permissions []string `json:"permissions,omitzero"`
+}
+
+func (l ListProjectMembersResponse) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(l, "", false)
+}
+
+func (l *ListProjectMembersResponse) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &l, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (l *ListProjectMembersResponse) GetMembers() []ProjectMember {
@@ -23,4 +42,11 @@ func (l *ListProjectMembersResponse) GetNextPageToken() *string {
 		return nil
 	}
 	return l.NextPageToken
+}
+
+func (l *ListProjectMembersResponse) GetPermissions() []string {
+	if l == nil {
+		return nil
+	}
+	return l.Permissions
 }

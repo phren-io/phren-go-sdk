@@ -11,6 +11,11 @@ import (
 type ProjectsGetRequest struct {
 	Organization string `pathParam:"style=simple,explode=false,name=organization"`
 	Project      string `pathParam:"style=simple,explode=false,name=project"`
+	// Extra data to return. With `permissions`, each resource lists the methods
+	// the caller may call on it, and a list response the methods on the
+	// collection. Rules that depend on data, such as keeping the last admin, are
+	// still checked when the method is called.
+	Include *components.Include `queryParam:"style=form,explode=false,name=include"`
 }
 
 func (p *ProjectsGetRequest) GetOrganization() string {
@@ -25,6 +30,13 @@ func (p *ProjectsGetRequest) GetProject() string {
 		return ""
 	}
 	return p.Project
+}
+
+func (p *ProjectsGetRequest) GetInclude() *components.Include {
+	if p == nil {
+		return nil
+	}
+	return p.Include
 }
 
 type ProjectsGetResponse struct {

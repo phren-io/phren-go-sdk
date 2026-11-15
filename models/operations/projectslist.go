@@ -14,8 +14,13 @@ type ProjectsListRequest struct {
 	// Token from a previous response's nextPageToken.
 	PageToken *string `queryParam:"style=form,explode=false,name=pageToken"`
 	// AIP-160 filter expression.
-	Filter       *string `queryParam:"style=form,explode=false,name=filter"`
-	Organization string  `pathParam:"style=simple,explode=false,name=organization"`
+	Filter *string `queryParam:"style=form,explode=false,name=filter"`
+	// Extra data to return. With `permissions`, each resource lists the methods
+	// the caller may call on it, and a list response the methods on the
+	// collection. Rules that depend on data, such as keeping the last admin, are
+	// still checked when the method is called.
+	Include      *components.Include `queryParam:"style=form,explode=false,name=include"`
+	Organization string              `pathParam:"style=simple,explode=false,name=organization"`
 }
 
 func (p ProjectsListRequest) MarshalJSON() ([]byte, error) {
@@ -48,6 +53,13 @@ func (p *ProjectsListRequest) GetFilter() *string {
 		return nil
 	}
 	return p.Filter
+}
+
+func (p *ProjectsListRequest) GetInclude() *components.Include {
+	if p == nil {
+		return nil
+	}
+	return p.Include
 }
 
 func (p *ProjectsListRequest) GetOrganization() string {

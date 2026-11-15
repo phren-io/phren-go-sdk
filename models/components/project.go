@@ -19,6 +19,9 @@ type Project struct {
 	CreatedBy string `json:"createdBy"`
 	// When the project was created.
 	CreatedAt time.Time `json:"createdAt"`
+	// The methods the caller may call on this resource, such as `delete`.
+	// Returned only with `include=permissions`.
+	Permissions []string `json:"permissions,omitzero"`
 }
 
 func (p Project) MarshalJSON() ([]byte, error) {
@@ -58,4 +61,11 @@ func (p *Project) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return p.CreatedAt
+}
+
+func (p *Project) GetPermissions() []string {
+	if p == nil {
+		return nil
+	}
+	return p.Permissions
 }

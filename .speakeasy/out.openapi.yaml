@@ -57,6 +57,17 @@ paths:
             Next page:
               summary: Next page
               value: state = "ACTIVE"
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
         - name: showDeleted
           in: query
           required: false
@@ -196,6 +207,17 @@ paths:
           schema:
             type: string
           example: acme
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -341,6 +363,17 @@ paths:
           schema:
             type: string
             maxLength: 1024
+          explode: false
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
           explode: false
         - name: organization
           in: path
@@ -496,6 +529,17 @@ paths:
           schema:
             type: string
           example: 0196f1c4-9a2b-7e3d-8f1c-6a7b8c9d0e03
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -754,6 +798,17 @@ paths:
             type: string
             maxLength: 1024
           explode: false
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
         - name: organization
           in: path
           required: true
@@ -827,6 +882,17 @@ paths:
           schema:
             type: string
           example: 0196f1a2-7c3e-7d4a-9b1e-3f2a6c8d9e01
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -952,6 +1018,17 @@ paths:
           schema:
             type: string
             maxLength: 1024
+          explode: false
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
           explode: false
         - name: organization
           in: path
@@ -1082,6 +1159,17 @@ paths:
           schema:
             type: string
           example: agent
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -1151,6 +1239,17 @@ paths:
           schema:
             type: string
             maxLength: 1024
+          explode: false
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
           explode: false
         - name: organization
           in: path
@@ -1303,6 +1402,17 @@ paths:
           schema:
             type: string
           example: 0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -1407,7 +1517,8 @@ paths:
 
         `filter` takes an AIP-160 expression on `project`, the only field it
         supports: `project = "organizations/{organization}/projects/{project}"`
-        lists that project's spaces.
+        lists that project's spaces. With `include=permissions`, the list's
+        `create` is known only when `filter` names the project.
       parameters:
         - name: pageSize
           in: query
@@ -1421,9 +1532,12 @@ paths:
             default: 50
           explode: false
           examples:
-            example0:
+            With permissions:
+              summary: With permissions
               value: 50
             example1:
+              value: 50
+            example2:
               value: 50
         - name: pageToken
           in: query
@@ -1440,16 +1554,39 @@ paths:
             type: string
             maxLength: 1024
           explode: false
-          example: project = "organizations/acme/projects/agent"
+          examples:
+            With permissions:
+              summary: With permissions
+              value: project = "organizations/acme/projects/agent"
+            example1:
+              value: project = "organizations/acme/projects/agent"
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
+          examples:
+            With permissions:
+              summary: With permissions
+              value: permissions
         - name: organization
           in: path
           required: true
           schema:
             type: string
           examples:
-            example0:
+            With permissions:
+              summary: With permissions
               value: acme
             example1:
+              value: acme
+            example2:
               value: acme
       responses:
         '200':
@@ -1459,7 +1596,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListSpacesResponse'
               examples:
-                example0:
+                With permissions:
+                  summary: With permissions
                   value:
                     spaces:
                       - name: organizations/acme/spaces/notes
@@ -1467,7 +1605,19 @@ paths:
                         displayName: Notes
                         createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                         createdAt: '2026-02-07T11:00:00Z'
+                        permissions:
+                          - query
+                    permissions:
+                      - create
                 example1:
+                  value:
+                    spaces:
+                      - name: organizations/acme/spaces/notes
+                        project: organizations/acme/projects/agent
+                        displayName: Notes
+                        createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                        createdAt: '2026-02-07T11:00:00Z'
+                example2:
                   value:
                     spaces:
                       - name: organizations/acme/spaces/notes
@@ -1585,6 +1735,17 @@ paths:
           schema:
             type: string
           example: notes
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -1655,6 +1816,17 @@ paths:
           schema:
             type: string
             maxLength: 1024
+          explode: false
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
           explode: false
         - name: organization
           in: path
@@ -1794,6 +1966,17 @@ paths:
           schema:
             type: string
           example: 0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -2123,6 +2306,11 @@ components:
       examples:
         - project: organizations/acme/projects/agent
           displayName: Notes
+    Include:
+      type: string
+      enum:
+        - permissions
+      description: Extra data a get or list returns when asked for it.
     Invitation:
       type: object
       required:
@@ -2178,6 +2366,14 @@ components:
           description: After this, the invitation can no longer be accepted.
           x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
           readOnly: true
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on this resource, such as `delete`.
+            Returned only with `include=permissions`.
+          readOnly: true
       description: |-
         An invitation to join an organization, addressed by email. The invitee
         accepts it by signing in with that email.
@@ -2213,6 +2409,14 @@ components:
         nextPageToken:
           type: string
           description: Token for the next page. Absent on the last page.
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on the collection, such as `create`.
+            Returned only with `include=permissions`, on every page, even when it has
+            no items.
       description: A page of invitations.
       examples:
         - invitations:
@@ -2238,6 +2442,14 @@ components:
         nextPageToken:
           type: string
           description: Token for the next page. Absent on the last page.
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on the collection, such as `create`.
+            Returned only with `include=permissions`, on every page, even when it has
+            no items.
       description: A page of members.
       examples:
         - members:
@@ -2267,6 +2479,14 @@ components:
         nextPageToken:
           type: string
           description: Token for the next page. Absent on the last page.
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on the collection, such as `create`.
+            Returned only with `include=permissions`, on every page, even when it has
+            no items.
       description: A page of memories, newest first.
       examples:
         - memories:
@@ -2287,6 +2507,14 @@ components:
         nextPageToken:
           type: string
           description: Token for the next page. Absent on the last page.
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on the collection, such as `create`.
+            Returned only with `include=permissions`, on every page, even when it has
+            no items.
       description: A page of organizations.
       examples:
         - organizations:
@@ -2310,6 +2538,14 @@ components:
         nextPageToken:
           type: string
           description: Token for the next page. Absent on the last page.
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on the collection, such as `create`.
+            Returned only with `include=permissions`, on every page, even when it has
+            no items.
       description: A page of project members.
       examples:
         - members:
@@ -2334,6 +2570,14 @@ components:
         nextPageToken:
           type: string
           description: Token for the next page. Absent on the last page.
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on the collection, such as `create`.
+            Returned only with `include=permissions`, on every page, even when it has
+            no items.
       description: A page of projects.
       examples:
         - projects:
@@ -2354,6 +2598,14 @@ components:
         nextPageToken:
           type: string
           description: Token for the next page. Absent on the last page.
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on the collection, such as `create`.
+            Returned only with `include=permissions`, on every page, even when it has
+            no items.
       description: A page of spaces.
       examples:
         - spaces:
@@ -2400,6 +2652,14 @@ components:
           description: When the user joined the organization.
           x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
           readOnly: true
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on this resource, such as `delete`.
+            Returned only with `include=permissions`.
+          readOnly: true
       description: A user's membership in an organization.
       examples:
         - name: organizations/acme/members/0196f1a2-7c3e-7d4a-9b1e-3f2a6c8d9e01
@@ -2442,6 +2702,14 @@ components:
           format: date-time
           description: When the memory was created.
           x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on this resource, such as `delete`.
+            Returned only with `include=permissions`.
           readOnly: true
       description: |-
         A piece of text an agent remembers. Creating one indexes it for the space's
@@ -2498,6 +2766,14 @@ components:
           format: date-time
           description: When a soft-deleted organization will be permanently purged.
           x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on this resource, such as `delete`.
+            Returned only with `include=permissions`.
           readOnly: true
       description: 'An organization: the top-level container that owns all other resources.'
       examples:
@@ -2567,6 +2843,14 @@ components:
           description: When the project was created.
           x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
           readOnly: true
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on this resource, such as `delete`.
+            Returned only with `include=permissions`.
+          readOnly: true
       description: |-
         A project in an organization. Its members use its spaces, which hold
         memories.
@@ -2616,6 +2900,14 @@ components:
           format: date-time
           description: When the member was added to the project.
           x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on this resource, such as `delete`.
+            Returned only with `include=permissions`.
           readOnly: true
       description: |-
         An organization member's membership in a project. Organization admins
@@ -2718,6 +3010,14 @@ components:
           format: date-time
           description: When the space was created.
           x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+        permissions:
+          type: array
+          items:
+            type: string
+          description: |-
+            The methods the caller may call on this resource, such as `delete`.
+            Returned only with `include=permissions`.
           readOnly: true
       description: |-
         A space holds memories, and is what agents query. Its ID is unique in the

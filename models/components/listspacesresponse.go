@@ -3,12 +3,31 @@
 
 package components
 
+import (
+	"github.com/phren-io/phren-go-sdk/internal/utils"
+)
+
 // ListSpacesResponse - A page of spaces.
 type ListSpacesResponse struct {
 	// The spaces on this page.
 	Spaces []Space `json:"spaces"`
 	// Token for the next page. Absent on the last page.
 	NextPageToken *string `json:"nextPageToken,omitzero"`
+	// The methods the caller may call on the collection, such as `create`.
+	// Returned only with `include=permissions`, on every page, even when it has
+	// no items.
+	Permissions []string `json:"permissions,omitzero"`
+}
+
+func (l ListSpacesResponse) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(l, "", false)
+}
+
+func (l *ListSpacesResponse) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &l, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (l *ListSpacesResponse) GetSpaces() []Space {
@@ -23,4 +42,11 @@ func (l *ListSpacesResponse) GetNextPageToken() *string {
 		return nil
 	}
 	return l.NextPageToken
+}
+
+func (l *ListSpacesResponse) GetPermissions() []string {
+	if l == nil {
+		return nil
+	}
+	return l.Permissions
 }

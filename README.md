@@ -55,6 +55,7 @@ package main
 import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 	"os"
 )
@@ -66,7 +67,10 @@ func main() {
 		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
-	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:    phren.Pointer("state = \"ACTIVE\""),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -108,6 +112,7 @@ package main
 import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 	"os"
 )
@@ -119,7 +124,10 @@ func main() {
 		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
-	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:    phren.Pointer("state = \"ACTIVE\""),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -207,7 +215,8 @@ joining: add a member as the project's admin to hand it over.
 
 `filter` takes an AIP-160 expression on `project`, the only field it
 supports: `project = "organizations/{organization}/projects/{project}"`
-lists that project's spaces.
+lists that project's spaces. With `include=permissions`, the list's
+`create` is known only when `filter` names the project.
 * [Create](docs/sdks/spaces/README.md#create) - Create. The project's admins create spaces in it.
 * [Get](docs/sdks/spaces/README.md#get) - Get
 * [SpacesQuery](docs/sdks/spaces/README.md#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
@@ -230,6 +239,7 @@ package main
 import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 	"os"
 )
@@ -241,7 +251,10 @@ func main() {
 		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
-	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:    phren.Pointer("state = \"ACTIVE\""),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -277,6 +290,7 @@ package main
 import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"github.com/phren-io/phren-go-sdk/retry"
 	"log"
 	"models/operations"
@@ -290,7 +304,10 @@ func main() {
 		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
-	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false), operations.WithRetries(
+	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:    phren.Pointer("state = \"ACTIVE\""),
+	}, operations.WithRetries(
 		retry.Config{
 			Strategy: "backoff",
 			Backoff: &retry.BackoffStrategy{
@@ -330,6 +347,7 @@ package main
 import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"github.com/phren-io/phren-go-sdk/retry"
 	"log"
 	"os"
@@ -353,7 +371,10 @@ func main() {
 		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
-	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:    phren.Pointer("state = \"ACTIVE\""),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -401,6 +422,7 @@ import (
 	"errors"
 	phren "github.com/phren-io/phren-go-sdk"
 	"github.com/phren-io/phren-go-sdk/models/apierrors"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 	"os"
 )
@@ -412,7 +434,10 @@ func main() {
 		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
-	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:    phren.Pointer("state = \"ACTIVE\""),
+	})
 	if err != nil {
 
 		var e *apierrors.ProblemError
@@ -452,6 +477,7 @@ package main
 import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 	"os"
 )
@@ -464,7 +490,10 @@ func main() {
 		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
-	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:    phren.Pointer("state = \"ACTIVE\""),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -496,6 +525,7 @@ package main
 import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 	"os"
 )
@@ -508,7 +538,10 @@ func main() {
 		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
-	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:    phren.Pointer("state = \"ACTIVE\""),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

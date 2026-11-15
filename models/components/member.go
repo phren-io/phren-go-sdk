@@ -22,6 +22,9 @@ type Member struct {
 	Roles []MemberRole `json:"roles"`
 	// When the user joined the organization.
 	CreatedAt time.Time `json:"createdAt"`
+	// The methods the caller may call on this resource, such as `delete`.
+	// Returned only with `include=permissions`.
+	Permissions []string `json:"permissions,omitzero"`
 }
 
 func (m Member) MarshalJSON() ([]byte, error) {
@@ -75,4 +78,11 @@ func (m *Member) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return m.CreatedAt
+}
+
+func (m *Member) GetPermissions() []string {
+	if m == nil {
+		return nil
+	}
+	return m.Permissions
 }

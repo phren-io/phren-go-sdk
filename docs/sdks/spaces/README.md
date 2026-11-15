@@ -8,7 +8,8 @@
 
 `filter` takes an AIP-160 expression on `project`, the only field it
 supports: `project = "organizations/{organization}/projects/{project}"`
-lists that project's spaces.
+lists that project's spaces. With `include=permissions`, the list's
+`create` is known only when `filter` names the project.
 * [Create](#create) - Create. The project's admins create spaces in it.
 * [Get](#get) - Get
 * [SpacesQuery](#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
@@ -20,11 +21,12 @@ List the spaces in the organization the caller can see.
 
 `filter` takes an AIP-160 expression on `project`, the only field it
 supports: `project = "organizations/{organization}/projects/{project}"`
-lists that project's spaces.
+lists that project's spaces. With `include=permissions`, the list's
+`create` is known only when `filter` names the project.
 
-### Example Usage: example0
+### Example Usage: With permissions
 
-<!-- UsageSnippet language="go" operationID="Spaces_list" method="get" path="/v1/organizations/{organization}/spaces" example="example0" -->
+<!-- UsageSnippet language="go" operationID="Spaces_list" method="get" path="/v1/organizations/{organization}/spaces" example="With permissions" -->
 ```go
 package main
 
@@ -32,6 +34,8 @@ import(
 	"context"
 	"os"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/components"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 )
 
@@ -42,7 +46,56 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    res, err := s.Spaces.List(ctx, "acme", phren.Pointer[int](50), nil, phren.Pointer("project = \"organizations/acme/projects/agent\""))
+    res, err := s.Spaces.List(ctx, operations.SpacesListRequest{
+        Filter: phren.Pointer("project = \"organizations/acme/projects/agent\""),
+        Include: components.IncludePermissions.ToPointer(),
+        Organization: "acme",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.ListSpacesResponse != nil {
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
+    }
+}
+```
+### Example Usage: example0
+
+<!-- UsageSnippet language="go" operationID="Spaces_list" method="get" path="/v1/organizations/{organization}/spaces" example="example0" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Spaces.List(ctx, operations.SpacesListRequest{
+        Filter: phren.Pointer("project = \"organizations/acme/projects/agent\""),
+        Organization: "acme",
+    })
     if err != nil {
         log.Fatal(err)
     }
@@ -73,6 +126,7 @@ import(
 	"context"
 	"os"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 )
 
@@ -83,7 +137,54 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    res, err := s.Spaces.List(ctx, "acme", phren.Pointer[int](50), nil, phren.Pointer("project = \"organizations/acme/projects/agent\""))
+    res, err := s.Spaces.List(ctx, operations.SpacesListRequest{
+        Filter: phren.Pointer("project = \"organizations/acme/projects/agent\""),
+        Organization: "acme",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.ListSpacesResponse != nil {
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
+    }
+}
+```
+### Example Usage: example2
+
+<!-- UsageSnippet language="go" operationID="Spaces_list" method="get" path="/v1/organizations/{organization}/spaces" example="example2" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Spaces.List(ctx, operations.SpacesListRequest{
+        Organization: "acme",
+    })
     if err != nil {
         log.Fatal(err)
     }
@@ -107,14 +208,11 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
-| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
-| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |                                                          |
-| `pageSize`                                               | `*int`                                                   | :heavy_minus_sign:                                       | Maximum number of results to return.                     |                                                          |
-| `pageToken`                                              | `*string`                                                | :heavy_minus_sign:                                       | Token from a previous response's nextPageToken.          |                                                          |
-| `filter`                                                 | `*string`                                                | :heavy_minus_sign:                                       | AIP-160 filter expression.                               | project = "organizations/acme/projects/agent"            |
-| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
+| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
+| `request`                                                                    | [operations.SpacesListRequest](../../models/operations/spaceslistrequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
+| `opts`                                                                       | [][operations.Option](../../models/operations/option.md)                     | :heavy_minus_sign:                                                           | The options for this request.                                                |
 
 ### Response
 
@@ -210,7 +308,7 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    res, err := s.Spaces.Get(ctx, "acme", "notes")
+    res, err := s.Spaces.Get(ctx, "acme", "notes", nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -222,12 +320,13 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
-| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
-| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
-| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | notes                                                    |
-| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
+| Parameter                                                                                                                                                                                                                                                       | Type                                                                                                                                                                                                                                                            | Required                                                                                                                                                                                                                                                        | Description                                                                                                                                                                                                                                                     | Example                                                                                                                                                                                                                                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                                                                                                                                           | [context.Context](https://pkg.go.dev/context#Context)                                                                                                                                                                                                           | :heavy_check_mark:                                                                                                                                                                                                                                              | The context to use for the request.                                                                                                                                                                                                                             |                                                                                                                                                                                                                                                                 |
+| `organization`                                                                                                                                                                                                                                                  | `string`                                                                                                                                                                                                                                                        | :heavy_check_mark:                                                                                                                                                                                                                                              | N/A                                                                                                                                                                                                                                                             | acme                                                                                                                                                                                                                                                            |
+| `space`                                                                                                                                                                                                                                                         | `string`                                                                                                                                                                                                                                                        | :heavy_check_mark:                                                                                                                                                                                                                                              | N/A                                                                                                                                                                                                                                                             | notes                                                                                                                                                                                                                                                           |
+| `include`                                                                                                                                                                                                                                                       | [*components.Include](../../models/components/include.md)                                                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                                                                              | Extra data to return. With `permissions`, each resource lists the methods<br/>the caller may call on it, and a list response the methods on the<br/>collection. Rules that depend on data, such as keeping the last admin, are<br/>still checked when the method is called. |                                                                                                                                                                                                                                                                 |
+| `opts`                                                                                                                                                                                                                                                          | [][operations.Option](../../models/operations/option.md)                                                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                                                                                              | The options for this request.                                                                                                                                                                                                                                   |                                                                                                                                                                                                                                                                 |
 
 ### Response
 

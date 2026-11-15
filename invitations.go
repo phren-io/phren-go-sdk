@@ -37,14 +37,7 @@ func newInvitations(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *ho
 // List - List. Admins list an organization's invitations. With `-` as the
 // organization, lists the pending invitations addressed to the caller's
 // email, across organizations.
-func (s *Invitations) List(ctx context.Context, organization string, pageSize *int, pageToken *string, filter *string, opts ...operations.Option) (*operations.InvitationsListResponse, error) {
-	request := operations.InvitationsListRequest{
-		PageSize:     pageSize,
-		PageToken:    pageToken,
-		Filter:       filter,
-		Organization: organization,
-	}
-
+func (s *Invitations) List(ctx context.Context, request operations.InvitationsListRequest, opts ...operations.Option) (*operations.InvitationsListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -248,13 +241,11 @@ func (s *Invitations) List(ctx context.Context, organization string, pageSize *i
 				return nil, nil
 			}
 		}
+		request.PageToken = &nCVal
 
 		return s.List(
 			paginationCtx,
-			organization,
-			pageSize,
-			&nCVal,
-			filter,
+			request,
 			opts...,
 		)
 	}
@@ -590,10 +581,11 @@ func (s *Invitations) Create(ctx context.Context, organization string, body comp
 }
 
 // Get
-func (s *Invitations) Get(ctx context.Context, organization string, invitation string, opts ...operations.Option) (*operations.InvitationsGetResponse, error) {
+func (s *Invitations) Get(ctx context.Context, organization string, invitation string, include *components.Include, opts ...operations.Option) (*operations.InvitationsGetResponse, error) {
 	request := operations.InvitationsGetRequest{
 		Organization: organization,
 		Invitation:   invitation,
+		Include:      include,
 	}
 
 	o := operations.Options{}
@@ -645,6 +637,10 @@ func (s *Invitations) Get(ctx context.Context, organization string, invitation s
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
 
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
 		return nil, err

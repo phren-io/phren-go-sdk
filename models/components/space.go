@@ -23,6 +23,9 @@ type Space struct {
 	CreatedBy string `json:"createdBy"`
 	// When the space was created.
 	CreatedAt time.Time `json:"createdAt"`
+	// The methods the caller may call on this resource, such as `delete`.
+	// Returned only with `include=permissions`.
+	Permissions []string `json:"permissions,omitzero"`
 }
 
 func (s Space) MarshalJSON() ([]byte, error) {
@@ -69,4 +72,11 @@ func (s *Space) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return s.CreatedAt
+}
+
+func (s *Space) GetPermissions() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Permissions
 }
