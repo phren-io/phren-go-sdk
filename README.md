@@ -195,6 +195,8 @@ leave. Removing the organization's last admin fails with 409.
 * [List](docs/sdks/spaces/README.md#list) - List the spaces in the organization the caller can see.
 * [Create](docs/sdks/spaces/README.md#create) - Create. The project's admins create spaces in it.
 * [Get](docs/sdks/spaces/README.md#get) - Get
+* [SpacesQuery](docs/sdks/spaces/README.md#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
+query it.
 
 ### [TeamMembers](docs/sdks/teammembers/README.md)
 

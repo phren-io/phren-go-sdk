@@ -1383,6 +1383,72 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - memories
+  /v1/organizations/{organization}/spaces/{space}:query:
+    post:
+      operationId: Spaces_query
+      description: |-
+        Search the space's memories. The space's viewers, editors and admins can
+        query it.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuerySpaceResponse'
+              example:
+                results:
+                  - memory: organizations/acme/spaces/notes/memories/019ad6a0-3c4e-7b8a-9d2f-5e6a7b8c9d0e
+                    content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+                    score: 0.91
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaces
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuerySpaceRequest'
+            example:
+              query: How do deploys work?
+              pageSize: 5
   /v1/organizations/{organization}/teams:
     get:
       operationId: Teams_list
@@ -2714,6 +2780,64 @@ components:
           displayName: Agent
           createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
           createdAt: '2026-02-06T10:00:00Z'
+    QueryResult:
+      type: object
+      required:
+        - memory
+        - content
+        - score
+      properties:
+        memory:
+          type: string
+          description: Resource name of the memory.
+        content:
+          type: string
+          description: The part of the memory that matched.
+        score:
+          type: number
+          format: double
+          description: Relevance to the query, from 0 to 1. Higher is more relevant.
+      description: A memory that matches a query.
+    QuerySpaceRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 2048
+          description: The question, in natural language. At most 2 KiB in UTF-8.
+        pageSize:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 50
+          description: The most results to return. Defaults to 10.
+          default: 10
+      description: A question to search a space's memories with.
+      examples:
+        - query: How do deploys work?
+          pageSize: 5
+    QuerySpaceResponse:
+      type: object
+      required:
+        - results
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueryResult'
+          description: The matching memories.
+      description: |-
+        The best matches, most relevant first, at most one per memory. Memories
+        become searchable shortly after they're created, and stop matching shortly
+        after they're deleted.
+      examples:
+        - results:
+            - memory: organizations/acme/spaces/notes/memories/019ad6a0-3c4e-7b8a-9d2f-5e6a7b8c9d0e
+              content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+              score: 0.91
     Space:
       type: object
       required:
