@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 	"os"
 )
@@ -16,7 +17,10 @@ func main() {
 		phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
 	)
 
-	res, err := s.Organizations.List(ctx, phren.Pointer[int](50), phren.Pointer("CiAKGjBpNDd2Nmp2"), phren.Pointer("state = \"ACTIVE\""), phren.Pointer(false))
+	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:    phren.Pointer("state = \"ACTIVE\""),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

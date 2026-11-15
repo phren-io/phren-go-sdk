@@ -26,6 +26,9 @@ type ProjectMember struct {
 	Roles []MemberRole `json:"roles,omitzero"`
 	// When the member was added to the project.
 	CreatedAt time.Time `json:"createdAt"`
+	// The methods the caller may call on this resource, such as `delete`.
+	// Returned only with `include=permissions`.
+	Permissions []string `json:"permissions,omitzero"`
 }
 
 func (p ProjectMember) MarshalJSON() ([]byte, error) {
@@ -86,4 +89,11 @@ func (p *ProjectMember) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return p.CreatedAt
+}
+
+func (p *ProjectMember) GetPermissions() []string {
+	if p == nil {
+		return nil
+	}
+	return p.Permissions
 }

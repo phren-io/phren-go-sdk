@@ -12,6 +12,11 @@ type MemoriesGetRequest struct {
 	Organization string `pathParam:"style=simple,explode=false,name=organization"`
 	Space        string `pathParam:"style=simple,explode=false,name=space"`
 	Memory       string `pathParam:"style=simple,explode=false,name=memory"`
+	// Extra data to return. With `permissions`, each resource lists the methods
+	// the caller may call on it, and a list response the methods on the
+	// collection. Rules that depend on data, such as keeping the last admin, are
+	// still checked when the method is called.
+	Include *components.Include `queryParam:"style=form,explode=false,name=include"`
 }
 
 func (m *MemoriesGetRequest) GetOrganization() string {
@@ -33,6 +38,13 @@ func (m *MemoriesGetRequest) GetMemory() string {
 		return ""
 	}
 	return m.Memory
+}
+
+func (m *MemoriesGetRequest) GetInclude() *components.Include {
+	if m == nil {
+		return nil
+	}
+	return m.Include
 }
 
 type MemoriesGetResponse struct {

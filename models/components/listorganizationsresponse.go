@@ -3,12 +3,31 @@
 
 package components
 
+import (
+	"github.com/phren-io/phren-go-sdk/internal/utils"
+)
+
 // ListOrganizationsResponse - A page of organizations.
 type ListOrganizationsResponse struct {
 	// The organizations on this page.
 	Organizations []Organization `json:"organizations"`
 	// Token for the next page. Absent on the last page.
 	NextPageToken *string `json:"nextPageToken,omitzero"`
+	// The methods the caller may call on the collection, such as `create`.
+	// Returned only with `include=permissions`, on every page, even when it has
+	// no items.
+	Permissions []string `json:"permissions,omitzero"`
+}
+
+func (l ListOrganizationsResponse) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(l, "", false)
+}
+
+func (l *ListOrganizationsResponse) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &l, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (l *ListOrganizationsResponse) GetOrganizations() []Organization {
@@ -23,4 +42,11 @@ func (l *ListOrganizationsResponse) GetNextPageToken() *string {
 		return nil
 	}
 	return l.NextPageToken
+}
+
+func (l *ListOrganizationsResponse) GetPermissions() []string {
+	if l == nil {
+		return nil
+	}
+	return l.Permissions
 }

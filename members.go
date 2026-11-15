@@ -35,14 +35,7 @@ func newMembers(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *hooks.
 }
 
 // List
-func (s *Members) List(ctx context.Context, organization string, pageSize *int, pageToken *string, filter *string, opts ...operations.Option) (*operations.MembersListResponse, error) {
-	request := operations.MembersListRequest{
-		PageSize:     pageSize,
-		PageToken:    pageToken,
-		Filter:       filter,
-		Organization: organization,
-	}
-
+func (s *Members) List(ctx context.Context, request operations.MembersListRequest, opts ...operations.Option) (*operations.MembersListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -246,13 +239,11 @@ func (s *Members) List(ctx context.Context, organization string, pageSize *int, 
 				return nil, nil
 			}
 		}
+		request.PageToken = &nCVal
 
 		return s.List(
 			paginationCtx,
-			organization,
-			pageSize,
-			&nCVal,
-			filter,
+			request,
 			opts...,
 		)
 	}
@@ -333,10 +324,11 @@ func (s *Members) List(ctx context.Context, organization string, pageSize *int, 
 }
 
 // Get
-func (s *Members) Get(ctx context.Context, organization string, member string, opts ...operations.Option) (*operations.MembersGetResponse, error) {
+func (s *Members) Get(ctx context.Context, organization string, member string, include *components.Include, opts ...operations.Option) (*operations.MembersGetResponse, error) {
 	request := operations.MembersGetRequest{
 		Organization: organization,
 		Member:       member,
+		Include:      include,
 	}
 
 	o := operations.Options{}
@@ -388,6 +380,10 @@ func (s *Members) Get(ctx context.Context, organization string, member string, o
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
 
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
 		return nil, err

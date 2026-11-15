@@ -11,6 +11,11 @@ import (
 type SpacesGetRequest struct {
 	Organization string `pathParam:"style=simple,explode=false,name=organization"`
 	Space        string `pathParam:"style=simple,explode=false,name=space"`
+	// Extra data to return. With `permissions`, each resource lists the methods
+	// the caller may call on it, and a list response the methods on the
+	// collection. Rules that depend on data, such as keeping the last admin, are
+	// still checked when the method is called.
+	Include *components.Include `queryParam:"style=form,explode=false,name=include"`
 }
 
 func (s *SpacesGetRequest) GetOrganization() string {
@@ -25,6 +30,13 @@ func (s *SpacesGetRequest) GetSpace() string {
 		return ""
 	}
 	return s.Space
+}
+
+func (s *SpacesGetRequest) GetInclude() *components.Include {
+	if s == nil {
+		return nil
+	}
+	return s.Include
 }
 
 type SpacesGetResponse struct {

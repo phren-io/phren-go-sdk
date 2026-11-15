@@ -36,14 +36,7 @@ func newOrganizations(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *
 }
 
 // List
-func (s *Organizations) List(ctx context.Context, pageSize *int, pageToken *string, filter *string, showDeleted *bool, opts ...operations.Option) (*operations.OrganizationsListResponse, error) {
-	request := operations.OrganizationsListRequest{
-		PageSize:    pageSize,
-		PageToken:   pageToken,
-		Filter:      filter,
-		ShowDeleted: showDeleted,
-	}
-
+func (s *Organizations) List(ctx context.Context, request operations.OrganizationsListRequest, opts ...operations.Option) (*operations.OrganizationsListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -247,13 +240,11 @@ func (s *Organizations) List(ctx context.Context, pageSize *int, pageToken *stri
 				return nil, nil
 			}
 		}
+		request.PageToken = &nCVal
 
 		return s.List(
 			paginationCtx,
-			pageSize,
-			&nCVal,
-			filter,
-			showDeleted,
+			request,
 			opts...,
 		)
 	}
@@ -592,9 +583,10 @@ func (s *Organizations) Create(ctx context.Context, organizationID string, body 
 }
 
 // Get
-func (s *Organizations) Get(ctx context.Context, organization string, opts ...operations.Option) (*operations.OrganizationsGetResponse, error) {
+func (s *Organizations) Get(ctx context.Context, organization string, include *components.Include, opts ...operations.Option) (*operations.OrganizationsGetResponse, error) {
 	request := operations.OrganizationsGetRequest{
 		Organization: organization,
+		Include:      include,
 	}
 
 	o := operations.Options{}
@@ -646,6 +638,10 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
 
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
 		return nil, err

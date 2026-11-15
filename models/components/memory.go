@@ -19,6 +19,9 @@ type Memory struct {
 	CreatedBy string `json:"createdBy"`
 	// When the memory was created.
 	CreatedAt time.Time `json:"createdAt"`
+	// The methods the caller may call on this resource, such as `delete`.
+	// Returned only with `include=permissions`.
+	Permissions []string `json:"permissions,omitzero"`
 }
 
 func (m Memory) MarshalJSON() ([]byte, error) {
@@ -58,4 +61,11 @@ func (m *Memory) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return m.CreatedAt
+}
+
+func (m *Memory) GetPermissions() []string {
+	if m == nil {
+		return nil
+	}
+	return m.Permissions
 }
