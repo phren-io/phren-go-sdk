@@ -14,7 +14,7 @@ type Space struct {
 	// Resource name: `organizations/{organization}/spaces/{space}`.
 	Name string `json:"name"`
 	// The project the space belongs to:
-	// `organizations/{organization}/teams/{team}/projects/{project}`. It can't
+	// `organizations/{organization}/projects/{project}`. It can't
 	// be changed later.
 	Project string `json:"project"`
 	// Human-readable name.

@@ -7,7 +7,7 @@ package components
 // organization, and it belongs to a project, which decides who can use it.
 type CreateSpace struct {
 	// The project the space belongs to:
-	// `organizations/{organization}/teams/{team}/projects/{project}`. It can't
+	// `organizations/{organization}/projects/{project}`. It can't
 	// be changed later.
 	Project string `json:"project"`
 	// Human-readable name.

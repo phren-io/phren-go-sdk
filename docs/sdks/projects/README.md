@@ -4,17 +4,20 @@
 
 ### Available Operations
 
-* [List](#list) - List. The team's members can list its projects.
-* [Create](#create) - Create. Team admins create projects.
+* [List](#list) - List the projects in the organization the caller is a member of.
+Organization admins see every project.
+* [Create](#create) - Create. Organization admins create projects, and manage them without
+joining: add a member as the project's admin to hand it over.
 * [Get](#get) - Get
 
 ## List
 
-List. The team's members can list its projects.
+List the projects in the organization the caller is a member of.
+Organization admins see every project.
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Projects_list" method="get" path="/v1/organizations/{organization}/teams/{team}/projects" -->
+<!-- UsageSnippet language="go" operationID="Projects_list" method="get" path="/v1/organizations/{organization}/projects" -->
 ```go
 package main
 
@@ -22,7 +25,6 @@ import(
 	"context"
 	"os"
 	phren "github.com/phren-io/phren-go-sdk"
-	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 )
 
@@ -33,10 +35,7 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    res, err := s.Projects.List(ctx, operations.ProjectsListRequest{
-        Organization: "acme",
-        Team: "core",
-    })
+    res, err := s.Projects.List(ctx, "acme", phren.Pointer[int](50), nil, nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -60,11 +59,14 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |
-| `request`                                                                        | [operations.ProjectsListRequest](../../models/operations/projectslistrequest.md) | :heavy_check_mark:                                                               | The request object to use for the request.                                       |
-| `opts`                                                                           | [][operations.Option](../../models/operations/option.md)                         | :heavy_minus_sign:                                                               | The options for this request.                                                    |
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
+| `pageSize`                                               | `*int`                                                   | :heavy_minus_sign:                                       | Maximum number of results to return.                     | 50                                                       |
+| `pageToken`                                              | `*string`                                                | :heavy_minus_sign:                                       | Token from a previous response's nextPageToken.          |                                                          |
+| `filter`                                                 | `*string`                                                | :heavy_minus_sign:                                       | AIP-160 filter expression.                               |                                                          |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
 
 ### Response
 
@@ -79,11 +81,12 @@ func main() {
 
 ## Create
 
-Create. Team admins create projects.
+Create. Organization admins create projects, and manage them without
+joining: add a member as the project's admin to hand it over.
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Projects_create" method="post" path="/v1/organizations/{organization}/teams/{team}/projects" -->
+<!-- UsageSnippet language="go" operationID="Projects_create" method="post" path="/v1/organizations/{organization}/projects" -->
 ```go
 package main
 
@@ -102,7 +105,7 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    res, err := s.Projects.Create(ctx, "acme", "core", "agent", components.CreateProject{
+    res, err := s.Projects.Create(ctx, "acme", "agent", components.CreateProject{
         DisplayName: "Agent",
     })
     if err != nil {
@@ -120,7 +123,6 @@ func main() {
 | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | `ctx`                                                                | [context.Context](https://pkg.go.dev/context#Context)                | :heavy_check_mark:                                                   | The context to use for the request.                                  |                                                                      |
 | `organization`                                                       | `string`                                                             | :heavy_check_mark:                                                   | N/A                                                                  | acme                                                                 |
-| `team`                                                               | `string`                                                             | :heavy_check_mark:                                                   | N/A                                                                  | core                                                                 |
 | `projectID`                                                          | `string`                                                             | :heavy_check_mark:                                                   | N/A                                                                  | agent                                                                |
 | `body`                                                               | [components.CreateProject](../../models/components/createproject.md) | :heavy_check_mark:                                                   | N/A                                                                  | {<br/>"displayName": "Agent"<br/>}                                   |
 | `opts`                                                               | [][operations.Option](../../models/operations/option.md)             | :heavy_minus_sign:                                                   | The options for this request.                                        |                                                                      |
@@ -142,7 +144,7 @@ Get
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Projects_get" method="get" path="/v1/organizations/{organization}/teams/{team}/projects/{project}" -->
+<!-- UsageSnippet language="go" operationID="Projects_get" method="get" path="/v1/organizations/{organization}/projects/{project}" -->
 ```go
 package main
 
@@ -160,7 +162,7 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    res, err := s.Projects.Get(ctx, "acme", "core", "agent")
+    res, err := s.Projects.Get(ctx, "acme", "agent")
     if err != nil {
         log.Fatal(err)
     }
@@ -176,7 +178,6 @@ func main() {
 | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
 | `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
 | `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
-| `team`                                                   | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | core                                                     |
 | `project`                                                | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | agent                                                    |
 | `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
 

@@ -8,9 +8,10 @@ import (
 	"time"
 )
 
-// Project - A project in a team. Its spaces hold memories.
+// Project - A project in an organization. Its members use its spaces, which hold
+// memories.
 type Project struct {
-	// Resource name: `organizations/{organization}/teams/{team}/projects/{project}`.
+	// Resource name: `organizations/{organization}/projects/{project}`.
 	Name string `json:"name"`
 	// Human-readable name.
 	DisplayName string `json:"displayName"`

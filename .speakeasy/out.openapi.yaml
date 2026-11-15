@@ -6,9 +6,8 @@ tags:
   - name: organizations
   - name: members
   - name: invitations
-  - name: teams
-  - name: teamMembers
   - name: projects
+  - name: projectMembers
   - name: spaces
   - name: memories
 paths:
@@ -920,10 +919,12 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - members
-  /v1/organizations/{organization}/spaces:
+  /v1/organizations/{organization}/projects:
     get:
-      operationId: Spaces_list
-      description: List the spaces in the organization the caller can see.
+      operationId: Projects_list
+      description: |-
+        List the projects in the organization the caller is a member of.
+        Organization admins see every project.
       parameters:
         - name: pageSize
           in: query
@@ -964,14 +965,516 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListSpacesResponse'
+                $ref: '#/components/schemas/ListProjectsResponse'
               example:
-                spaces:
-                  - name: organizations/acme/spaces/notes
-                    project: organizations/acme/teams/core/projects/agent
-                    displayName: Notes
+                projects:
+                  - name: organizations/acme/projects/agent
+                    displayName: Agent
                     createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
-                    createdAt: '2026-02-07T11:00:00Z'
+                    createdAt: '2026-02-06T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - projects
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+    post:
+      operationId: Projects_create
+      description: |-
+        Create. Organization admins create projects, and manage them without
+        joining: add a member as the project's admin to hand it over.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: projectId
+          in: query
+          required: true
+          schema:
+            type: string
+          explode: false
+          example: agent
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+              example:
+                name: organizations/acme/projects/agent
+                displayName: Agent
+                createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                createdAt: '2026-02-06T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProject'
+            example:
+              displayName: Agent
+  /v1/organizations/{organization}/projects/{project}:
+    get:
+      operationId: Projects_get
+      description: Get
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+          example: agent
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+              example:
+                name: organizations/acme/projects/agent
+                displayName: Agent
+                createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                createdAt: '2026-02-06T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - projects
+  /v1/organizations/{organization}/projects/{project}/members:
+    get:
+      operationId: ProjectMembers_list
+      description: List. The project's members can list them.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          example: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: filter
+          in: query
+          required: false
+          description: AIP-160 filter expression.
+          schema:
+            type: string
+            maxLength: 1024
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+          example: agent
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListProjectMembersResponse'
+              example:
+                members:
+                  - name: organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
+                    member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+                    user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                    email: bob@acme.example
+                    displayName: Bob Jones
+                    roles:
+                      - admin
+                    createdAt: '2026-02-05T09:05:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - projectMembers
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+    post:
+      operationId: ProjectMembers_create
+      description: |-
+        Add an organization member to the project. Project admins add members; adding
+        one as an admin needs the right to grant admin. Fails with 409 if they're
+        already in the project.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+          example: agent
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMember'
+              example:
+                name: organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
+                member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+                user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                email: bob@acme.example
+                displayName: Bob Jones
+                roles:
+                  - admin
+                createdAt: '2026-02-05T09:05:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - projectMembers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectMember'
+            example:
+              member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+              roles:
+                - admin
+  /v1/organizations/{organization}/projects/{project}/members/{member}:
+    get:
+      operationId: ProjectMembers_get
+      description: Get
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+          example: agent
+        - name: member
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMember'
+              example:
+                name: organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
+                member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+                user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                email: bob@acme.example
+                displayName: Bob Jones
+                roles:
+                  - admin
+                createdAt: '2026-02-05T09:05:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - projectMembers
+    delete:
+      operationId: ProjectMembers_delete
+      description: Remove a member. Project admins remove anyone; members remove themselves.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: member
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: There is no content to send for this request, but the headers may be useful.
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - projectMembers
+  /v1/organizations/{organization}/spaces:
+    get:
+      operationId: Spaces_list
+      description: |-
+        List the spaces in the organization the caller can see.
+
+        `filter` takes an AIP-160 expression on `project`, the only field it
+        supports: `project = "organizations/{organization}/projects/{project}"`
+        lists that project's spaces.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          examples:
+            example0:
+              value: 50
+            example1:
+              value: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: filter
+          in: query
+          required: false
+          description: AIP-160 filter expression.
+          schema:
+            type: string
+            maxLength: 1024
+          explode: false
+          example: project = "organizations/acme/projects/agent"
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            example0:
+              value: acme
+            example1:
+              value: acme
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSpacesResponse'
+              examples:
+                example0:
+                  value:
+                    spaces:
+                      - name: organizations/acme/spaces/notes
+                        project: organizations/acme/projects/agent
+                        displayName: Notes
+                        createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                        createdAt: '2026-02-07T11:00:00Z'
+                example1:
+                  value:
+                    spaces:
+                      - name: organizations/acme/spaces/notes
+                        project: organizations/acme/projects/agent
+                        displayName: Notes
+                        createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                        createdAt: '2026-02-07T11:00:00Z'
         '400':
           description: The request is malformed or fails validation.
           content:
@@ -1026,7 +1529,7 @@ paths:
                 $ref: '#/components/schemas/Space'
               example:
                 name: organizations/acme/spaces/notes
-                project: organizations/acme/teams/core/projects/agent
+                project: organizations/acme/projects/agent
                 displayName: Notes
                 createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                 createdAt: '2026-02-07T11:00:00Z'
@@ -1063,7 +1566,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateSpace'
             example:
-              project: organizations/acme/teams/core/projects/agent
+              project: organizations/acme/projects/agent
               displayName: Notes
   /v1/organizations/{organization}/spaces/{space}:
     get:
@@ -1091,7 +1594,7 @@ paths:
                 $ref: '#/components/schemas/Space'
               example:
                 name: organizations/acme/spaces/notes
-                project: organizations/acme/teams/core/projects/agent
+                project: organizations/acme/projects/agent
                 displayName: Notes
                 createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                 createdAt: '2026-02-07T11:00:00Z'
@@ -1463,699 +1966,6 @@ paths:
             example:
               query: How do deploys work?
               pageSize: 5
-  /v1/organizations/{organization}/teams:
-    get:
-      operationId: Teams_list
-      description: List. Every organization member can list its teams.
-      parameters:
-        - name: pageSize
-          in: query
-          required: false
-          description: Maximum number of results to return.
-          schema:
-            type: integer
-            format: int32
-            minimum: 1
-            maximum: 100
-            default: 50
-          explode: false
-          example: 50
-        - name: pageToken
-          in: query
-          required: false
-          description: Token from a previous response's nextPageToken.
-          schema:
-            type: string
-          explode: false
-        - name: filter
-          in: query
-          required: false
-          description: AIP-160 filter expression.
-          schema:
-            type: string
-            maxLength: 1024
-          explode: false
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-          example: acme
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListTeamsResponse'
-              example:
-                teams:
-                  - name: organizations/acme/teams/core
-                    displayName: Core
-                    createdBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
-                    createdAt: '2026-02-05T09:00:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - teams
-      x-speakeasy-pagination:
-        type: cursor
-        inputs:
-          - name: pageToken
-            in: parameters
-            type: cursor
-        outputs:
-          nextCursor: $.nextPageToken
-    post:
-      operationId: Teams_create
-      description: |-
-        Create. Organization admins create teams, and manage them without joining:
-        add a member as the team's admin to hand it over.
-      parameters:
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-          example: acme
-        - name: teamId
-          in: query
-          required: true
-          schema:
-            type: string
-          explode: false
-          example: core
-      responses:
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Team'
-              example:
-                name: organizations/acme/teams/core
-                displayName: Core
-                createdBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
-                createdAt: '2026-02-05T09:00:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '409':
-          description: The request conflicts with the resource's current state.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - teams
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTeam'
-            example:
-              displayName: Core
-  /v1/organizations/{organization}/teams/{team}:
-    get:
-      operationId: Teams_get
-      description: Get
-      parameters:
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-          example: acme
-        - name: team
-          in: path
-          required: true
-          schema:
-            type: string
-          example: core
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Team'
-              example:
-                name: organizations/acme/teams/core
-                displayName: Core
-                createdBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
-                createdAt: '2026-02-05T09:00:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '404':
-          description: The caller is authorized for the requested resources, but this one does not exist.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - teams
-  /v1/organizations/{organization}/teams/{team}/members:
-    get:
-      operationId: TeamMembers_list
-      description: List
-      parameters:
-        - name: pageSize
-          in: query
-          required: false
-          description: Maximum number of results to return.
-          schema:
-            type: integer
-            format: int32
-            minimum: 1
-            maximum: 100
-            default: 50
-          explode: false
-          example: 50
-        - name: pageToken
-          in: query
-          required: false
-          description: Token from a previous response's nextPageToken.
-          schema:
-            type: string
-          explode: false
-        - name: filter
-          in: query
-          required: false
-          description: AIP-160 filter expression.
-          schema:
-            type: string
-            maxLength: 1024
-          explode: false
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-          example: acme
-        - name: team
-          in: path
-          required: true
-          schema:
-            type: string
-          example: core
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListTeamMembersResponse'
-              example:
-                members:
-                  - name: organizations/acme/teams/core/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
-                    member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
-                    user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
-                    email: bob@acme.example
-                    displayName: Bob Jones
-                    roles:
-                      - admin
-                    createdAt: '2026-02-05T09:05:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - teamMembers
-      x-speakeasy-pagination:
-        type: cursor
-        inputs:
-          - name: pageToken
-            in: parameters
-            type: cursor
-        outputs:
-          nextCursor: $.nextPageToken
-    post:
-      operationId: TeamMembers_create
-      description: |-
-        Add an organization member to the team. Team admins add members; adding
-        one as an admin needs the right to grant admin. Fails with 409 if they're
-        already in the team.
-      parameters:
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-          example: acme
-        - name: team
-          in: path
-          required: true
-          schema:
-            type: string
-          example: core
-      responses:
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TeamMember'
-              example:
-                name: organizations/acme/teams/core/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
-                member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
-                user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
-                email: bob@acme.example
-                displayName: Bob Jones
-                roles:
-                  - admin
-                createdAt: '2026-02-05T09:05:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '409':
-          description: The request conflicts with the resource's current state.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - teamMembers
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTeamMember'
-            example:
-              member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
-              roles:
-                - admin
-  /v1/organizations/{organization}/teams/{team}/members/{member}:
-    get:
-      operationId: TeamMembers_get
-      description: Get
-      parameters:
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-          example: acme
-        - name: team
-          in: path
-          required: true
-          schema:
-            type: string
-          example: core
-        - name: member
-          in: path
-          required: true
-          schema:
-            type: string
-          example: 0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TeamMember'
-              example:
-                name: organizations/acme/teams/core/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
-                member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
-                user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
-                email: bob@acme.example
-                displayName: Bob Jones
-                roles:
-                  - admin
-                createdAt: '2026-02-05T09:05:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '404':
-          description: The caller is authorized for the requested resources, but this one does not exist.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - teamMembers
-    delete:
-      operationId: TeamMembers_delete
-      description: Remove a member. Team admins remove anyone; members remove themselves.
-      parameters:
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: team
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: member
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: There is no content to send for this request, but the headers may be useful.
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '404':
-          description: The caller is authorized for the requested resources, but this one does not exist.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '409':
-          description: The request conflicts with the resource's current state.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - teamMembers
-  /v1/organizations/{organization}/teams/{team}/projects:
-    get:
-      operationId: Projects_list
-      description: List. The team's members can list its projects.
-      parameters:
-        - name: pageSize
-          in: query
-          required: false
-          description: Maximum number of results to return.
-          schema:
-            type: integer
-            format: int32
-            minimum: 1
-            maximum: 100
-            default: 50
-          explode: false
-          example: 50
-        - name: pageToken
-          in: query
-          required: false
-          description: Token from a previous response's nextPageToken.
-          schema:
-            type: string
-          explode: false
-        - name: filter
-          in: query
-          required: false
-          description: AIP-160 filter expression.
-          schema:
-            type: string
-            maxLength: 1024
-          explode: false
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-          example: acme
-        - name: team
-          in: path
-          required: true
-          schema:
-            type: string
-          example: core
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListProjectsResponse'
-              example:
-                projects:
-                  - name: organizations/acme/teams/core/projects/agent
-                    displayName: Agent
-                    createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
-                    createdAt: '2026-02-06T10:00:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - projects
-      x-speakeasy-pagination:
-        type: cursor
-        inputs:
-          - name: pageToken
-            in: parameters
-            type: cursor
-        outputs:
-          nextCursor: $.nextPageToken
-    post:
-      operationId: Projects_create
-      description: Create. Team admins create projects.
-      parameters:
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-          example: acme
-        - name: team
-          in: path
-          required: true
-          schema:
-            type: string
-          example: core
-        - name: projectId
-          in: query
-          required: true
-          schema:
-            type: string
-          explode: false
-          example: agent
-      responses:
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Project'
-              example:
-                name: organizations/acme/teams/core/projects/agent
-                displayName: Agent
-                createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
-                createdAt: '2026-02-06T10:00:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '409':
-          description: The request conflicts with the resource's current state.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - projects
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateProject'
-            example:
-              displayName: Agent
-  /v1/organizations/{organization}/teams/{team}/projects/{project}:
-    get:
-      operationId: Projects_get
-      description: Get
-      parameters:
-        - name: organization
-          in: path
-          required: true
-          schema:
-            type: string
-          example: acme
-        - name: team
-          in: path
-          required: true
-          schema:
-            type: string
-          example: core
-        - name: project
-          in: path
-          required: true
-          schema:
-            type: string
-          example: agent
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Project'
-              example:
-                name: organizations/acme/teams/core/projects/agent
-                displayName: Agent
-                createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
-                createdAt: '2026-02-06T10:00:00Z'
-        '400':
-          description: The request is malformed or fails validation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '401':
-          description: The request has no bearer token, or the token is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '403':
-          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '404':
-          description: The caller is authorized for the requested resources, but this one does not exist.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      tags:
-        - projects
   /v1/organizations/{organization}:undelete:
     post:
       operationId: Organizations_undelete
@@ -2265,9 +2075,33 @@ components:
         displayName:
           type: string
           description: Human-readable name.
-      description: A project in a team. Its spaces hold memories.
+      description: |-
+        A project in an organization. Its members use its spaces, which hold
+        memories.
       examples:
         - displayName: Agent
+    CreateProjectMember:
+      type: object
+      required:
+        - member
+      properties:
+        member:
+          type: string
+          description: |-
+            The organization member added to the project:
+            `organizations/{organization}/members/{member}`.
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberRole'
+          description: Roles the member holds in the project. Empty for a plain member.
+      description: |-
+        An organization member's membership in a project. Organization admins
+        manage every project without being members.
+      examples:
+        - member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+          roles:
+            - admin
     CreateSpace:
       type: object
       required:
@@ -2278,7 +2112,7 @@ components:
           type: string
           description: |-
             The project the space belongs to:
-            `organizations/{organization}/teams/{team}/projects/{project}`. It can't
+            `organizations/{organization}/projects/{project}`. It can't
             be changed later.
         displayName:
           type: string
@@ -2287,43 +2121,8 @@ components:
         A space holds memories, and is what agents query. Its ID is unique in the
         organization, and it belongs to a project, which decides who can use it.
       examples:
-        - project: organizations/acme/teams/core/projects/agent
+        - project: organizations/acme/projects/agent
           displayName: Notes
-    CreateTeam:
-      type: object
-      required:
-        - displayName
-      properties:
-        displayName:
-          type: string
-          description: Human-readable name.
-      description: |-
-        A team in an organization. Teams own projects, and through them spaces and
-        memories.
-      examples:
-        - displayName: Core
-    CreateTeamMember:
-      type: object
-      required:
-        - member
-      properties:
-        member:
-          type: string
-          description: |-
-            The organization member added to the team:
-            `organizations/{organization}/members/{member}`.
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/MemberRole'
-          description: Roles the member holds in the team. Empty for a plain member.
-      description: |-
-        An organization member's membership in a team. Organization admins manage
-        every team without being members.
-      examples:
-        - member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
-          roles:
-            - admin
     Invitation:
       type: object
       required:
@@ -2498,6 +2297,30 @@ components:
               createdAt: '2026-01-15T09:30:00Z'
               updatedAt: '2026-03-02T14:05:00Z'
           nextPageToken: CiAKGjBpNDd2Nmp2
+    ListProjectMembersResponse:
+      type: object
+      required:
+        - members
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectMember'
+          description: The members on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of project members.
+      examples:
+        - members:
+            - name: organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
+              member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+              user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+              email: bob@acme.example
+              displayName: Bob Jones
+              roles:
+                - admin
+              createdAt: '2026-02-05T09:05:00Z'
     ListProjectsResponse:
       type: object
       required:
@@ -2514,7 +2337,7 @@ components:
       description: A page of projects.
       examples:
         - projects:
-            - name: organizations/acme/teams/core/projects/agent
+            - name: organizations/acme/projects/agent
               displayName: Agent
               createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
               createdAt: '2026-02-06T10:00:00Z'
@@ -2535,54 +2358,10 @@ components:
       examples:
         - spaces:
             - name: organizations/acme/spaces/notes
-              project: organizations/acme/teams/core/projects/agent
+              project: organizations/acme/projects/agent
               displayName: Notes
               createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
               createdAt: '2026-02-07T11:00:00Z'
-    ListTeamMembersResponse:
-      type: object
-      required:
-        - members
-      properties:
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/TeamMember'
-          description: The members on this page.
-        nextPageToken:
-          type: string
-          description: Token for the next page. Absent on the last page.
-      description: A page of team members.
-      examples:
-        - members:
-            - name: organizations/acme/teams/core/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
-              member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
-              user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
-              email: bob@acme.example
-              displayName: Bob Jones
-              roles:
-                - admin
-              createdAt: '2026-02-05T09:05:00Z'
-    ListTeamsResponse:
-      type: object
-      required:
-        - teams
-      properties:
-        teams:
-          type: array
-          items:
-            $ref: '#/components/schemas/Team'
-          description: The teams on this page.
-        nextPageToken:
-          type: string
-          description: Token for the next page. Absent on the last page.
-      description: A page of teams.
-      examples:
-        - teams:
-            - name: organizations/acme/teams/core
-              displayName: Core
-              createdBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
-              createdAt: '2026-02-05T09:00:00Z'
     Member:
       type: object
       required:
@@ -2773,7 +2552,7 @@ components:
       properties:
         name:
           type: string
-          description: 'Resource name: `organizations/{organization}/teams/{team}/projects/{project}`.'
+          description: 'Resource name: `organizations/{organization}/projects/{project}`.'
           readOnly: true
         displayName:
           type: string
@@ -2788,12 +2567,68 @@ components:
           description: When the project was created.
           x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
           readOnly: true
-      description: A project in a team. Its spaces hold memories.
+      description: |-
+        A project in an organization. Its members use its spaces, which hold
+        memories.
       examples:
-        - name: organizations/acme/teams/core/projects/agent
+        - name: organizations/acme/projects/agent
           displayName: Agent
           createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
           createdAt: '2026-02-06T10:00:00Z'
+    ProjectMember:
+      type: object
+      required:
+        - name
+        - member
+        - user
+        - email
+        - displayName
+        - createdAt
+      properties:
+        name:
+          type: string
+          description: 'Resource name: `organizations/{organization}/projects/{project}/members/{member}`.'
+          readOnly: true
+        member:
+          type: string
+          description: |-
+            The organization member added to the project:
+            `organizations/{organization}/members/{member}`.
+        user:
+          type: string
+          description: "Name of the member's user: `users/{user}`."
+          readOnly: true
+        email:
+          type: string
+          description: The user's email, from their organization membership.
+          readOnly: true
+        displayName:
+          type: string
+          description: The user's name, from their organization membership.
+          readOnly: true
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberRole'
+          description: Roles the member holds in the project. Empty for a plain member.
+        createdAt:
+          type: string
+          format: date-time
+          description: When the member was added to the project.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+      description: |-
+        An organization member's membership in a project. Organization admins
+        manage every project without being members.
+      examples:
+        - name: organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
+          member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+          user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+          email: bob@acme.example
+          displayName: Bob Jones
+          roles:
+            - admin
+          createdAt: '2026-02-05T09:05:00Z'
     QueryResult:
       type: object
       required:
@@ -2869,7 +2704,7 @@ components:
           type: string
           description: |-
             The project the space belongs to:
-            `organizations/{organization}/teams/{team}/projects/{project}`. It can't
+            `organizations/{organization}/projects/{project}`. It can't
             be changed later.
         displayName:
           type: string
@@ -2889,97 +2724,10 @@ components:
         organization, and it belongs to a project, which decides who can use it.
       examples:
         - name: organizations/acme/spaces/notes
-          project: organizations/acme/teams/core/projects/agent
+          project: organizations/acme/projects/agent
           displayName: Notes
           createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
           createdAt: '2026-02-07T11:00:00Z'
-    Team:
-      type: object
-      required:
-        - name
-        - displayName
-        - createdBy
-        - createdAt
-      properties:
-        name:
-          type: string
-          description: 'Resource name: `organizations/{organization}/teams/{team}`.'
-          readOnly: true
-        displayName:
-          type: string
-          description: Human-readable name.
-        createdBy:
-          type: string
-          description: Name of the user that created the team.
-          readOnly: true
-        createdAt:
-          type: string
-          format: date-time
-          description: When the team was created.
-          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
-          readOnly: true
-      description: |-
-        A team in an organization. Teams own projects, and through them spaces and
-        memories.
-      examples:
-        - name: organizations/acme/teams/core
-          displayName: Core
-          createdBy: users/9b2f4c1e-5a3d-4e7b-8c6f-1d2e3f4a5b6c
-          createdAt: '2026-02-05T09:00:00Z'
-    TeamMember:
-      type: object
-      required:
-        - name
-        - member
-        - user
-        - email
-        - displayName
-        - createdAt
-      properties:
-        name:
-          type: string
-          description: 'Resource name: `organizations/{organization}/teams/{team}/members/{member}`.'
-          readOnly: true
-        member:
-          type: string
-          description: |-
-            The organization member added to the team:
-            `organizations/{organization}/members/{member}`.
-        user:
-          type: string
-          description: "Name of the member's user: `users/{user}`."
-          readOnly: true
-        email:
-          type: string
-          description: The user's email, from their organization membership.
-          readOnly: true
-        displayName:
-          type: string
-          description: The user's name, from their organization membership.
-          readOnly: true
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/MemberRole'
-          description: Roles the member holds in the team. Empty for a plain member.
-        createdAt:
-          type: string
-          format: date-time
-          description: When the member was added to the team.
-          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
-          readOnly: true
-      description: |-
-        An organization member's membership in a team. Organization admins manage
-        every team without being members.
-      examples:
-        - name: organizations/acme/teams/core/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
-          member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
-          user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
-          email: bob@acme.example
-          displayName: Bob Jones
-          roles:
-            - admin
-          createdAt: '2026-02-05T09:05:00Z'
   securitySchemes:
     BearerAuth:
       type: http

@@ -35,6 +35,10 @@ func newSpaces(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *hooks.H
 }
 
 // List the spaces in the organization the caller can see.
+//
+// `filter` takes an AIP-160 expression on `project`, the only field it
+// supports: `project = "organizations/{organization}/projects/{project}"`
+// lists that project's spaces.
 func (s *Spaces) List(ctx context.Context, organization string, pageSize *int, pageToken *string, filter *string, opts ...operations.Option) (*operations.SpacesListResponse, error) {
 	request := operations.SpacesListRequest{
 		PageSize:     pageSize,

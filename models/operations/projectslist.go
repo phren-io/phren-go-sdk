@@ -16,7 +16,6 @@ type ProjectsListRequest struct {
 	// AIP-160 filter expression.
 	Filter       *string `queryParam:"style=form,explode=false,name=filter"`
 	Organization string  `pathParam:"style=simple,explode=false,name=organization"`
-	Team         string  `pathParam:"style=simple,explode=false,name=team"`
 }
 
 func (p ProjectsListRequest) MarshalJSON() ([]byte, error) {
@@ -56,13 +55,6 @@ func (p *ProjectsListRequest) GetOrganization() string {
 		return ""
 	}
 	return p.Organization
-}
-
-func (p *ProjectsListRequest) GetTeam() string {
-	if p == nil {
-		return ""
-	}
-	return p.Team
 }
 
 type ProjectsListResponse struct {

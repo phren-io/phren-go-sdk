@@ -184,35 +184,34 @@ leave. Removing the organization's last admin fails with 409.
 * [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete
 * [Undelete](docs/sdks/organizations/README.md#undelete) - Undelete
 
+### [ProjectMembers](docs/sdks/projectmembers/README.md)
+
+* [List](docs/sdks/projectmembers/README.md#list) - List. The project's members can list them.
+* [Create](docs/sdks/projectmembers/README.md#create) - Add an organization member to the project. Project admins add members; adding
+one as an admin needs the right to grant admin. Fails with 409 if they're
+already in the project.
+* [Get](docs/sdks/projectmembers/README.md#get) - Get
+* [Delete](docs/sdks/projectmembers/README.md#delete) - Remove a member. Project admins remove anyone; members remove themselves.
+
 ### [Projects](docs/sdks/projects/README.md)
 
-* [List](docs/sdks/projects/README.md#list) - List. The team's members can list its projects.
-* [Create](docs/sdks/projects/README.md#create) - Create. Team admins create projects.
+* [List](docs/sdks/projects/README.md#list) - List the projects in the organization the caller is a member of.
+Organization admins see every project.
+* [Create](docs/sdks/projects/README.md#create) - Create. Organization admins create projects, and manage them without
+joining: add a member as the project's admin to hand it over.
 * [Get](docs/sdks/projects/README.md#get) - Get
 
 ### [Spaces](docs/sdks/spaces/README.md)
 
 * [List](docs/sdks/spaces/README.md#list) - List the spaces in the organization the caller can see.
+
+`filter` takes an AIP-160 expression on `project`, the only field it
+supports: `project = "organizations/{organization}/projects/{project}"`
+lists that project's spaces.
 * [Create](docs/sdks/spaces/README.md#create) - Create. The project's admins create spaces in it.
 * [Get](docs/sdks/spaces/README.md#get) - Get
 * [SpacesQuery](docs/sdks/spaces/README.md#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
 query it.
-
-### [TeamMembers](docs/sdks/teammembers/README.md)
-
-* [List](docs/sdks/teammembers/README.md#list) - List
-* [Create](docs/sdks/teammembers/README.md#create) - Add an organization member to the team. Team admins add members; adding
-one as an admin needs the right to grant admin. Fails with 409 if they're
-already in the team.
-* [Get](docs/sdks/teammembers/README.md#get) - Get
-* [Delete](docs/sdks/teammembers/README.md#delete) - Remove a member. Team admins remove anyone; members remove themselves.
-
-### [Teams](docs/sdks/teams/README.md)
-
-* [List](docs/sdks/teams/README.md#list) - List. Every organization member can list its teams.
-* [Create](docs/sdks/teams/README.md#create) - Create. Organization admins create teams, and manage them without joining:
-add a member as the team's admin to hand it over.
-* [Get](docs/sdks/teams/README.md#get) - Get
 
 </details>
 <!-- End Available Resources and Operations [operations] -->

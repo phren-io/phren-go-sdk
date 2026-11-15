@@ -10,7 +10,6 @@ import (
 
 type ProjectsGetRequest struct {
 	Organization string `pathParam:"style=simple,explode=false,name=organization"`
-	Team         string `pathParam:"style=simple,explode=false,name=team"`
 	Project      string `pathParam:"style=simple,explode=false,name=project"`
 }
 
@@ -19,13 +18,6 @@ func (p *ProjectsGetRequest) GetOrganization() string {
 		return ""
 	}
 	return p.Organization
-}
-
-func (p *ProjectsGetRequest) GetTeam() string {
-	if p == nil {
-		return ""
-	}
-	return p.Team
 }
 
 func (p *ProjectsGetRequest) GetProject() string {

@@ -34,8 +34,16 @@ func newProjects(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *hooks
 	}
 }
 
-// List - List. The team's members can list its projects.
-func (s *Projects) List(ctx context.Context, request operations.ProjectsListRequest, opts ...operations.Option) (*operations.ProjectsListResponse, error) {
+// List the projects in the organization the caller is a member of.
+// Organization admins see every project.
+func (s *Projects) List(ctx context.Context, organization string, pageSize *int, pageToken *string, filter *string, opts ...operations.Option) (*operations.ProjectsListResponse, error) {
+	request := operations.ProjectsListRequest{
+		PageSize:     pageSize,
+		PageToken:    pageToken,
+		Filter:       filter,
+		Organization: organization,
+	}
+
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -54,7 +62,7 @@ func (s *Projects) List(ctx context.Context, request operations.ProjectsListRequ
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}/teams/{team}/projects", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}/projects", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -239,11 +247,13 @@ func (s *Projects) List(ctx context.Context, request operations.ProjectsListRequ
 				return nil, nil
 			}
 		}
-		request.PageToken = &nCVal
 
 		return s.List(
 			paginationCtx,
-			request,
+			organization,
+			pageSize,
+			&nCVal,
+			filter,
 			opts...,
 		)
 	}
@@ -323,11 +333,11 @@ func (s *Projects) List(ctx context.Context, request operations.ProjectsListRequ
 
 }
 
-// Create - Create. Team admins create projects.
-func (s *Projects) Create(ctx context.Context, organization string, team string, projectID string, body components.CreateProject, opts ...operations.Option) (*operations.ProjectsCreateResponse, error) {
+// Create - Create. Organization admins create projects, and manage them without
+// joining: add a member as the project's admin to hand it over.
+func (s *Projects) Create(ctx context.Context, organization string, projectID string, body components.CreateProject, opts ...operations.Option) (*operations.ProjectsCreateResponse, error) {
 	request := operations.ProjectsCreateRequest{
 		Organization: organization,
-		Team:         team,
 		ProjectID:    projectID,
 		Body:         body,
 	}
@@ -350,7 +360,7 @@ func (s *Projects) Create(ctx context.Context, organization string, team string,
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}/teams/{team}/projects", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}/projects", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -584,10 +594,9 @@ func (s *Projects) Create(ctx context.Context, organization string, team string,
 }
 
 // Get
-func (s *Projects) Get(ctx context.Context, organization string, team string, project string, opts ...operations.Option) (*operations.ProjectsGetResponse, error) {
+func (s *Projects) Get(ctx context.Context, organization string, project string, opts ...operations.Option) (*operations.ProjectsGetResponse, error) {
 	request := operations.ProjectsGetRequest{
 		Organization: organization,
-		Team:         team,
 		Project:      project,
 	}
 
@@ -609,7 +618,7 @@ func (s *Projects) Get(ctx context.Context, organization string, team string, pr
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}/teams/{team}/projects/{project}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}/projects/{project}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}

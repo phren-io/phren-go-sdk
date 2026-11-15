@@ -5,6 +5,10 @@
 ### Available Operations
 
 * [List](#list) - List the spaces in the organization the caller can see.
+
+`filter` takes an AIP-160 expression on `project`, the only field it
+supports: `project = "organizations/{organization}/projects/{project}"`
+lists that project's spaces.
 * [Create](#create) - Create. The project's admins create spaces in it.
 * [Get](#get) - Get
 * [SpacesQuery](#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
@@ -14,9 +18,13 @@ query it.
 
 List the spaces in the organization the caller can see.
 
-### Example Usage
+`filter` takes an AIP-160 expression on `project`, the only field it
+supports: `project = "organizations/{organization}/projects/{project}"`
+lists that project's spaces.
 
-<!-- UsageSnippet language="go" operationID="Spaces_list" method="get" path="/v1/organizations/{organization}/spaces" -->
+### Example Usage: example0
+
+<!-- UsageSnippet language="go" operationID="Spaces_list" method="get" path="/v1/organizations/{organization}/spaces" example="example0" -->
 ```go
 package main
 
@@ -34,7 +42,48 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    res, err := s.Spaces.List(ctx, "acme", phren.Pointer[int](50), nil, nil)
+    res, err := s.Spaces.List(ctx, "acme", phren.Pointer[int](50), nil, phren.Pointer("project = \"organizations/acme/projects/agent\""))
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.ListSpacesResponse != nil {
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
+    }
+}
+```
+### Example Usage: example1
+
+<!-- UsageSnippet language="go" operationID="Spaces_list" method="get" path="/v1/organizations/{organization}/spaces" example="example1" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Spaces.List(ctx, "acme", phren.Pointer[int](50), nil, phren.Pointer("project = \"organizations/acme/projects/agent\""))
     if err != nil {
         log.Fatal(err)
     }
@@ -61,10 +110,10 @@ func main() {
 | Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
 | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
 | `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
-| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
-| `pageSize`                                               | `*int`                                                   | :heavy_minus_sign:                                       | Maximum number of results to return.                     | 50                                                       |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |                                                          |
+| `pageSize`                                               | `*int`                                                   | :heavy_minus_sign:                                       | Maximum number of results to return.                     |                                                          |
 | `pageToken`                                              | `*string`                                                | :heavy_minus_sign:                                       | Token from a previous response's nextPageToken.          |                                                          |
-| `filter`                                                 | `*string`                                                | :heavy_minus_sign:                                       | AIP-160 filter expression.                               |                                                          |
+| `filter`                                                 | `*string`                                                | :heavy_minus_sign:                                       | AIP-160 filter expression.                               | project = "organizations/acme/projects/agent"            |
 | `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
 
 ### Response
@@ -104,7 +153,7 @@ func main() {
     )
 
     res, err := s.Spaces.Create(ctx, "acme", "notes", components.CreateSpace{
-        Project: "organizations/acme/teams/core/projects/agent",
+        Project: "organizations/acme/projects/agent",
         DisplayName: "Notes",
     })
     if err != nil {
@@ -118,13 +167,13 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                             | Type                                                                                  | Required                                                                              | Description                                                                           | Example                                                                               |
-| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `ctx`                                                                                 | [context.Context](https://pkg.go.dev/context#Context)                                 | :heavy_check_mark:                                                                    | The context to use for the request.                                                   |                                                                                       |
-| `organization`                                                                        | `string`                                                                              | :heavy_check_mark:                                                                    | N/A                                                                                   | acme                                                                                  |
-| `spaceID`                                                                             | `string`                                                                              | :heavy_check_mark:                                                                    | N/A                                                                                   | notes                                                                                 |
-| `body`                                                                                | [components.CreateSpace](../../models/components/createspace.md)                      | :heavy_check_mark:                                                                    | N/A                                                                                   | {<br/>"project": "organizations/acme/teams/core/projects/agent",<br/>"displayName": "Notes"<br/>} |
-| `opts`                                                                                | [][operations.Option](../../models/operations/option.md)                              | :heavy_minus_sign:                                                                    | The options for this request.                                                         |                                                                                       |
+| Parameter                                                                  | Type                                                                       | Required                                                                   | Description                                                                | Example                                                                    |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `ctx`                                                                      | [context.Context](https://pkg.go.dev/context#Context)                      | :heavy_check_mark:                                                         | The context to use for the request.                                        |                                                                            |
+| `organization`                                                             | `string`                                                                   | :heavy_check_mark:                                                         | N/A                                                                        | acme                                                                       |
+| `spaceID`                                                                  | `string`                                                                   | :heavy_check_mark:                                                         | N/A                                                                        | notes                                                                      |
+| `body`                                                                     | [components.CreateSpace](../../models/components/createspace.md)           | :heavy_check_mark:                                                         | N/A                                                                        | {<br/>"project": "organizations/acme/projects/agent",<br/>"displayName": "Notes"<br/>} |
+| `opts`                                                                     | [][operations.Option](../../models/operations/option.md)                   | :heavy_minus_sign:                                                         | The options for this request.                                              |                                                                            |
 
 ### Response
 

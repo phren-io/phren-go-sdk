@@ -10,7 +10,6 @@ import (
 
 type ProjectsCreateRequest struct {
 	Organization string                   `pathParam:"style=simple,explode=false,name=organization"`
-	Team         string                   `pathParam:"style=simple,explode=false,name=team"`
 	ProjectID    string                   `queryParam:"style=form,explode=false,name=projectId"`
 	Body         components.CreateProject `request:"mediaType=application/json"`
 }
@@ -20,13 +19,6 @@ func (p *ProjectsCreateRequest) GetOrganization() string {
 		return ""
 	}
 	return p.Organization
-}
-
-func (p *ProjectsCreateRequest) GetTeam() string {
-	if p == nil {
-		return ""
-	}
-	return p.Team
 }
 
 func (p *ProjectsCreateRequest) GetProjectID() string {

@@ -1,4 +1,4 @@
-# TeamMembersDeleteResponse
+# ProjectMembersDeleteResponse
 
 
 ## Fields
