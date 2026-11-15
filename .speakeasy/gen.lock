@@ -1,18 +1,18 @@
 lockVersion: 2.0.0
 id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
 management:
-  docChecksum: c00ce0e79dd27148d9ddcdb42f560982
+  docChecksum: 576780c426fb2941b22b94b13a64ab5a
   docVersion: 0.0.0
   speakeasyVersion: 1.809.0
   generationVersion: 2.961.1
-  releaseVersion: 0.3.9
-  configChecksum: 0c19ff7eaa9137677f28bcf89a4ece30
+  releaseVersion: 0.3.10
+  configChecksum: 22af696cef08962822b51942cb728572
   repoURL: https://github.com/phren-io/phren-go-sdk.git
   installationURL: https://github.com/phren-io/phren-go-sdk
 persistentEdits:
-  generation_id: f0f0823c-1166-4452-9b26-c71dc1e452f5
-  pristine_commit_hash: 4eb771dad1c9424ab2f860207d51d543b756333e
-  pristine_tree_hash: 873dfcaafc4f4f1d1248cb25935d74fdf132a395
+  generation_id: e6d97be0-1019-42b1-870c-47d436132eb0
+  pristine_commit_hash: 9c3dedf0ccf9b3000f8c30a48e138fb65aee8c2c
+  pristine_tree_hash: c4bf72d68202f97abf52be7c31ca6c63cae262e9
 features:
   go:
     additionalDependencies: 0.1.0
@@ -383,8 +383,8 @@ trackedFiles:
     pristine_git_object: 9d3520f184c15b9852ce814610f3a8443537d0c9
   docs/models/operations/spacesqueryresponse.md:
     id: 094f5ab2d8e4
-    last_write_checksum: sha1:54b32ee2b9882d49235d1b7ffb1cf0b1b2b9bad8
-    pristine_git_object: 2e0d3c0c602ca79fb2c88d33b8413585652c57ea
+    last_write_checksum: sha1:e5f1c4d02e30791a2ae84e4af6d9d71e6b901796
+    pristine_git_object: 363776ed19a5a60e04d676de411c9906f5567b54
   docs/models/operations/teammemberscreaterequest.md:
     id: e1c797d84359
     last_write_checksum: sha1:fded733a855331961a8ea95ffa2cb23d1df6ef70
@@ -463,8 +463,8 @@ trackedFiles:
     pristine_git_object: 938083a08df1364d08200b8a3bdd4305afc7b9f6
   docs/sdks/spaces/README.md:
     id: 0e054ac466b4
-    last_write_checksum: sha1:7068f5d339e5ae793f5e65c2398bd436a4060122
-    pristine_git_object: 8c333d904335a9fef393c22fb2769bd6d2a12fc2
+    last_write_checksum: sha1:3bc6755ec0824fe38ee3a27ad093cab2da329a26
+    pristine_git_object: 0697656ce44465e5a412325724dd0f1442daa965
   docs/sdks/teammembers/README.md:
     id: 542da4114bf0
     last_write_checksum: sha1:df2e2a2e57c155d796ba9dd360ce0f0d646eef2b
@@ -787,8 +787,8 @@ trackedFiles:
     pristine_git_object: 2899ae34e67c89a5329700d46a3b0210bb954ec7
   models/operations/spacesquery.go:
     id: 97d76cec4b78
-    last_write_checksum: sha1:e8af28ccee1827000475596476ba75e9ea53184b
-    pristine_git_object: 287aecbe9a6d4a45ca505be0952a7af86b87dd5d
+    last_write_checksum: sha1:f4646b224687ccd56c84870478a1b297e32f78ec
+    pristine_git_object: 4638d754b0ec00e1b8e1a50904294cd10cfd45aa
   models/operations/teammemberscreate.go:
     id: a41416970ebb
     last_write_checksum: sha1:157570c9d20a669d49f54b37138167c5f394886d
@@ -831,8 +831,8 @@ trackedFiles:
     pristine_git_object: a9564097f6af778d554c4361eb4d03833430549f
   phren.go:
     id: 3c886eef84be
-    last_write_checksum: sha1:7a601b391c79c23a4b9804bf75604c2d0b8459b4
-    pristine_git_object: f6078f6358828c4c26d6519a185163bf6c609687
+    last_write_checksum: sha1:1a2d1c3550f234b26dfece29def6a61c0e0efa45
+    pristine_git_object: 70e4bfe5f9f4498090c606f39691a2885be5ba51
   projects.go:
     id: 18025b258b56
     last_write_checksum: sha1:55680898e7cea70a2505a3aa8f01a083bbe7e388
@@ -843,8 +843,8 @@ trackedFiles:
     pristine_git_object: 41b99806908e2adeaa2c0bcfb601c08b8064eae6
   spaces.go:
     id: b90c9b8b3435
-    last_write_checksum: sha1:20768eb70ba19d5d8ecc1d0c743084824baeee8d
-    pristine_git_object: 4bb0cadedc99bc12d8cf3d57483578096155fe0a
+    last_write_checksum: sha1:43cceff81a759c6d870c99f05906fdfb45f473e5
+    pristine_git_object: 9ae68aeeafac2cefb6391a784b2d97f2c01e7c70
   teammembers.go:
     id: fac4d4067f1d
     last_write_checksum: sha1:b7e0e32af62ecc084e5b4eed4c76b3da37208441
@@ -1438,7 +1438,9 @@ examples:
           application/json: {"results": [{"memory": "organizations/acme/spaces/notes/memories/019ad6a0-3c4e-7b8a-9d2f-5e6a7b8c9d0e", "content": "Deploys go through Flux; never kubectl apply to the dev cluster by hand.", "score": 0.91}]}
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+        "503":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
 examplesVersion: 1.0.2
 releaseNotes: |
   ## Go SDK Changes:
-  * `Phren.Spaces.SpacesQuery()`: **Added**
+  * `Phren.Spaces.SpacesQuery()`:  `error.status[503]` **Added**

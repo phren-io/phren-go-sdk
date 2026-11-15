@@ -1438,6 +1438,20 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        '503':
+          description: |-
+            A service the request depends on is unavailable or rate limited. Retry
+            after the number of seconds in `Retry-After`, when present.
+          headers:
+            Retry-After:
+              required: false
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
       tags:
         - spaces
       requestBody:

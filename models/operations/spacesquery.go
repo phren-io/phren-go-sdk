@@ -39,6 +39,7 @@ type SpacesQueryResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
 	// The request has succeeded.
 	QuerySpaceResponse *components.QuerySpaceResponse
+	Headers            map[string][]string
 }
 
 func (s SpacesQueryResponse) MarshalJSON() ([]byte, error) {
@@ -64,4 +65,11 @@ func (s *SpacesQueryResponse) GetQuerySpaceResponse() *components.QuerySpaceResp
 		return nil
 	}
 	return s.QuerySpaceResponse
+}
+
+func (s *SpacesQueryResponse) GetHeaders() map[string][]string {
+	if s == nil {
+		return map[string][]string{}
+	}
+	return s.Headers
 }
