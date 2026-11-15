@@ -1,0 +1,10 @@
+# SpacesQueryRequest
+
+
+## Fields
+
+| Field                                                                        | Type                                                                         | Required                                                                     | Description                                                                  | Example                                                                      |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `Organization`                                                               | `string`                                                                     | :heavy_check_mark:                                                           | N/A                                                                          | acme                                                                         |
+| `Space`                                                                      | `string`                                                                     | :heavy_check_mark:                                                           | N/A                                                                          | notes                                                                        |
+| `Body`                                                                       | [components.QuerySpaceRequest](../../models/components/queryspacerequest.md) | :heavy_check_mark:                                                           | N/A                                                                          | {<br/>"query": "How do deploys work?",<br/>"pageSize": 5<br/>}               |

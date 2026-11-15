@@ -7,6 +7,8 @@
 * [List](#list) - List the spaces in the organization the caller can see.
 * [Create](#create) - Create. The project's admins create spaces in it.
 * [Get](#get) - Get
+* [SpacesQuery](#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
+query it.
 
 ## List
 
@@ -181,6 +183,66 @@ func main() {
 ### Response
 
 **[*operations.SpacesGetResponse](../../models/operations/spacesgetresponse.md), error**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404       | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
+## SpacesQuery
+
+Search the space's memories. The space's viewers, editors and admins can
+query it.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="Spaces_query" method="post" path="/v1/organizations/{organization}/spaces/{space}:query" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Spaces.SpacesQuery(ctx, "acme", "notes", components.QuerySpaceRequest{
+        Query: "How do deploys work?",
+        PageSize: phren.Pointer[int](5),
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.QuerySpaceResponse != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  | Example                                                                      |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |                                                                              |
+| `organization`                                                               | `string`                                                                     | :heavy_check_mark:                                                           | N/A                                                                          | acme                                                                         |
+| `space`                                                                      | `string`                                                                     | :heavy_check_mark:                                                           | N/A                                                                          | notes                                                                        |
+| `body`                                                                       | [components.QuerySpaceRequest](../../models/components/queryspacerequest.md) | :heavy_check_mark:                                                           | N/A                                                                          | {<br/>"query": "How do deploys work?",<br/>"pageSize": 5<br/>}               |
+| `opts`                                                                       | [][operations.Option](../../models/operations/option.md)                     | :heavy_minus_sign:                                                           | The options for this request.                                                |                                                                              |
+
+### Response
+
+**[*operations.SpacesQueryResponse](../../models/operations/spacesqueryresponse.md), error**
 
 ### Errors
 
