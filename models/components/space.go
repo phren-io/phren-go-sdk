@@ -21,6 +21,10 @@ type Space struct {
 	DisplayName string `json:"displayName"`
 	// Name of the user that created the space.
 	CreatedBy string `json:"createdBy"`
+	// Name of the agent that created the space for the user: `agents/{agent}`
+	// for an agent the user connected, or `apiKeys/{apiKey}` for one of their
+	// API keys. Absent when the user created it themselves.
+	CreatedWith *string `json:"createdWith,omitzero"`
 	// When the space was created.
 	CreatedAt time.Time `json:"createdAt"`
 	// The methods the caller may call on this resource, such as `delete`.
@@ -65,6 +69,13 @@ func (s *Space) GetCreatedBy() string {
 		return ""
 	}
 	return s.CreatedBy
+}
+
+func (s *Space) GetCreatedWith() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CreatedWith
 }
 
 func (s *Space) GetCreatedAt() time.Time {

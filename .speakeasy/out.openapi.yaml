@@ -2697,6 +2697,13 @@ components:
           type: string
           description: Name of the user that created the memory.
           readOnly: true
+        createdWith:
+          type: string
+          description: |-
+            Name of the agent that created the memory for the user: `agents/{agent}`
+            for an agent the user connected, or `apiKeys/{apiKey}` for one of their
+            API keys. Absent when the user created it themselves.
+          readOnly: true
         createdAt:
           type: string
           format: date-time
@@ -3004,6 +3011,13 @@ components:
         createdBy:
           type: string
           description: Name of the user that created the space.
+          readOnly: true
+        createdWith:
+          type: string
+          description: |-
+            Name of the agent that created the space for the user: `agents/{agent}`
+            for an agent the user connected, or `apiKeys/{apiKey}` for one of their
+            API keys. Absent when the user created it themselves.
           readOnly: true
         createdAt:
           type: string

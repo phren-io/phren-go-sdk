@@ -17,6 +17,10 @@ type Memory struct {
 	Content string `json:"content"`
 	// Name of the user that created the memory.
 	CreatedBy string `json:"createdBy"`
+	// Name of the agent that created the memory for the user: `agents/{agent}`
+	// for an agent the user connected, or `apiKeys/{apiKey}` for one of their
+	// API keys. Absent when the user created it themselves.
+	CreatedWith *string `json:"createdWith,omitzero"`
 	// When the memory was created.
 	CreatedAt time.Time `json:"createdAt"`
 	// The methods the caller may call on this resource, such as `delete`.
@@ -54,6 +58,13 @@ func (m *Memory) GetCreatedBy() string {
 		return ""
 	}
 	return m.CreatedBy
+}
+
+func (m *Memory) GetCreatedWith() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CreatedWith
 }
 
 func (m *Memory) GetCreatedAt() time.Time {

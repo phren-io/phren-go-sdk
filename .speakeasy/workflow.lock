@@ -1,19 +1,19 @@
-speakeasyVersion: 1.809.0
+speakeasyVersion: 1.811.0
 sources:
     Phren API:
         sourceNamespace: phren-api
-        sourceRevisionDigest: sha256:45bdfc17ca0416aab0e84fa830b9cfccc961288971b9d15290d8f3ad0d22ffab
-        sourceBlobDigest: sha256:9bdc31c3c3ad26f7e3d18e63780ff38db8df19b6b196e27ad706b33b571c2939
+        sourceRevisionDigest: sha256:e963fd5724e4a6d57fb02dfe2f498e43e9de567da199581ded30605f59df9024
+        sourceBlobDigest: sha256:127358859e3e00bd736345687ce00809041257bd8320d51a9f16704b4900ab9a
         tags:
             - latest
 targets:
     phren:
         source: Phren API
         sourceNamespace: phren-api
-        sourceRevisionDigest: sha256:45bdfc17ca0416aab0e84fa830b9cfccc961288971b9d15290d8f3ad0d22ffab
-        sourceBlobDigest: sha256:9bdc31c3c3ad26f7e3d18e63780ff38db8df19b6b196e27ad706b33b571c2939
+        sourceRevisionDigest: sha256:e963fd5724e4a6d57fb02dfe2f498e43e9de567da199581ded30605f59df9024
+        sourceBlobDigest: sha256:127358859e3e00bd736345687ce00809041257bd8320d51a9f16704b4900ab9a
         codeSamplesNamespace: phren-api-go-code-samples
-        codeSamplesRevisionDigest: sha256:4312c75178aa3fbd9e528d66e4aac41ce99820e6b41d3ecb1347caf22b3f5432
+        codeSamplesRevisionDigest: sha256:ee6978e28d77ed8af1b33ea07d4d15a1c55dfc5bed43fc9354c86a76f485e892
 workflow:
     workflowVersion: 1.0.0
     speakeasyVersion: latest

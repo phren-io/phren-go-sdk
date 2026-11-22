@@ -1,22 +1,22 @@
 lockVersion: 2.0.0
 id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
 management:
-  docChecksum: 682052163d07d2ce68d397d9e242e9f3
+  docChecksum: c76f19886fbbb707c3c56b44050face9
   docVersion: 0.0.0
-  speakeasyVersion: 1.809.0
-  generationVersion: 2.961.1
-  releaseVersion: 0.3.12
-  configChecksum: 79b0abfc981f85ba2889034a47cf72a0
+  speakeasyVersion: 1.811.0
+  generationVersion: 2.968.1
+  releaseVersion: 0.3.13
+  configChecksum: f6a74d10964f0eb761b929a0ac2c1375
   repoURL: https://github.com/phren-io/phren-go-sdk.git
   installationURL: https://github.com/phren-io/phren-go-sdk
 persistentEdits:
-  generation_id: 2ec825df-67eb-4812-b81a-54c4395fb42a
-  pristine_commit_hash: 89f68c39978a6bd5e3af000983cc19b4fd533a46
-  pristine_tree_hash: 407b99b6949bab914f886009dc1ca8bc9907bc5b
+  generation_id: c04dc05c-823b-4af6-88e7-91a323f1313d
+  pristine_commit_hash: cef8ec829206a88758f7cace04e1178733950579
+  pristine_tree_hash: 3e3875f78908952cda4d1d1e28cb1e1ef8a372d2
 features:
   go:
     additionalDependencies: 0.1.0
-    constsAndDefaults: 0.1.15
+    constsAndDefaults: 0.1.16
     core: 3.16.7
     defaultEnabledRetries: 0.2.0
     devContainers: 2.90.0
@@ -135,8 +135,8 @@ trackedFiles:
     pristine_git_object: f9f841a163be20cab720f3e105cde8532496aa8a
   docs/models/components/memory.md:
     id: 6eeb194c31b3
-    last_write_checksum: sha1:e6a20d11c3f2cf38b7a78b1591f57d5260f8602a
-    pristine_git_object: 87c45d2c6e433f8b36b8022b441b99bd7d453a8d
+    last_write_checksum: sha1:b52c0f65ac839085ff72300af30130246fa68ee9
+    pristine_git_object: 988ffe889c64f110e623a9eb9f1dd7a75e2176c7
   docs/models/components/organization.md:
     id: 288ce68f18e3
     last_write_checksum: sha1:b91d5f723d98f554c5161657a2715f63ba6dfdc0
@@ -171,8 +171,8 @@ trackedFiles:
     pristine_git_object: c15c11e5000d4802bfc26a199e249e734ad2b549
   docs/models/components/space.md:
     id: dfed15c46571
-    last_write_checksum: sha1:063335ecf4f6b625e252d346bb42a337ce65cc16
-    pristine_git_object: 5f9b77d6fb5afe0bbd52bdbcc5cac525d655e158
+    last_write_checksum: sha1:47266ddf0a3c69e8e378674a7f568e621d150b9c
+    pristine_git_object: 59a75a212869c2dd543e792b9ffefa7109e57954
   docs/models/operations/invitationsacceptrequest.md:
     id: b66f48c9bbfd
     last_write_checksum: sha1:449e15eecb666dabcd30c67796527affb7954ddf
@@ -467,8 +467,8 @@ trackedFiles:
     pristine_git_object: e340944e68e9a0dc5229959f90d1cb3a86f20160
   internal/utils/json.go:
     id: ad03e3c502d8
-    last_write_checksum: sha1:c9a37a64293f92fa73f16201753a8659afcb032e
-    pristine_git_object: 38d5357f6dcac36c8ae4d168576bad2fe3066d1e
+    last_write_checksum: sha1:ad825b03d4636cbe34dc734dac4cb423ba087e89
+    pristine_git_object: 3496f9093d2b54268e940e533e2feb38ba269f26
   internal/utils/pathparams.go:
     id: 1f3e0c30fd90
     last_write_checksum: sha1:3e724736da838e6f10dcdcb9a3e735f8b4a45356
@@ -603,8 +603,8 @@ trackedFiles:
     pristine_git_object: 3365b5b481c033f68fd8c7fa3c1f140801f16de4
   models/components/memory.go:
     id: 408d8dfd0e69
-    last_write_checksum: sha1:d85b8b58bee728cf6f4f72939b67b05dc0a74203
-    pristine_git_object: daf9a9f38ab1fe6e48e64e988235161406e29368
+    last_write_checksum: sha1:30e03b12751e66f0146f782242981615c87d9be6
+    pristine_git_object: aef70e30b7e5673936bc6a62f8d59c2e85f63959
   models/components/organization.go:
     id: 0a5779f28941
     last_write_checksum: sha1:2e2fbf56ee1159c13ba9185dba56d5615905aa4a
@@ -639,8 +639,8 @@ trackedFiles:
     pristine_git_object: f621d27cdd2b11a110b8b72ff0956f92a6a049cd
   models/components/space.go:
     id: 5112f00d12c3
-    last_write_checksum: sha1:bfcf67d3735e084a4f8a4d86869795bdd77d1bf6
-    pristine_git_object: 2edf33de6364ea39d1b26a79074043d9af6e8f58
+    last_write_checksum: sha1:035685e0fcf5342ea4d6141ae5d149440487464e
+    pristine_git_object: 83132a48da00042d2f76677b8abd34c63187a519
   models/operations/invitationsaccept.go:
     id: be7aa6566736
     last_write_checksum: sha1:6e271b6c52c876785c2f26dcb0c9b7f1753739c9
@@ -775,8 +775,8 @@ trackedFiles:
     pristine_git_object: ee0bb8ba971f2d56a73e8bcc63988a6253b0a141
   phren.go:
     id: 3c886eef84be
-    last_write_checksum: sha1:f201098e6c079735910030badd844124d06853ed
-    pristine_git_object: ab5eddea2579ee4653bde189dd016e19d6ad0f4b
+    last_write_checksum: sha1:c3f7fade2f0bc78fbf15af78ccbe70f64d292b59
+    pristine_git_object: baa7f8ca4235f786552b7f9db5b9e604f556cf7b
   projectmembers.go:
     id: e51bf3767009
     last_write_checksum: sha1:4ccbb8217d294d491ead799a9c2335ecae65a8be
@@ -1470,4 +1470,11 @@ examples:
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
 examplesVersion: 1.0.2
-releaseNotes: "## Go SDK Changes:\n* `Phren.Spaces.List()`: \n  *  `request` **Changed** (Breaking ⚠️)\n  *  `response` **Changed**\n* `Phren.Invitations.List()`: \n  *  `request` **Changed** (Breaking ⚠️)\n  *  `response` **Changed**\n* `Phren.Organizations.List()`: \n  *  `request` **Changed** (Breaking ⚠️)\n  *  `response` **Changed**\n* `Phren.Projects.List()`: \n  *  `request` **Changed** (Breaking ⚠️)\n  *  `response` **Changed**\n* `Phren.Members.List()`: \n  *  `request` **Changed** (Breaking ⚠️)\n  *  `response` **Changed**\n* `Phren.Members.Get()`: \n  *  `request.Include` **Added**\n  *  `response.Permissions` **Added**\n* `Phren.Projects.Get()`: \n  *  `request.Include` **Added**\n  *  `response.Permissions` **Added**\n* `Phren.Invitations.Get()`: \n  *  `request.Include` **Added**\n  *  `response.Permissions` **Added**\n* `Phren.Invitations.Accept()`:  `response.Permissions` **Added**\n* `Phren.Invitations.Decline()`:  `response.Permissions` **Added**\n* `Phren.Organizations.Create()`:  `response.Permissions` **Added**\n* `Phren.Invitations.Create()`:  `response.Permissions` **Added**\n* `Phren.ProjectMembers.Create()`:  `response.Permissions` **Added**\n* `Phren.Projects.Create()`:  `response.Permissions` **Added**\n* `Phren.Organizations.Undelete()`:  `response.Permissions` **Added**\n* `Phren.ProjectMembers.List()`: \n  *  `request.Request.Include` **Added**\n  *  `response` **Changed**\n* `Phren.Organizations.Delete()`:  `response.Permissions` **Added**\n* `Phren.ProjectMembers.Get()`: \n  *  `request.Include` **Added**\n  *  `response.Permissions` **Added**\n* `Phren.Organizations.Get()`: \n  *  `request.Include` **Added**\n  *  `response.Permissions` **Added**\n* `Phren.Spaces.Create()`:  `response.Permissions` **Added**\n* `Phren.Spaces.Get()`: \n  *  `request.Include` **Added**\n  *  `response.Permissions` **Added**\n* `Phren.Memories.List()`: \n  *  `request.Request.Include` **Added**\n  *  `response` **Changed**\n* `Phren.Memories.Create()`:  `response.Permissions` **Added**\n* `Phren.Memories.Get()`: \n  *  `request.Include` **Added**\n  *  `response.Permissions` **Added**\n"
+releaseNotes: |
+  ## Go SDK Changes:
+  * `Phren.Spaces.List()`:  `response.Spaces[].CreatedWith` **Added**
+  * `Phren.Spaces.Create()`:  `response.CreatedWith` **Added**
+  * `Phren.Spaces.Get()`:  `response.CreatedWith` **Added**
+  * `Phren.Memories.List()`:  `response.Memories[].CreatedWith` **Added**
+  * `Phren.Memories.Create()`:  `response.CreatedWith` **Added**
+  * `Phren.Memories.Get()`:  `response.CreatedWith` **Added**
