@@ -48,7 +48,8 @@ func (m *MemoriesCreateRequest) GetBody() components.CreateMemory {
 type MemoriesCreateResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
 	// The request has succeeded and a new resource has been created as a result.
-	Memory *components.Memory
+	Memory  *components.Memory
+	Headers map[string][]string
 }
 
 func (m MemoriesCreateResponse) MarshalJSON() ([]byte, error) {
@@ -74,4 +75,11 @@ func (m *MemoriesCreateResponse) GetMemory() *components.Memory {
 		return nil
 	}
 	return m.Memory
+}
+
+func (m *MemoriesCreateResponse) GetHeaders() map[string][]string {
+	if m == nil {
+		return map[string][]string{}
+	}
+	return m.Headers
 }
