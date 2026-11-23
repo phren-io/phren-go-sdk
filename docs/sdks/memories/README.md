@@ -6,6 +6,10 @@
 
 * [List](#list) - List, newest first.
 * [Create](#create) - Create. The space's editors create memories.
+
+A create retried with the same `requestId` returns the memory the first
+attempt created instead of creating another, for as long as that memory
+exists. Reusing a `requestId` for different content is a 409.
 * [Get](#get) - Get
 * [Delete](#delete) - Delete. Its vectors are removed from the space in the background.
 
@@ -82,6 +86,10 @@ func main() {
 
 Create. The space's editors create memories.
 
+A create retried with the same `requestId` returns the memory the first
+attempt created instead of creating another, for as long as that memory
+exists. Reusing a `requestId` for different content is a 409.
+
 ### Example Usage
 
 <!-- UsageSnippet language="go" operationID="Memories_create" method="post" path="/v1/organizations/{organization}/spaces/{space}/memories" -->
@@ -105,7 +113,7 @@ func main() {
 
     res, err := s.Memories.Create(ctx, "acme", "notes", components.CreateMemory{
         Content: "Deploys go through Flux; never kubectl apply to the dev cluster by hand.",
-    })
+    }, nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -117,13 +125,14 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                 | Type                                                                                      | Required                                                                                  | Description                                                                               | Example                                                                                   |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `ctx`                                                                                     | [context.Context](https://pkg.go.dev/context#Context)                                     | :heavy_check_mark:                                                                        | The context to use for the request.                                                       |                                                                                           |
-| `organization`                                                                            | `string`                                                                                  | :heavy_check_mark:                                                                        | N/A                                                                                       | acme                                                                                      |
-| `space`                                                                                   | `string`                                                                                  | :heavy_check_mark:                                                                        | N/A                                                                                       | notes                                                                                     |
-| `body`                                                                                    | [components.CreateMemory](../../models/components/creatememory.md)                        | :heavy_check_mark:                                                                        | N/A                                                                                       | {<br/>"content": "Deploys go through Flux; never kubectl apply to the dev cluster by hand."<br/>} |
-| `opts`                                                                                    | [][operations.Option](../../models/operations/option.md)                                  | :heavy_minus_sign:                                                                        | The options for this request.                                                             |                                                                                           |
+| Parameter                                                                                             | Type                                                                                                  | Required                                                                                              | Description                                                                                           | Example                                                                                               |
+| ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                 | [context.Context](https://pkg.go.dev/context#Context)                                                 | :heavy_check_mark:                                                                                    | The context to use for the request.                                                                   |                                                                                                       |
+| `organization`                                                                                        | `string`                                                                                              | :heavy_check_mark:                                                                                    | N/A                                                                                                   | acme                                                                                                  |
+| `space`                                                                                               | `string`                                                                                              | :heavy_check_mark:                                                                                    | N/A                                                                                                   | notes                                                                                                 |
+| `body`                                                                                                | [components.CreateMemory](../../models/components/creatememory.md)                                    | :heavy_check_mark:                                                                                    | N/A                                                                                                   | {<br/>"content": "Deploys go through Flux; never kubectl apply to the dev cluster by hand."<br/>}     |
+| `requestID`                                                                                           | `*string`                                                                                             | :heavy_minus_sign:                                                                                    | A key the caller picks, such as a UUID, to make retries safe. It is<br/>scoped to the user and the space. |                                                                                                       |
+| `opts`                                                                                                | [][operations.Option](../../models/operations/option.md)                                              | :heavy_minus_sign:                                                                                    | The options for this request.                                                                         |                                                                                                       |
 
 ### Response
 

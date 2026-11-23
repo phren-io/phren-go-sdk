@@ -324,10 +324,15 @@ func (s *Memories) List(ctx context.Context, request operations.MemoriesListRequ
 }
 
 // Create - Create. The space's editors create memories.
-func (s *Memories) Create(ctx context.Context, organization string, space string, body components.CreateMemory, opts ...operations.Option) (*operations.MemoriesCreateResponse, error) {
+//
+// A create retried with the same `requestId` returns the memory the first
+// attempt created instead of creating another, for as long as that memory
+// exists. Reusing a `requestId` for different content is a 409.
+func (s *Memories) Create(ctx context.Context, organization string, space string, body components.CreateMemory, requestID *string, opts ...operations.Option) (*operations.MemoriesCreateResponse, error) {
 	request := operations.MemoriesCreateRequest{
 		Organization: organization,
 		Space:        space,
+		RequestID:    requestID,
 		Body:         body,
 	}
 
@@ -386,6 +391,10 @@ func (s *Memories) Create(ctx context.Context, organization string, space string
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 	if reqContentType != "" {
 		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
