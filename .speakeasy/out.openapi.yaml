@@ -1883,7 +1883,12 @@ paths:
           nextCursor: $.nextPageToken
     post:
       operationId: Memories_create
-      description: Create. The space's editors create memories.
+      description: |-
+        Create. The space's editors create memories.
+
+        A create retried with the same `requestId` returns the memory the first
+        attempt created instead of creating another, for as long as that memory
+        exists. Reusing a `requestId` for different content is a 409.
       parameters:
         - name: organization
           in: path
@@ -1897,6 +1902,18 @@ paths:
           schema:
             type: string
           example: notes
+        - name: requestId
+          in: query
+          required: false
+          description: |-
+            A key the caller picks, such as a UUID, to make retries safe. It is
+            scoped to the user and the space.
+          schema:
+            type: string
+            pattern: ^[A-Za-z0-9_-]+$
+            minLength: 1
+            maxLength: 64
+          explode: false
       responses:
         '201':
           description: The request has succeeded and a new resource has been created as a result.

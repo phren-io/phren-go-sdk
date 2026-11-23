@@ -181,6 +181,10 @@ leave. Removing the organization's last admin fails with 409.
 
 * [List](docs/sdks/memories/README.md#list) - List, newest first.
 * [Create](docs/sdks/memories/README.md#create) - Create. The space's editors create memories.
+
+A create retried with the same `requestId` returns the memory the first
+attempt created instead of creating another, for as long as that memory
+exists. Reusing a `requestId` for different content is a 409.
 * [Get](docs/sdks/memories/README.md#get) - Get
 * [Delete](docs/sdks/memories/README.md#delete) - Delete. Its vectors are removed from the space in the background.
 

@@ -9,9 +9,12 @@ import (
 )
 
 type MemoriesCreateRequest struct {
-	Organization string                  `pathParam:"style=simple,explode=false,name=organization"`
-	Space        string                  `pathParam:"style=simple,explode=false,name=space"`
-	Body         components.CreateMemory `request:"mediaType=application/json"`
+	Organization string `pathParam:"style=simple,explode=false,name=organization"`
+	Space        string `pathParam:"style=simple,explode=false,name=space"`
+	// A key the caller picks, such as a UUID, to make retries safe. It is
+	// scoped to the user and the space.
+	RequestID *string                 `queryParam:"style=form,explode=false,name=requestId"`
+	Body      components.CreateMemory `request:"mediaType=application/json"`
 }
 
 func (m *MemoriesCreateRequest) GetOrganization() string {
@@ -26,6 +29,13 @@ func (m *MemoriesCreateRequest) GetSpace() string {
 		return ""
 	}
 	return m.Space
+}
+
+func (m *MemoriesCreateRequest) GetRequestID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.RequestID
 }
 
 func (m *MemoriesCreateRequest) GetBody() components.CreateMemory {

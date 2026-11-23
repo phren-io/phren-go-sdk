@@ -1,18 +1,18 @@
 lockVersion: 2.0.0
 id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
 management:
-  docChecksum: c76f19886fbbb707c3c56b44050face9
+  docChecksum: 08b1ac11e4bb06434baacb27e7e6c6b6
   docVersion: 0.0.0
   speakeasyVersion: 1.811.0
   generationVersion: 2.968.1
-  releaseVersion: 0.3.13
-  configChecksum: f6a74d10964f0eb761b929a0ac2c1375
+  releaseVersion: 0.3.14
+  configChecksum: 049f067eee3984a2ae4f36f89218b383
   repoURL: https://github.com/phren-io/phren-go-sdk.git
   installationURL: https://github.com/phren-io/phren-go-sdk
 persistentEdits:
-  generation_id: c04dc05c-823b-4af6-88e7-91a323f1313d
-  pristine_commit_hash: cef8ec829206a88758f7cace04e1178733950579
-  pristine_tree_hash: 3e3875f78908952cda4d1d1e28cb1e1ef8a372d2
+  generation_id: 021c5679-810f-450a-9a83-60dd214d2ec4
+  pristine_commit_hash: 698dc0ec635468078114ecf6889bf4d42fdd6f84
+  pristine_tree_hash: 805adf2dc65851ff7ba61076e361fa4a5c822e53
 features:
   go:
     additionalDependencies: 0.1.0
@@ -247,8 +247,8 @@ trackedFiles:
     pristine_git_object: 84b684c00fd5ff633097bf082111fae0f8534502
   docs/models/operations/memoriescreaterequest.md:
     id: f16ce4c07051
-    last_write_checksum: sha1:c78b66e66c1398a43299a692455fe2b59bce2566
-    pristine_git_object: 2269ba464173760621e1aeebac027c8b5a3faee7
+    last_write_checksum: sha1:46d1701775955954c02adea9905406478fa06364
+    pristine_git_object: 48d07c7a46e9c25c58d5ad0180839bcfb484b702
   docs/models/operations/memoriescreateresponse.md:
     id: 7fd343580abe
     last_write_checksum: sha1:ba0472c377010fc9be56188afe08b6e1da8e3948
@@ -419,8 +419,8 @@ trackedFiles:
     pristine_git_object: ae54c12ceda4a0d27f2bb3be31e80c33c96e0f78
   docs/sdks/memories/README.md:
     id: f9e56b27b7fe
-    last_write_checksum: sha1:030cbdbfe2fb2fb74f11c86a048c0d64a00e9b29
-    pristine_git_object: 141eee84a398ac003b62ed034dc422dae63024b8
+    last_write_checksum: sha1:56f75b68e96438dd26951c3d5f7a55217e4e5bb3
+    pristine_git_object: 71715063cc44417c3976e8a0c8bd602ae2b09d9f
   docs/sdks/organizations/README.md:
     id: 3425667a2db5
     last_write_checksum: sha1:00ed40ca220f2d713fe7da09a0fbe1b989a3049b
@@ -511,8 +511,8 @@ trackedFiles:
     pristine_git_object: be11089e7ffc37db927714cb89a9779b7e0a7bb1
   memories.go:
     id: 9b57ebe03ad3
-    last_write_checksum: sha1:8eca406401349ae666560f15e336d0818bcef094
-    pristine_git_object: ebc25230efb36d24ff9fba2535ee913aee819a3b
+    last_write_checksum: sha1:cf123d39c2733a77c29a09e3b237bac9e93800e1
+    pristine_git_object: 7149939d2b65e6029086f5438809354b250943fb
   models/apierrors/apierror.go:
     id: 4cecf27a5a54
     last_write_checksum: sha1:bdfed9d7fe645715fc71b2d3bbfd5eb382601552
@@ -679,8 +679,8 @@ trackedFiles:
     pristine_git_object: b1860f41a474b84c7ec0483c96b381ffeeadc4ea
   models/operations/memoriescreate.go:
     id: 6782f84854c2
-    last_write_checksum: sha1:f35f35ac5e05b81b8c8ac5b13b41ca4db3d81ab3
-    pristine_git_object: 3ada46de3c509f63c7b032165e445bf2e922df02
+    last_write_checksum: sha1:0fc4b0a60c9c9f3c2679dc81f12cb0873aaf0cfe
+    pristine_git_object: 1d2906cc4cde4456763aae1c860420bb7c8c06a7
   models/operations/memoriesdelete.go:
     id: ebc10d426b6c
     last_write_checksum: sha1:e57861886adeee1f4b397a604e84f326b645c8b5
@@ -775,8 +775,8 @@ trackedFiles:
     pristine_git_object: ee0bb8ba971f2d56a73e8bcc63988a6253b0a141
   phren.go:
     id: 3c886eef84be
-    last_write_checksum: sha1:c3f7fade2f0bc78fbf15af78ccbe70f64d292b59
-    pristine_git_object: baa7f8ca4235f786552b7f9db5b9e604f556cf7b
+    last_write_checksum: sha1:f0c34c978e888a91e9060d5f4c764e6fe3305a24
+    pristine_git_object: 64cd59197be623f3774c09fd114a65d0d6aca514
   projectmembers.go:
     id: e51bf3767009
     last_write_checksum: sha1:4ccbb8217d294d491ead799a9c2335ecae65a8be
@@ -1472,9 +1472,4 @@ examples:
 examplesVersion: 1.0.2
 releaseNotes: |
   ## Go SDK Changes:
-  * `Phren.Spaces.List()`:  `response.Spaces[].CreatedWith` **Added**
-  * `Phren.Spaces.Create()`:  `response.CreatedWith` **Added**
-  * `Phren.Spaces.Get()`:  `response.CreatedWith` **Added**
-  * `Phren.Memories.List()`:  `response.Memories[].CreatedWith` **Added**
-  * `Phren.Memories.Create()`:  `response.CreatedWith` **Added**
-  * `Phren.Memories.Get()`:  `response.CreatedWith` **Added**
+  * `Phren.Memories.Create()`:  `request.RequestId` **Added**
