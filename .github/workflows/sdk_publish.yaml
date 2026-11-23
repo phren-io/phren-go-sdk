@@ -17,6 +17,8 @@ jobs:
     uses: speakeasy-api/sdk-generation-action/.github/workflows/sdk-publish.yaml@v15
     with:
       target: phren
+      # The self-hosted runner (CI_RUNNER=phren), like every phren-io repo.
+      runs-on: ${{ vars.CI_RUNNER || 'ubuntu-22.04' }}
     secrets:
       github_access_token: ${{ secrets.GITHUB_TOKEN }}
       speakeasy_api_key: ${{ secrets.SPEAKEASY_API_KEY }}
