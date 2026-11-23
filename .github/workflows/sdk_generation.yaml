@@ -28,6 +28,8 @@ jobs:
       feature_branch: ${{ inputs.feature_branch }}
       force: ${{ github.event.inputs.force }}
       mode: direct
+      # The self-hosted runner (CI_RUNNER=phren), like every phren-io repo.
+      runs-on: ${{ vars.CI_RUNNER || 'ubuntu-22.04' }}
       set_version: ${{ github.event.inputs.set_version }}
     secrets:
       github_access_token: ${{ secrets.GITHUB_TOKEN }}
