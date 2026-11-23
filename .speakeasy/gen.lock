@@ -1,18 +1,18 @@
 lockVersion: 2.0.0
 id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
 management:
-  docChecksum: 08b1ac11e4bb06434baacb27e7e6c6b6
+  docChecksum: 92f8502ddd777c08cad9ac56754db533
   docVersion: 0.0.0
   speakeasyVersion: 1.811.0
   generationVersion: 2.968.1
-  releaseVersion: 0.3.14
-  configChecksum: 049f067eee3984a2ae4f36f89218b383
+  releaseVersion: 0.3.15
+  configChecksum: 438089e14cf56cb213f7f607655ff6a3
   repoURL: https://github.com/phren-io/phren-go-sdk.git
   installationURL: https://github.com/phren-io/phren-go-sdk
 persistentEdits:
-  generation_id: 021c5679-810f-450a-9a83-60dd214d2ec4
-  pristine_commit_hash: 698dc0ec635468078114ecf6889bf4d42fdd6f84
-  pristine_tree_hash: 805adf2dc65851ff7ba61076e361fa4a5c822e53
+  generation_id: 73097867-d9c5-4dd7-bd69-bccfa49386e2
+  pristine_commit_hash: 2b5e85a0300e34c0fa15ab930d3f2229c10d39af
+  pristine_tree_hash: aca047e4ffc86baa22bbb9e018a25c3efbbb8142
 features:
   go:
     additionalDependencies: 0.1.0
@@ -251,8 +251,8 @@ trackedFiles:
     pristine_git_object: 48d07c7a46e9c25c58d5ad0180839bcfb484b702
   docs/models/operations/memoriescreateresponse.md:
     id: 7fd343580abe
-    last_write_checksum: sha1:ba0472c377010fc9be56188afe08b6e1da8e3948
-    pristine_git_object: 0466512f360d353b26431164c0d3325cb1d84c2d
+    last_write_checksum: sha1:00bee91239d8940d614c6be963bd63434a2d58f7
+    pristine_git_object: dc45cfce9720f7ae9cf18ac119cf3f94d072ad9f
   docs/models/operations/memoriesdeleterequest.md:
     id: 5820a421691b
     last_write_checksum: sha1:e7c2dbd2c00d47d59636a9a56fbf5186c2e588e6
@@ -419,8 +419,8 @@ trackedFiles:
     pristine_git_object: ae54c12ceda4a0d27f2bb3be31e80c33c96e0f78
   docs/sdks/memories/README.md:
     id: f9e56b27b7fe
-    last_write_checksum: sha1:56f75b68e96438dd26951c3d5f7a55217e4e5bb3
-    pristine_git_object: 71715063cc44417c3976e8a0c8bd602ae2b09d9f
+    last_write_checksum: sha1:6db70c3c3f6c86b5b033eac6adddec752a7080da
+    pristine_git_object: 5a81730a4774e3eb501d5b9b68bc5a6f7e806cf3
   docs/sdks/organizations/README.md:
     id: 3425667a2db5
     last_write_checksum: sha1:00ed40ca220f2d713fe7da09a0fbe1b989a3049b
@@ -435,8 +435,8 @@ trackedFiles:
     pristine_git_object: 441b2600d0ec06426091b564e1e14f704dd2502c
   docs/sdks/spaces/README.md:
     id: 0e054ac466b4
-    last_write_checksum: sha1:2aca63959df6408aea294cbba5e6a823f3e821d3
-    pristine_git_object: f08248ce8d7c1a481a1bde66e1c505e3fbbcbc51
+    last_write_checksum: sha1:cdc0b1db17b947059cf5fed1853d1ab6e8ed7a41
+    pristine_git_object: 6c1e16a89be23e440b87d3fc23ab1073bb9c8a5d
   go.mod:
     id: c47645c391ad
     last_write_checksum: sha1:e05c5281120ac5615edc8333ef284e86272b5e8b
@@ -511,8 +511,8 @@ trackedFiles:
     pristine_git_object: be11089e7ffc37db927714cb89a9779b7e0a7bb1
   memories.go:
     id: 9b57ebe03ad3
-    last_write_checksum: sha1:cf123d39c2733a77c29a09e3b237bac9e93800e1
-    pristine_git_object: 7149939d2b65e6029086f5438809354b250943fb
+    last_write_checksum: sha1:c335290f6ab3a73970c9c2038e3017577202ff0f
+    pristine_git_object: 381c4cb6fd953ebec395ea3998111f8cb4fb8446
   models/apierrors/apierror.go:
     id: 4cecf27a5a54
     last_write_checksum: sha1:bdfed9d7fe645715fc71b2d3bbfd5eb382601552
@@ -679,8 +679,8 @@ trackedFiles:
     pristine_git_object: b1860f41a474b84c7ec0483c96b381ffeeadc4ea
   models/operations/memoriescreate.go:
     id: 6782f84854c2
-    last_write_checksum: sha1:0fc4b0a60c9c9f3c2679dc81f12cb0873aaf0cfe
-    pristine_git_object: 1d2906cc4cde4456763aae1c860420bb7c8c06a7
+    last_write_checksum: sha1:a8e921738aba208cb7078cac21197a35889ce0a3
+    pristine_git_object: d4fd2f536e041dc438039debea134e4b2e4814e7
   models/operations/memoriesdelete.go:
     id: ebc10d426b6c
     last_write_checksum: sha1:e57861886adeee1f4b397a604e84f326b645c8b5
@@ -775,8 +775,8 @@ trackedFiles:
     pristine_git_object: ee0bb8ba971f2d56a73e8bcc63988a6253b0a141
   phren.go:
     id: 3c886eef84be
-    last_write_checksum: sha1:f0c34c978e888a91e9060d5f4c764e6fe3305a24
-    pristine_git_object: 64cd59197be623f3774c09fd114a65d0d6aca514
+    last_write_checksum: sha1:6d5a45af1b654c977b3182d025713d8ac68e029c
+    pristine_git_object: d3d3fe9527fc9d46b76385e614acc985a748bc3f
   projectmembers.go:
     id: e51bf3767009
     last_write_checksum: sha1:4ccbb8217d294d491ead799a9c2335ecae65a8be
@@ -791,8 +791,8 @@ trackedFiles:
     pristine_git_object: 41b99806908e2adeaa2c0bcfb601c08b8064eae6
   spaces.go:
     id: b90c9b8b3435
-    last_write_checksum: sha1:9a8f0a8442bc979993e5ee64c59be35f587d5652
-    pristine_git_object: 9b9eff69cf5ecd4998d214dff55a06ad53c42a21
+    last_write_checksum: sha1:c45bf3b6f24776d758dcab81ec30fa884ea69cf2
+    pristine_git_object: 68cf191f32e80e6a8e5aff92ce375f2818557c67
   types/bigint.go:
     id: 6f911e1a03c3
     last_write_checksum: sha1:f63da326b7a902bb319d157b10604df53a8957ad
@@ -1384,6 +1384,8 @@ examples:
           application/json: {"name": "organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01", "content": "Deploys go through Flux; never kubectl apply to the dev cluster by hand.", "createdBy": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "createdAt": "2026-02-07T11:30:00Z"}
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+        "429":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
   Memories_get:
     speakeasy-default-memories-get:
       parameters:
@@ -1420,6 +1422,8 @@ examples:
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
         "503":
+          application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
+        "429":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
   ProjectMembers_list:
     speakeasy-default-project-members-list:
@@ -1472,4 +1476,5 @@ examples:
 examplesVersion: 1.0.2
 releaseNotes: |
   ## Go SDK Changes:
-  * `Phren.Memories.Create()`:  `request.RequestId` **Added**
+  * `Phren.Spaces.SpacesQuery()`:  `error.status[429]` **Added**
+  * `Phren.Memories.Create()`:  `error.status[429]` **Added**
