@@ -1,0 +1,14 @@
+# OperationMetadata
+
+Progress of a long-running operation.
+
+
+## Fields
+
+| Field                                                                     | Type                                                                      | Required                                                                  | Description                                                               | Example                                                                   |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `Target`                                                                  | `string`                                                                  | :heavy_check_mark:                                                        | Name of the resource the operation acts on, such as `organizations/acme`. |                                                                           |
+| `Verb`                                                                    | [components.OperationVerb](../../models/components/operationverb.md)      | :heavy_check_mark:                                                        | What a long-running operation does to its target.                         | delete                                                                    |
+| `CreateTime`                                                              | [time.Time](https://pkg.go.dev/time#Time)                                 | :heavy_check_mark:                                                        | When the operation started.                                               |                                                                           |
+| `EndTime`                                                                 | [*time.Time](https://pkg.go.dev/time#Time)                                | :heavy_minus_sign:                                                        | When the operation finished. Absent while it runs.                        |                                                                           |
+| `Passes`                                                                  | `int`                                                                     | :heavy_check_mark:                                                        | Passes the job has made over the target's data so far.                    |                                                                           |

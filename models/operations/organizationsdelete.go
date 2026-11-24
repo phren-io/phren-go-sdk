@@ -30,7 +30,7 @@ func (o *OrganizationsDeleteRequest) GetForce() *bool {
 type OrganizationsDeleteResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
 	// The request has succeeded.
-	Organization *components.Organization
+	OrganizationOperation *components.OrganizationOperation
 }
 
 func (o OrganizationsDeleteResponse) MarshalJSON() ([]byte, error) {
@@ -51,9 +51,9 @@ func (o *OrganizationsDeleteResponse) GetHTTPMeta() components.HTTPMetadata {
 	return o.HTTPMeta
 }
 
-func (o *OrganizationsDeleteResponse) GetOrganization() *components.Organization {
+func (o *OrganizationsDeleteResponse) GetOrganizationOperation() *components.OrganizationOperation {
 	if o == nil {
 		return nil
 	}
-	return o.Organization
+	return o.OrganizationOperation
 }

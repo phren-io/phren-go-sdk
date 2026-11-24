@@ -7,8 +7,11 @@
 * [List](#list) - List
 * [Create](#create) - Create
 * [Get](#get) - Get
-* [Delete](#delete) - Soft-delete
-* [Undelete](#undelete) - Undelete
+* [Delete](#delete) - Soft-delete. The delete runs in the background: this returns its
+long-running operation, which `OrganizationOperations` get and `:wait`
+follow until it is done, with the organization `DELETED`.
+* [Undelete](#undelete) - Undelete. The restore runs in the background: this returns its
+long-running operation, done when the organization is `ACTIVE` again.
 
 ## List
 
@@ -321,7 +324,9 @@ func main() {
 
 ## Delete
 
-Soft-delete
+Soft-delete. The delete runs in the background: this returns its
+long-running operation, which `OrganizationOperations` get and `:wait`
+follow until it is done, with the organization `DELETED`.
 
 ### Example Usage
 
@@ -347,7 +352,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    if res.Organization != nil {
+    if res.OrganizationOperation != nil {
         // handle response
     }
 }
@@ -375,7 +380,8 @@ func main() {
 
 ## Undelete
 
-Undelete
+Undelete. The restore runs in the background: this returns its
+long-running operation, done when the organization is `ACTIVE` again.
 
 ### Example Usage
 
@@ -401,7 +407,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    if res.Organization != nil {
+    if res.OrganizationOperation != nil {
         // handle response
     }
 }
