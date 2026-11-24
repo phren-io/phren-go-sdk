@@ -1,0 +1,10 @@
+# ProjectsCreateRequest
+
+
+## Fields
+
+| Field                                                                | Type                                                                 | Required                                                             | Description                                                          | Example                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `Organization`                                                       | `string`                                                             | :heavy_check_mark:                                                   | N/A                                                                  | acme                                                                 |
+| `ProjectID`                                                          | `string`                                                             | :heavy_check_mark:                                                   | N/A                                                                  | agent                                                                |
+| `Body`                                                               | [components.CreateProject](../../models/components/createproject.md) | :heavy_check_mark:                                                   | N/A                                                                  | {<br/>"displayName": "Agent"<br/>}                                   |

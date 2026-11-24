@@ -3,13 +3,15 @@
 
 package phren
 
-// Generated from OpenAPI doc version 0.0.0 and generator version 2.948.4
+// Generated from OpenAPI doc version 0.0.0 and generator version 2.950.2
 
 import (
+	"context"
 	"fmt"
 	"github.com/phren-io/phren-go-sdk/internal/config"
 	"github.com/phren-io/phren-go-sdk/internal/hooks"
 	"github.com/phren-io/phren-go-sdk/internal/utils"
+	"github.com/phren-io/phren-go-sdk/models/components"
 	"github.com/phren-io/phren-go-sdk/retry"
 	"net/http"
 	"time"
@@ -50,8 +52,15 @@ func Float64(f float64) *float64 { return &f }
 func Pointer[T any](v T) *T { return &v }
 
 type Phren struct {
-	SDKVersion    string
-	Organizations *Organizations
+	SDKVersion             string
+	Organizations          *Organizations
+	Invitations            *Invitations
+	Members                *Members
+	OrganizationOperations *OrganizationOperations
+	Projects               *Projects
+	ProjectMembers         *ProjectMembers
+	Spaces                 *Spaces
+	Memories               *Memories
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -95,6 +104,23 @@ func WithClient(client HTTPClient) SDKOption {
 	}
 }
 
+// WithSecurity configures the SDK to use the provided security details
+func WithSecurity(bearerAuth string) SDKOption {
+	return func(sdk *Phren) {
+		security := components.Security{BearerAuth: &bearerAuth}
+		sdk.sdkConfiguration.Security = utils.AsSecuritySource(&security)
+	}
+}
+
+// WithSecuritySource configures the SDK to invoke the Security Source function on each method call to determine authentication
+func WithSecuritySource(security func(context.Context) (components.Security, error)) SDKOption {
+	return func(sdk *Phren) {
+		sdk.sdkConfiguration.Security = func(ctx context.Context) (interface{}, error) {
+			return security(ctx)
+		}
+	}
+}
+
 func WithRetryConfig(retryConfig retry.Config) SDKOption {
 	return func(sdk *Phren) {
 		sdk.sdkConfiguration.RetryConfig = &retryConfig
@@ -111,11 +137,11 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *Phren {
 	sdk := &Phren{
-		SDKVersion: "0.0.1",
+		SDKVersion: "0.1.0",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "speakeasy-sdk/go 0.0.1 2.948.4 0.0.0 github.com/phren-io/phren-go-sdk",
-			SDKVersion:        "0.0.1",
-			GenVersion:        "2.948.4",
+			UserAgent:         "speakeasy-sdk/go 0.1.0 2.950.2 0.0.0 github.com/phren-io/phren-go-sdk",
+			SDKVersion:        "0.1.0",
+			GenVersion:        "2.950.2",
 			OpenAPIDocVersion: "0.0.0",
 			ServerList:        ServerList,
 		},
@@ -123,6 +149,13 @@ func New(opts ...SDKOption) *Phren {
 	}
 	for _, opt := range opts {
 		opt(sdk)
+	}
+
+	if sdk.sdkConfiguration.Security == nil {
+		var envVarSecurity components.Security
+		if utils.PopulateSecurityFromEnv(&envVarSecurity) {
+			sdk.sdkConfiguration.Security = utils.AsSecuritySource(envVarSecurity)
+		}
 	}
 
 	// Use WithClient to override the default client if you would like to customize the timeout
@@ -133,6 +166,13 @@ func New(opts ...SDKOption) *Phren {
 	sdk.sdkConfiguration = sdk.hooks.SDKInit(sdk.sdkConfiguration)
 
 	sdk.Organizations = newOrganizations(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Invitations = newInvitations(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Members = newMembers(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.OrganizationOperations = newOrganizationOperations(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Projects = newProjects(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.ProjectMembers = newProjectMembers(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Spaces = newSpaces(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Memories = newMemories(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }

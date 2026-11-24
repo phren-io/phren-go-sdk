@@ -8,10 +8,74 @@ import (
 	"github.com/phren-io/phren-go-sdk/models/components"
 )
 
+type OrganizationsListRequest struct {
+	// Maximum number of results to return.
+	PageSize *int `default:"50" queryParam:"style=form,explode=false,name=pageSize"`
+	// Token from a previous response's nextPageToken.
+	PageToken *string `queryParam:"style=form,explode=false,name=pageToken"`
+	// AIP-160 filter expression.
+	Filter *string `queryParam:"style=form,explode=false,name=filter"`
+	// Extra data to return. With `permissions`, each resource lists the methods
+	// the caller may call on it, and a list response the methods on the
+	// collection. Rules that depend on data, such as keeping the last admin, are
+	// still checked when the method is called.
+	Include *components.Include `queryParam:"style=form,explode=false,name=include"`
+	// Include soft-deleted resources in the results.
+	ShowDeleted *bool `default:"false" queryParam:"style=form,explode=false,name=showDeleted"`
+}
+
+func (o OrganizationsListRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(o, "", false)
+}
+
+func (o *OrganizationsListRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &o, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OrganizationsListRequest) GetPageSize() *int {
+	if o == nil {
+		return nil
+	}
+	return o.PageSize
+}
+
+func (o *OrganizationsListRequest) GetPageToken() *string {
+	if o == nil {
+		return nil
+	}
+	return o.PageToken
+}
+
+func (o *OrganizationsListRequest) GetFilter() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Filter
+}
+
+func (o *OrganizationsListRequest) GetInclude() *components.Include {
+	if o == nil {
+		return nil
+	}
+	return o.Include
+}
+
+func (o *OrganizationsListRequest) GetShowDeleted() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.ShowDeleted
+}
+
 type OrganizationsListResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
 	// The request has succeeded.
-	Organizations []components.Organization
+	ListOrganizationsResponse *components.ListOrganizationsResponse
+
+	Next func() (*OrganizationsListResponse, error)
 }
 
 func (o OrganizationsListResponse) MarshalJSON() ([]byte, error) {
@@ -32,9 +96,9 @@ func (o *OrganizationsListResponse) GetHTTPMeta() components.HTTPMetadata {
 	return o.HTTPMeta
 }
 
-func (o *OrganizationsListResponse) GetOrganizations() []components.Organization {
+func (o *OrganizationsListResponse) GetListOrganizationsResponse() *components.ListOrganizationsResponse {
 	if o == nil {
 		return nil
 	}
-	return o.Organizations
+	return o.ListOrganizationsResponse
 }

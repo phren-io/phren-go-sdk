@@ -3,9 +3,42 @@
 
 package components
 
+import (
+	"github.com/phren-io/phren-go-sdk/internal/utils"
+	"time"
+)
+
+// Organization - An organization: the top-level container that owns all other resources.
 type Organization struct {
-	Name        string `json:"name"`
+	Name string `json:"name"`
+	// Human-readable name.
 	DisplayName string `json:"displayName"`
+	// Lifecycle state of an organization.
+	State OrganizationState `json:"state"`
+	// Name of the user that created the organization.
+	CreatedBy string `json:"createdBy"`
+	// When the organization was created.
+	CreatedAt time.Time `json:"createdAt"`
+	// When the organization was last updated.
+	UpdatedAt time.Time `json:"updatedAt"`
+	// When the organization was soft-deleted. Set only while deleted.
+	DeletedAt *time.Time `json:"deletedAt,omitzero"`
+	// When a soft-deleted organization will be permanently purged.
+	PurgesAt *time.Time `json:"purgesAt,omitzero"`
+	// The methods the caller may call on this resource, such as `delete`.
+	// Returned only with `include=permissions`.
+	Permissions []string `json:"permissions,omitzero"`
+}
+
+func (o Organization) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(o, "", false)
+}
+
+func (o *Organization) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &o, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *Organization) GetName() string {
@@ -20,4 +53,53 @@ func (o *Organization) GetDisplayName() string {
 		return ""
 	}
 	return o.DisplayName
+}
+
+func (o *Organization) GetState() OrganizationState {
+	if o == nil {
+		return OrganizationState("")
+	}
+	return o.State
+}
+
+func (o *Organization) GetCreatedBy() string {
+	if o == nil {
+		return ""
+	}
+	return o.CreatedBy
+}
+
+func (o *Organization) GetCreatedAt() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.CreatedAt
+}
+
+func (o *Organization) GetUpdatedAt() time.Time {
+	if o == nil {
+		return time.Time{}
+	}
+	return o.UpdatedAt
+}
+
+func (o *Organization) GetDeletedAt() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.DeletedAt
+}
+
+func (o *Organization) GetPurgesAt() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.PurgesAt
+}
+
+func (o *Organization) GetPermissions() []string {
+	if o == nil {
+		return nil
+	}
+	return o.Permissions
 }

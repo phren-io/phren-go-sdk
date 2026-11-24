@@ -1,0 +1,12 @@
+# CreateSpace
+
+A space holds memories, and is what agents query. Its ID is unique in the
+organization, and it belongs to a project, which decides who can use it.
+
+
+## Fields
+
+| Field                                                                                                           | Type                                                                                                            | Required                                                                                                        | Description                                                                                                     |
+| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `Project`                                                                                                       | `string`                                                                                                        | :heavy_check_mark:                                                                                              | The project the space belongs to:<br/>`organizations/{organization}/projects/{project}`. It can't<br/>be changed later. |
+| `DisplayName`                                                                                                   | `string`                                                                                                        | :heavy_check_mark:                                                                                              | Human-readable name.                                                                                            |

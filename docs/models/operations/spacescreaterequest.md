@@ -1,0 +1,10 @@
+# SpacesCreateRequest
+
+
+## Fields
+
+| Field                                                                      | Type                                                                       | Required                                                                   | Description                                                                | Example                                                                    |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `Organization`                                                             | `string`                                                                   | :heavy_check_mark:                                                         | N/A                                                                        | acme                                                                       |
+| `SpaceID`                                                                  | `string`                                                                   | :heavy_check_mark:                                                         | N/A                                                                        | notes                                                                      |
+| `Body`                                                                     | [components.CreateSpace](../../models/components/createspace.md)           | :heavy_check_mark:                                                         | N/A                                                                        | {<br/>"project": "organizations/acme/projects/agent",<br/>"displayName": "Notes"<br/>} |

@@ -4,11 +4,13 @@
 package operations
 
 import (
+	"github.com/phren-io/phren-go-sdk/internal/utils"
 	"github.com/phren-io/phren-go-sdk/models/components"
 )
 
 type OrganizationsDeleteRequest struct {
 	Organization string `pathParam:"style=simple,explode=false,name=organization"`
+	Force        *bool  `queryParam:"style=form,explode=false,name=force"`
 }
 
 func (o *OrganizationsDeleteRequest) GetOrganization() string {
@@ -18,8 +20,28 @@ func (o *OrganizationsDeleteRequest) GetOrganization() string {
 	return o.Organization
 }
 
+func (o *OrganizationsDeleteRequest) GetForce() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Force
+}
+
 type OrganizationsDeleteResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
+	// The request has succeeded.
+	OrganizationOperation *components.OrganizationOperation
+}
+
+func (o OrganizationsDeleteResponse) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(o, "", false)
+}
+
+func (o *OrganizationsDeleteResponse) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &o, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *OrganizationsDeleteResponse) GetHTTPMeta() components.HTTPMetadata {
@@ -27,4 +49,11 @@ func (o *OrganizationsDeleteResponse) GetHTTPMeta() components.HTTPMetadata {
 		return components.HTTPMetadata{}
 	}
 	return o.HTTPMeta
+}
+
+func (o *OrganizationsDeleteResponse) GetOrganizationOperation() *components.OrganizationOperation {
+	if o == nil {
+		return nil
+	}
+	return o.OrganizationOperation
 }

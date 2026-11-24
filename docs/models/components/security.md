@@ -1,8 +1,8 @@
-# OrganizationInput
+# Security
 
 
 ## Fields
 
 | Field              | Type               | Required           | Description        |
 | ------------------ | ------------------ | ------------------ | ------------------ |
-| `DisplayName`      | `string`           | :heavy_check_mark: | N/A                |
+| `BearerAuth`       | `*string`          | :heavy_minus_sign: | N/A                |

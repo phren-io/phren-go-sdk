@@ -14,8 +14,11 @@ import (
 	"github.com/phren-io/phren-go-sdk/models/components"
 	"github.com/phren-io/phren-go-sdk/models/operations"
 	"github.com/phren-io/phren-go-sdk/retry"
+	"github.com/spyzhov/ajson"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 type Organizations struct {
@@ -32,7 +35,8 @@ func newOrganizations(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *
 	}
 }
 
-func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*operations.OrganizationsListResponse, error) {
+// List
+func (s *Organizations) List(ctx context.Context, request operations.OrganizationsListRequest, opts ...operations.Option) (*operations.OrganizationsListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -51,7 +55,7 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/organizations")
+	opURL, err := url.JoinPath(baseURL, "/v1/organizations")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -62,13 +66,14 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 		BaseURL:          baseURL,
 		Context:          ctx,
 		OperationID:      "Organizations_list",
-		SecuritySource:   nil,
+		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
 	timeout := o.Timeout
 	if timeout == nil {
 		timeout = s.sdkConfiguration.Timeout
 	}
+	paginationCtx := ctx
 
 	if timeout != nil {
 		var cancel context.CancelFunc
@@ -83,6 +88,14 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
 	for k, v := range o.SetHeaders {
 		req.Header.Set(k, v)
 	}
@@ -92,6 +105,16 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 10,
+					MaxInterval:     200,
+					Exponent:        1.5,
+					MaxElapsedTime:  1000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -101,10 +124,7 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
+				"5XX",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -184,6 +204,50 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 			Response: httpRes,
 		},
 	}
+	res.Next = func() (*operations.OrganizationsListResponse, error) {
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+
+		b, err := ajson.Unmarshal(rawBody)
+		if err != nil {
+			return nil, err
+		}
+		nC, err := ajson.Eval(b, "$.nextPageToken")
+		if err != nil {
+			return nil, err
+		}
+		var nCVal string
+
+		if nC.IsNumeric() {
+			numVal, err := nC.GetNumeric()
+			if err != nil {
+				return nil, err
+			}
+			// GetNumeric returns as float64 so convert to the appropriate type.
+			nCVal = strconv.FormatFloat(numVal, 'f', 0, 64)
+		} else {
+			val, err := nC.Value()
+			if err != nil {
+				return nil, err
+			}
+			if val == nil {
+				return nil, nil
+			}
+			nCVal = val.(string)
+			if strings.TrimSpace(nCVal) == "" {
+				return nil, nil
+			}
+		}
+		request.PageToken = &nCVal
+
+		return s.List(
+			paginationCtx,
+			request,
+			opts...,
+		)
+	}
 
 	switch {
 	case httpRes.StatusCode == 200:
@@ -194,12 +258,41 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 				return nil, err
 			}
 
-			var out []components.Organization
+			var out components.ListOrganizationsResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 
-			res.Organizations = out
+			res.ListOrganizationsResponse = &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 400:
+		fallthrough
+	case httpRes.StatusCode == 401:
+		fallthrough
+	case httpRes.StatusCode == 403:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/problem+json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out apierrors.ProblemError
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, apierrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			out.HTTPMeta = components.HTTPMetadata{
+				Request:  req,
+				Response: httpRes,
+			}
+			return nil, &out
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
 			if err != nil {
@@ -231,7 +324,13 @@ func (s *Organizations) List(ctx context.Context, opts ...operations.Option) (*o
 
 }
 
-func (s *Organizations) Create(ctx context.Context, request components.OrganizationInput, opts ...operations.Option) (*operations.OrganizationsCreateResponse, error) {
+// Create
+func (s *Organizations) Create(ctx context.Context, organizationID string, body components.CreateOrganization, opts ...operations.Option) (*operations.OrganizationsCreateResponse, error) {
+	request := operations.OrganizationsCreateRequest{
+		OrganizationID: organizationID,
+		Body:           body,
+	}
+
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -250,7 +349,7 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/organizations")
+	opURL, err := url.JoinPath(baseURL, "/v1/organizations")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -261,9 +360,9 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 		BaseURL:          baseURL,
 		Context:          ctx,
 		OperationID:      "Organizations_create",
-		SecuritySource:   nil,
+		SecuritySource:   s.sdkConfiguration.Security,
 	}
-	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Request", "json", `request:"mediaType=application/json"`)
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
 	if err != nil {
 		return nil, err
 	}
@@ -289,6 +388,14 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 		req.Header.Set("Content-Type", reqContentType)
 	}
 
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
 	for k, v := range o.SetHeaders {
 		req.Header.Set(k, v)
 	}
@@ -298,6 +405,16 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 10,
+					MaxInterval:     200,
+					Exponent:        1.5,
+					MaxElapsedTime:  1000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -307,10 +424,7 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
+				"5XX",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -392,7 +506,7 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 	}
 
 	switch {
-	case httpRes.StatusCode == 200:
+	case httpRes.StatusCode == 201:
 		switch {
 		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -406,6 +520,37 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 			}
 
 			res.Organization = &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 400:
+		fallthrough
+	case httpRes.StatusCode == 401:
+		fallthrough
+	case httpRes.StatusCode == 403:
+		fallthrough
+	case httpRes.StatusCode == 409:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/problem+json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out apierrors.ProblemError
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, apierrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			out.HTTPMeta = components.HTTPMetadata{
+				Request:  req,
+				Response: httpRes,
+			}
+			return nil, &out
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
 			if err != nil {
@@ -437,9 +582,11 @@ func (s *Organizations) Create(ctx context.Context, request components.Organizat
 
 }
 
-func (s *Organizations) Get(ctx context.Context, organization string, opts ...operations.Option) (*operations.OrganizationsGetResponse, error) {
+// Get
+func (s *Organizations) Get(ctx context.Context, organization string, include *components.Include, opts ...operations.Option) (*operations.OrganizationsGetResponse, error) {
 	request := operations.OrganizationsGetRequest{
 		Organization: organization,
+		Include:      include,
 	}
 
 	o := operations.Options{}
@@ -460,7 +607,7 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/organizations/{organization}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -471,7 +618,7 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 		BaseURL:          baseURL,
 		Context:          ctx,
 		OperationID:      "Organizations_get",
-		SecuritySource:   nil,
+		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
 	timeout := o.Timeout
@@ -492,6 +639,14 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
 	for k, v := range o.SetHeaders {
 		req.Header.Set(k, v)
 	}
@@ -501,6 +656,16 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 10,
+					MaxInterval:     200,
+					Exponent:        1.5,
+					MaxElapsedTime:  1000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -510,10 +675,7 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
+				"5XX",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -616,6 +778,37 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 			}
 			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
 		}
+	case httpRes.StatusCode == 400:
+		fallthrough
+	case httpRes.StatusCode == 401:
+		fallthrough
+	case httpRes.StatusCode == 403:
+		fallthrough
+	case httpRes.StatusCode == 404:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/problem+json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out apierrors.ProblemError
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, apierrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			out.HTTPMeta = components.HTTPMetadata{
+				Request:  req,
+				Response: httpRes,
+			}
+			return nil, &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {
@@ -640,9 +833,13 @@ func (s *Organizations) Get(ctx context.Context, organization string, opts ...op
 
 }
 
-func (s *Organizations) Delete(ctx context.Context, organization string, opts ...operations.Option) (*operations.OrganizationsDeleteResponse, error) {
+// Delete - Soft-delete. The delete runs in the background: this returns its
+// long-running operation, which `OrganizationOperations` get and `:wait`
+// follow until it is done, with the organization `DELETED`.
+func (s *Organizations) Delete(ctx context.Context, organization string, force *bool, opts ...operations.Option) (*operations.OrganizationsDeleteResponse, error) {
 	request := operations.OrganizationsDeleteRequest{
 		Organization: organization,
+		Force:        force,
 	}
 
 	o := operations.Options{}
@@ -663,7 +860,7 @@ func (s *Organizations) Delete(ctx context.Context, organization string, opts ..
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/organizations/{organization}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -674,7 +871,7 @@ func (s *Organizations) Delete(ctx context.Context, organization string, opts ..
 		BaseURL:          baseURL,
 		Context:          ctx,
 		OperationID:      "Organizations_delete",
-		SecuritySource:   nil,
+		SecuritySource:   s.sdkConfiguration.Security,
 	}
 
 	timeout := o.Timeout
@@ -692,8 +889,16 @@ func (s *Organizations) Delete(ctx context.Context, organization string, opts ..
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
 
 	for k, v := range o.SetHeaders {
 		req.Header.Set(k, v)
@@ -704,6 +909,16 @@ func (s *Organizations) Delete(ctx context.Context, organization string, opts ..
 	if retryConfig == nil {
 		if globalRetryConfig != nil {
 			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 10,
+					MaxInterval:     200,
+					Exponent:        1.5,
+					MaxElapsedTime:  1000,
+				},
+				RetryConnectionErrors: true,
+			}
 		}
 	}
 
@@ -713,10 +928,7 @@ func (s *Organizations) Delete(ctx context.Context, organization string, opts ..
 			Config: retryConfig,
 			StatusCodes: []string{
 				"429",
-				"500",
-				"502",
-				"503",
-				"504",
+				"5XX",
 			},
 		}, func() (*http.Response, error) {
 			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
@@ -798,8 +1010,309 @@ func (s *Organizations) Delete(ctx context.Context, organization string, opts ..
 	}
 
 	switch {
-	case httpRes.StatusCode == 204:
-		utils.DrainBody(httpRes)
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out components.OrganizationOperation
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.OrganizationOperation = &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 400:
+		fallthrough
+	case httpRes.StatusCode == 401:
+		fallthrough
+	case httpRes.StatusCode == 403:
+		fallthrough
+	case httpRes.StatusCode == 404:
+		fallthrough
+	case httpRes.StatusCode == 409:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/problem+json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out apierrors.ProblemError
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, apierrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			out.HTTPMeta = components.HTTPMetadata{
+				Request:  req,
+				Response: httpRes,
+			}
+			return nil, &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// Undelete - Undelete. The restore runs in the background: this returns its
+// long-running operation, done when the organization is `ACTIVE` again.
+func (s *Organizations) Undelete(ctx context.Context, organization string, opts ...operations.Option) (*operations.OrganizationsUndeleteResponse, error) {
+	request := operations.OrganizationsUndeleteRequest{
+		Organization: organization,
+	}
+
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionRetries,
+		operations.SupportedOptionTimeout,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}:undelete", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "Organizations_undelete",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", opURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	globalRetryConfig := s.sdkConfiguration.RetryConfig
+	retryConfig := o.Retries
+	if retryConfig == nil {
+		if globalRetryConfig != nil {
+			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 10,
+					MaxInterval:     200,
+					Exponent:        1.5,
+					MaxElapsedTime:  1000,
+				},
+				RetryConnectionErrors: true,
+			}
+		}
+	}
+
+	var httpRes *http.Response
+	if retryConfig != nil {
+		httpRes, err = utils.Retry(ctx, utils.Retries{
+			Config: retryConfig,
+			StatusCodes: []string{
+				"429",
+				"5XX",
+			},
+		}, func() (*http.Response, error) {
+			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
+				copyBody, err := req.GetBody()
+
+				if err != nil {
+					return nil, err
+				}
+
+				req.Body = copyBody
+			}
+
+			req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+			if err != nil {
+				if retry.IsPermanentError(err) || retry.IsTemporaryError(err) {
+					return nil, err
+				}
+
+				return nil, retry.Permanent(err)
+			}
+
+			httpRes, err := s.sdkConfiguration.Client.Do(req)
+			if err != nil || httpRes == nil {
+				if err != nil {
+					err = fmt.Errorf("error sending request: %w", err)
+				} else {
+					err = fmt.Errorf("error sending request: no response")
+				}
+
+				_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+			}
+			return httpRes, err
+		})
+
+		if err != nil {
+			return nil, err
+		} else {
+			httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+		if err != nil {
+			return nil, err
+		}
+
+		httpRes, err = s.sdkConfiguration.Client.Do(req)
+		if err != nil || httpRes == nil {
+			if err != nil {
+				err = fmt.Errorf("error sending request: %w", err)
+			} else {
+				err = fmt.Errorf("error sending request: no response")
+			}
+
+			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+			return nil, err
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+			if err != nil {
+				return nil, err
+			} else if _httpRes != nil {
+				httpRes = _httpRes
+			}
+		} else {
+			httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	res := &operations.OrganizationsUndeleteResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out components.OrganizationOperation
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.OrganizationOperation = &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 400:
+		fallthrough
+	case httpRes.StatusCode == 401:
+		fallthrough
+	case httpRes.StatusCode == 403:
+		fallthrough
+	case httpRes.StatusCode == 404:
+		fallthrough
+	case httpRes.StatusCode == 409:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/problem+json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out apierrors.ProblemError
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, apierrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			out.HTTPMeta = components.HTTPMetadata{
+				Request:  req,
+				Response: httpRes,
+			}
+			return nil, &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {

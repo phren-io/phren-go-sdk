@@ -4,46 +4,114 @@
 
 ### Available Operations
 
-* [List](#list)
-* [Create](#create)
-* [Get](#get)
-* [Delete](#delete)
+* [List](#list) - List
+* [Create](#create) - Create
+* [Get](#get) - Get
+* [Delete](#delete) - Soft-delete. The delete runs in the background: this returns its
+long-running operation, which `OrganizationOperations` get and `:wait`
+follow until it is done, with the organization `DELETED`.
+* [Undelete](#undelete) - Undelete. The restore runs in the background: this returns its
+long-running operation, done when the organization is `ACTIVE` again.
 
 ## List
 
-### Example Usage
+List
 
-<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/organizations" -->
+### Example Usage: First page
+
+<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/v1/organizations" example="First page" -->
 ```go
 package main
 
 import(
 	"context"
+	"os"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 )
 
 func main() {
     ctx := context.Background()
 
-    s := phren.New()
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
 
-    res, err := s.Organizations.List(ctx)
+    res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{})
     if err != nil {
         log.Fatal(err)
     }
-    if res.Organizations != nil {
-        // handle response
+    if res.ListOrganizationsResponse != nil {
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
+    }
+}
+```
+### Example Usage: Next page
+
+<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/v1/organizations" example="Next page" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+        PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
+        Filter: phren.Pointer("state = \"ACTIVE\""),
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.ListOrganizationsResponse != nil {
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
     }
 }
 ```
 
 ### Parameters
 
-| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
-| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
-| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
+| Parameter                                                                                  | Type                                                                                       | Required                                                                                   | Description                                                                                |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                      | [context.Context](https://pkg.go.dev/context#Context)                                      | :heavy_check_mark:                                                                         | The context to use for the request.                                                        |
+| `request`                                                                                  | [operations.OrganizationsListRequest](../../models/operations/organizationslistrequest.md) | :heavy_check_mark:                                                                         | The request object to use for the request.                                                 |
+| `opts`                                                                                     | [][operations.Option](../../models/operations/option.md)                                   | :heavy_minus_sign:                                                                         | The options for this request.                                                              |
 
 ### Response
 
@@ -51,20 +119,24 @@ func main() {
 
 ### Errors
 
-| Error Type         | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| apierrors.APIError | 4XX, 5XX           | \*/\*              |
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403            | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
 
 ## Create
 
+Create
+
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_create" method="post" path="/organizations" -->
+<!-- UsageSnippet language="go" operationID="Organizations_create" method="post" path="/v1/organizations" -->
 ```go
 package main
 
 import(
 	"context"
+	"os"
 	phren "github.com/phren-io/phren-go-sdk"
 	"github.com/phren-io/phren-go-sdk/models/components"
 	"log"
@@ -73,10 +145,12 @@ import(
 func main() {
     ctx := context.Background()
 
-    s := phren.New()
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
 
-    res, err := s.Organizations.Create(ctx, components.OrganizationInput{
-        DisplayName: "Blanca_Hettinger",
+    res, err := s.Organizations.Create(ctx, "acme", components.CreateOrganization{
+        DisplayName: "Acme Corp",
     })
     if err != nil {
         log.Fatal(err)
@@ -89,11 +163,12 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
-| `request`                                                                    | [components.OrganizationInput](../../models/components/organizationinput.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
-| `opts`                                                                       | [][operations.Option](../../models/operations/option.md)                     | :heavy_minus_sign:                                                           | The options for this request.                                                |
+| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    | Example                                                                        |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |                                                                                |
+| `organizationID`                                                               | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | acme                                                                           |
+| `body`                                                                         | [components.CreateOrganization](../../models/components/createorganization.md) | :heavy_check_mark:                                                             | N/A                                                                            | {<br/>"displayName": "Acme Corp"<br/>}                                         |
+| `opts`                                                                         | [][operations.Option](../../models/operations/option.md)                       | :heavy_minus_sign:                                                             | The options for this request.                                                  |                                                                                |
 
 ### Response
 
@@ -101,20 +176,24 @@ func main() {
 
 ### Errors
 
-| Error Type         | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| apierrors.APIError | 4XX, 5XX           | \*/\*              |
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 409       | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
 
 ## Get
 
+Get
+
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_get" method="get" path="/organizations/{organization}" -->
+<!-- UsageSnippet language="go" operationID="Organizations_get" method="get" path="/v1/organizations/{organization}" -->
 ```go
 package main
 
 import(
 	"context"
+	"os"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
 )
@@ -122,9 +201,11 @@ import(
 func main() {
     ctx := context.Background()
 
-    s := phren.New()
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
 
-    res, err := s.Organizations.Get(ctx, "<value>")
+    res, err := s.Organizations.Get(ctx, "acme", nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -136,11 +217,12 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
-| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
-| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
-| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
+| Parameter                                                                                                                                                                                                                                                       | Type                                                                                                                                                                                                                                                            | Required                                                                                                                                                                                                                                                        | Description                                                                                                                                                                                                                                                     | Example                                                                                                                                                                                                                                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                                                                                                                                           | [context.Context](https://pkg.go.dev/context#Context)                                                                                                                                                                                                           | :heavy_check_mark:                                                                                                                                                                                                                                              | The context to use for the request.                                                                                                                                                                                                                             |                                                                                                                                                                                                                                                                 |
+| `organization`                                                                                                                                                                                                                                                  | `string`                                                                                                                                                                                                                                                        | :heavy_check_mark:                                                                                                                                                                                                                                              | N/A                                                                                                                                                                                                                                                             | acme                                                                                                                                                                                                                                                            |
+| `include`                                                                                                                                                                                                                                                       | [*components.Include](../../models/components/include.md)                                                                                                                                                                                                       | :heavy_minus_sign:                                                                                                                                                                                                                                              | Extra data to return. With `permissions`, each resource lists the methods<br/>the caller may call on it, and a list response the methods on the<br/>collection. Rules that depend on data, such as keeping the last admin, are<br/>still checked when the method is called. |                                                                                                                                                                                                                                                                 |
+| `opts`                                                                                                                                                                                                                                                          | [][operations.Option](../../models/operations/option.md)                                                                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                                                                                              | The options for this request.                                                                                                                                                                                                                                   |                                                                                                                                                                                                                                                                 |
 
 ### Response
 
@@ -148,20 +230,26 @@ func main() {
 
 ### Errors
 
-| Error Type         | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| apierrors.APIError | 4XX, 5XX           | \*/\*              |
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404       | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
 
 ## Delete
 
+Soft-delete. The delete runs in the background: this returns its
+long-running operation, which `OrganizationOperations` get and `:wait`
+follow until it is done, with the organization `DELETED`.
+
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Organizations_delete" method="delete" path="/organizations/{organization}" -->
+<!-- UsageSnippet language="go" operationID="Organizations_delete" method="delete" path="/v1/organizations/{organization}" -->
 ```go
 package main
 
 import(
 	"context"
+	"os"
 	phren "github.com/phren-io/phren-go-sdk"
 	"log"
 )
@@ -169,13 +257,15 @@ import(
 func main() {
     ctx := context.Background()
 
-    s := phren.New()
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
 
-    res, err := s.Organizations.Delete(ctx, "<value>")
+    res, err := s.Organizations.Delete(ctx, "acme", phren.Pointer(false))
     if err != nil {
         log.Fatal(err)
     }
-    if res != nil {
+    if res.OrganizationOperation != nil {
         // handle response
     }
 }
@@ -183,11 +273,12 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
-| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
-| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
-| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
+| `force`                                                  | `*bool`                                                  | :heavy_minus_sign:                                       | N/A                                                      | false                                                    |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
 
 ### Response
 
@@ -195,6 +286,61 @@ func main() {
 
 ### Errors
 
-| Error Type         | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| apierrors.APIError | 4XX, 5XX           | \*/\*              |
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
+## Undelete
+
+Undelete. The restore runs in the background: this returns its
+long-running operation, done when the organization is `ACTIVE` again.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="Organizations_undelete" method="post" path="/v1/organizations/{organization}:undelete" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Organizations.Undelete(ctx, "acme")
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.OrganizationOperation != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
+
+### Response
+
+**[*operations.OrganizationsUndeleteResponse](../../models/operations/organizationsundeleteresponse.md), error**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |

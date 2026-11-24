@@ -1,0 +1,9 @@
+# OrganizationsCreateRequest
+
+
+## Fields
+
+| Field                                                                          | Type                                                                           | Required                                                                       | Description                                                                    | Example                                                                        |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `OrganizationID`                                                               | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | acme                                                                           |
+| `Body`                                                                         | [components.CreateOrganization](../../models/components/createorganization.md) | :heavy_check_mark:                                                             | N/A                                                                            | {<br/>"displayName": "Acme Corp"<br/>}                                         |
