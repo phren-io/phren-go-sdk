@@ -15,6 +15,14 @@ type Memory struct {
 	Name string `json:"name"`
 	// Plain text, at most 32 KiB in UTF-8.
 	Content string `json:"content"`
+	// What a memory is, so an agent can tell a quote from the person's own thought
+	// without guessing from the wording. The set is closed: queries filter on it.
+	Kind *MemoryKind `json:"kind,omitzero"`
+	// Labels the caller picks, such as a chapter or a topic. At most 10.
+	Labels []string `json:"labels,omitzero"`
+	// Where the content comes from, such as a book, chapter and page, or a URL.
+	// At most 512 bytes.
+	Source *string `json:"source,omitzero"`
 	// Name of the user that created the memory.
 	CreatedBy string `json:"createdBy"`
 	// Name of the agent that created the memory for the user: `agents/{agent}`
@@ -51,6 +59,27 @@ func (m *Memory) GetContent() string {
 		return ""
 	}
 	return m.Content
+}
+
+func (m *Memory) GetKind() *MemoryKind {
+	if m == nil {
+		return nil
+	}
+	return m.Kind
+}
+
+func (m *Memory) GetLabels() []string {
+	if m == nil {
+		return nil
+	}
+	return m.Labels
+}
+
+func (m *Memory) GetSource() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Source
 }
 
 func (m *Memory) GetCreatedBy() string {

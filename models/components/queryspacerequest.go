@@ -13,6 +13,10 @@ type QuerySpaceRequest struct {
 	Query string `json:"query"`
 	// The most results to return. Defaults to 10.
 	PageSize *int `default:"10" json:"pageSize"`
+	// Keeps memories of any of these kinds. All kinds when absent.
+	Kinds []MemoryKind `json:"kinds,omitzero"`
+	// Keeps memories that have every one of these labels.
+	Labels []string `json:"labels,omitzero"`
 }
 
 func (q QuerySpaceRequest) MarshalJSON() ([]byte, error) {
@@ -38,4 +42,18 @@ func (q *QuerySpaceRequest) GetPageSize() *int {
 		return nil
 	}
 	return q.PageSize
+}
+
+func (q *QuerySpaceRequest) GetKinds() []MemoryKind {
+	if q == nil {
+		return nil
+	}
+	return q.Kinds
+}
+
+func (q *QuerySpaceRequest) GetLabels() []string {
+	if q == nil {
+		return nil
+	}
+	return q.Labels
 }
