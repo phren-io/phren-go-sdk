@@ -184,7 +184,8 @@ leave. Removing the organization's last admin fails with 409.
 
 A create retried with the same `requestId` returns the memory the first
 attempt created instead of creating another, for as long as that memory
-exists. Reusing a `requestId` for different content is a 409.
+exists. Reusing a `requestId` for a different memory (content, kind,
+labels or source) is a 409.
 * [Get](docs/sdks/memories/README.md#get) - Get
 * [Delete](docs/sdks/memories/README.md#delete) - Delete. Its vectors are removed from the space in the background.
 

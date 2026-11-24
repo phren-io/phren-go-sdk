@@ -3,6 +3,10 @@
 
 package components
 
+import (
+	"github.com/phren-io/phren-go-sdk/internal/utils"
+)
+
 // QueryResult - A memory that matches a query.
 type QueryResult struct {
 	// Resource name of the memory.
@@ -11,6 +15,24 @@ type QueryResult struct {
 	Content string `json:"content"`
 	// Relevance to the query, from 0 to 1. Higher is more relevant.
 	Score float64 `json:"score"`
+	// What a memory is, so an agent can tell a quote from the person's own thought
+	// without guessing from the wording. The set is closed: queries filter on it.
+	Kind MemoryKind `json:"kind"`
+	// The memory's labels.
+	Labels []string `json:"labels,omitzero"`
+	// Where the memory's content comes from.
+	Source *string `json:"source,omitzero"`
+}
+
+func (q QueryResult) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(q, "", false)
+}
+
+func (q *QueryResult) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &q, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (q *QueryResult) GetMemory() string {
@@ -32,4 +54,25 @@ func (q *QueryResult) GetScore() float64 {
 		return 0.0
 	}
 	return q.Score
+}
+
+func (q *QueryResult) GetKind() MemoryKind {
+	if q == nil {
+		return MemoryKind("")
+	}
+	return q.Kind
+}
+
+func (q *QueryResult) GetLabels() []string {
+	if q == nil {
+		return nil
+	}
+	return q.Labels
+}
+
+func (q *QueryResult) GetSource() *string {
+	if q == nil {
+		return nil
+	}
+	return q.Source
 }

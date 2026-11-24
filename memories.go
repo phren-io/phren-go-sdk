@@ -327,7 +327,8 @@ func (s *Memories) List(ctx context.Context, request operations.MemoriesListRequ
 //
 // A create retried with the same `requestId` returns the memory the first
 // attempt created instead of creating another, for as long as that memory
-// exists. Reusing a `requestId` for different content is a 409.
+// exists. Reusing a `requestId` for a different memory (content, kind,
+// labels or source) is a 409.
 func (s *Memories) Create(ctx context.Context, organization string, space string, body components.CreateMemory, requestID *string, opts ...operations.Option) (*operations.MemoriesCreateResponse, error) {
 	request := operations.MemoriesCreateRequest{
 		Organization: organization,

@@ -2221,6 +2221,9 @@ paths:
                 memories:
                   - name: organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
                     content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+                    kind: note
+                    labels:
+                      - deploys
                     createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                     createdAt: '2026-02-07T11:30:00Z'
         '400':
@@ -2258,7 +2261,8 @@ paths:
 
         A create retried with the same `requestId` returns the memory the first
         attempt created instead of creating another, for as long as that memory
-        exists. Reusing a `requestId` for different content is a 409.
+        exists. Reusing a `requestId` for a different memory (content, kind,
+        labels or source) is a 409.
       parameters:
         - name: organization
           in: path
@@ -2294,6 +2298,9 @@ paths:
               example:
                 name: organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
                 content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+                kind: note
+                labels:
+                  - deploys
                 createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                 createdAt: '2026-02-07T11:30:00Z'
         '400':
@@ -2389,6 +2396,9 @@ paths:
               example:
                 name: organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
                 content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+                kind: note
+                labels:
+                  - deploys
                 createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                 createdAt: '2026-02-07T11:30:00Z'
         '400':
@@ -2502,6 +2512,9 @@ paths:
                   - memory: organizations/acme/spaces/notes/memories/019ad6a0-3c4e-7b8a-9d2f-5e6a7b8c9d0e
                     content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
                     score: 0.91
+                    kind: note
+                    labels:
+                      - deploys
         '400':
           description: The request is malformed or fails validation.
           content:
@@ -2654,11 +2667,30 @@ components:
           minLength: 1
           maxLength: 32768
           description: Plain text, at most 32 KiB in UTF-8.
+        kind:
+          $ref: '#/components/schemas/MemoryKind'
+          description: What the memory is. Defaults to `note`.
+          default: note
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemoryLabel'
+          maxItems: 10
+          description: Labels the caller picks, such as a chapter or a topic. At most 10.
+        source:
+          type: string
+          maxLength: 512
+          description: |-
+            Where the content comes from, such as a book, chapter and page, or a URL.
+            At most 512 bytes.
       description: |-
         A piece of text an agent remembers. Creating one indexes it for the space's
         queries in the background; its content can't be changed.
       examples:
         - content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+          kind: note
+          labels:
+            - deploys
     CreateOrganization:
       type: object
       required:
@@ -2912,6 +2944,9 @@ components:
         - memories:
             - name: organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
               content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+              kind: note
+              labels:
+                - deploys
               createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
               createdAt: '2026-02-07T11:30:00Z'
     ListOrganizationOperationsResponse:
@@ -3127,6 +3162,22 @@ components:
           minLength: 1
           maxLength: 32768
           description: Plain text, at most 32 KiB in UTF-8.
+        kind:
+          $ref: '#/components/schemas/MemoryKind'
+          description: What the memory is. Defaults to `note`.
+          default: note
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemoryLabel'
+          maxItems: 10
+          description: Labels the caller picks, such as a chapter or a topic. At most 10.
+        source:
+          type: string
+          maxLength: 512
+          description: |-
+            Where the content comes from, such as a book, chapter and page, or a URL.
+            At most 512 bytes.
         createdBy:
           type: string
           description: Name of the user that created the memory.
@@ -3158,8 +3209,26 @@ components:
       examples:
         - name: organizations/acme/spaces/notes/memories/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f01
           content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
+          kind: note
+          labels:
+            - deploys
           createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
           createdAt: '2026-02-07T11:30:00Z'
+    MemoryKind:
+      type: string
+      enum:
+        - note
+        - quote
+        - thought
+        - summary
+        - task
+      description: |-
+        What a memory is, so an agent can tell a quote from the person's own thought
+        without guessing from the wording. The set is closed: queries filter on it.
+    MemoryLabel:
+      type: string
+      pattern: ^[a-z0-9][a-z0-9-]{0,31}$
+      description: 'A free-form label: lowercase letters, digits and dashes, at most 32.'
     OperationMetadata:
       type: object
       required:
@@ -3436,6 +3505,7 @@ components:
         - memory
         - content
         - score
+        - kind
       properties:
         memory:
           type: string
@@ -3447,6 +3517,17 @@ components:
           type: number
           format: double
           description: Relevance to the query, from 0 to 1. Higher is more relevant.
+        kind:
+          $ref: '#/components/schemas/MemoryKind'
+          description: What the memory is.
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemoryLabel'
+          description: The memory's labels.
+        source:
+          type: string
+          description: Where the memory's content comes from.
       description: A memory that matches a query.
     QuerySpaceRequest:
       type: object
@@ -3465,6 +3546,18 @@ components:
           maximum: 50
           description: The most results to return. Defaults to 10.
           default: 10
+        kinds:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemoryKind'
+          maxItems: 5
+          description: Keeps memories of any of these kinds. All kinds when absent.
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemoryLabel'
+          maxItems: 10
+          description: Keeps memories that have every one of these labels.
       description: A question to search a space's memories with.
       examples:
         - query: How do deploys work?
@@ -3488,6 +3581,9 @@ components:
             - memory: organizations/acme/spaces/notes/memories/019ad6a0-3c4e-7b8a-9d2f-5e6a7b8c9d0e
               content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
               score: 0.91
+              kind: note
+              labels:
+                - deploys
     Space:
       type: object
       required:
