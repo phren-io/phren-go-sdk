@@ -4,6 +4,7 @@ info:
   version: 0.0.0
 tags:
   - name: organizations
+  - name: organizationOperations
   - name: members
   - name: invitations
   - name: projects
@@ -260,7 +261,10 @@ paths:
         - organizations
     delete:
       operationId: Organizations_delete
-      description: Soft-delete
+      description: |-
+        Soft-delete. The delete runs in the background: this returns its
+        long-running operation, which `OrganizationOperations` get and `:wait`
+        follow until it is done, with the organization `DELETED`.
       parameters:
         - name: organization
           in: path
@@ -281,16 +285,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: '#/components/schemas/OrganizationOperation'
               example:
-                name: organizations/acme
-                displayName: Acme Corp
-                state: deleted
-                createdBy: users/alice
-                createdAt: '2026-01-15T09:30:00Z'
-                updatedAt: '2026-04-01T10:00:00Z'
-                deletedAt: '2026-04-01T10:00:00Z'
-                purgesAt: '2026-05-01T10:00:00Z'
+                name: organizations/acme/operations/019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+                done: false
+                metadata:
+                  target: organizations/acme
+                  verb: delete
+                  createTime: '2026-04-01T10:00:00Z'
+                  passes: 1
         '400':
           description: The request is malformed or fails validation.
           content:
@@ -985,6 +988,373 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - members
+  /v1/organizations/{organization}/operations:
+    get:
+      operationId: OrganizationOperations_list
+      description: List, newest first.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          examples:
+            A cancelled delete:
+              summary: A cancelled delete
+              value: 50
+            Deleted and undeleted:
+              summary: Deleted and undeleted
+              value: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: filter
+          in: query
+          required: false
+          description: AIP-160 filter expression.
+          schema:
+            type: string
+            maxLength: 1024
+          explode: false
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            A cancelled delete:
+              summary: A cancelled delete
+              value: acme
+            Deleted and undeleted:
+              summary: Deleted and undeleted
+              value: acme
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOrganizationOperationsResponse'
+              examples:
+                A cancelled delete:
+                  summary: A cancelled delete
+                  value:
+                    operations:
+                      - name: organizations/acme/operations/019a9a07-1c5d-7e2f-8a4b-3d5e7f9a1b22
+                        done: false
+                        metadata:
+                          target: organizations/acme
+                          verb: undelete
+                          createTime: '2026-04-02T08:00:00Z'
+                          passes: 0
+                      - name: organizations/acme/operations/019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+                        done: true
+                        metadata:
+                          target: organizations/acme
+                          verb: delete
+                          createTime: '2026-04-01T10:00:00Z'
+                          endTime: '2026-04-01T10:00:00.640Z'
+                          passes: 1
+                        error:
+                          title: Cancelled
+                          status: 409
+                          detail: The delete was cancelled and organizations/acme is being restored.
+                Deleted and undeleted:
+                  summary: Deleted and undeleted
+                  value:
+                    operations:
+                      - name: organizations/acme/operations/019a9a07-1c5d-7e2f-8a4b-3d5e7f9a1b22
+                        done: true
+                        metadata:
+                          target: organizations/acme
+                          verb: undelete
+                          createTime: '2026-04-02T08:00:00Z'
+                          endTime: '2026-04-02T08:00:01.488Z'
+                          passes: 2
+                        response:
+                          name: organizations/acme
+                          displayName: Acme Corp
+                          state: active
+                          createdBy: users/alice
+                          createdAt: '2026-01-15T09:30:00Z'
+                          updatedAt: '2026-03-02T14:05:00Z'
+                      - name: organizations/acme/operations/019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+                        done: true
+                        metadata:
+                          target: organizations/acme
+                          verb: delete
+                          createTime: '2026-04-01T10:00:00Z'
+                          endTime: '2026-04-01T10:00:01.512Z'
+                          passes: 2
+                        response:
+                          name: organizations/acme
+                          displayName: Acme Corp
+                          state: deleted
+                          createdBy: users/alice
+                          createdAt: '2026-01-15T09:30:00Z'
+                          updatedAt: '2026-04-01T10:00:00Z'
+                          deletedAt: '2026-04-01T10:00:00Z'
+                          purgesAt: '2026-05-01T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - organizationOperations
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+  /v1/organizations/{organization}/operations/{operation}:
+    get:
+      operationId: OrganizationOperations_get
+      description: Get
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: operation
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationOperation'
+              example:
+                name: organizations/acme/operations/019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+                done: false
+                metadata:
+                  target: organizations/acme
+                  verb: delete
+                  createTime: '2026-04-01T10:00:00Z'
+                  passes: 1
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - organizationOperations
+  /v1/organizations/{organization}/operations/{operation}:cancel:
+    post:
+      operationId: OrganizationOperations_cancel
+      description: |-
+        Cancel a delete in flight: the delete stops, its operation is done with a
+        `Cancelled` error, and a new undelete operation restores the
+        organization. Returns that undelete operation. Fails with 409 if the
+        operation has already finished (undelete the organization instead) or is
+        not a delete. Only admins can cancel.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: operation
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationOperation'
+              example:
+                name: organizations/acme/operations/019a9a07-1c5d-7e2f-8a4b-3d5e7f9a1b22
+                done: false
+                metadata:
+                  target: organizations/acme
+                  verb: undelete
+                  createTime: '2026-04-02T08:00:00Z'
+                  passes: 0
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - organizationOperations
+  /v1/organizations/{organization}/operations/{operation}:wait:
+    post:
+      operationId: OrganizationOperations_wait
+      description: |-
+        Wait for the operation to finish. Returns it when it is done or when
+        `timeout` passes, whichever is first; check `done` and call again if it
+        is still running.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: operation
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+        - name: timeout
+          in: query
+          required: false
+          description: |-
+            How long to wait for the operation to finish, as seconds with an `s`
+            suffix (`10s`, `2.5s`). The call returns the operation when it is done or
+            when the timeout passes, whichever is first; check `done`. At most `60s`.
+          schema:
+            type: string
+            pattern: ^[0-9]+(\.[0-9]+)?s$
+            default: 10s
+          explode: false
+          example: 10s
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationOperation'
+              example:
+                name: organizations/acme/operations/019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+                done: true
+                metadata:
+                  target: organizations/acme
+                  verb: delete
+                  createTime: '2026-04-01T10:00:00Z'
+                  endTime: '2026-04-01T10:00:01.512Z'
+                  passes: 2
+                response:
+                  name: organizations/acme
+                  displayName: Acme Corp
+                  state: deleted
+                  createdBy: users/alice
+                  createdAt: '2026-01-15T09:30:00Z'
+                  updatedAt: '2026-04-01T10:00:00Z'
+                  deletedAt: '2026-04-01T10:00:00Z'
+                  purgesAt: '2026-05-01T10:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - organizationOperations
   /v1/organizations/{organization}/projects:
     get:
       operationId: Projects_list
@@ -2199,7 +2569,9 @@ paths:
   /v1/organizations/{organization}:undelete:
     post:
       operationId: Organizations_undelete
-      description: Undelete
+      description: |-
+        Undelete. The restore runs in the background: this returns its
+        long-running operation, done when the organization is `ACTIVE` again.
       parameters:
         - name: organization
           in: path
@@ -2213,14 +2585,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: '#/components/schemas/OrganizationOperation'
               example:
-                name: organizations/acme
-                displayName: Acme Corp
-                state: active
-                createdBy: users/alice
-                createdAt: '2026-01-15T09:30:00Z'
-                updatedAt: '2026-03-02T14:05:00Z'
+                name: organizations/acme/operations/019a9a07-1c5d-7e2f-8a4b-3d5e7f9a1b22
+                done: false
+                metadata:
+                  target: organizations/acme
+                  verb: undelete
+                  createTime: '2026-04-02T08:00:00Z'
+                  passes: 0
         '400':
           description: The request is malformed or fails validation.
           content:
@@ -2541,6 +2914,20 @@ components:
               content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
               createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
               createdAt: '2026-02-07T11:30:00Z'
+    ListOrganizationOperationsResponse:
+      type: object
+      required:
+        - operations
+      properties:
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizationOperation'
+          description: The operations on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of a resource's operations, newest first.
     ListOrganizationsResponse:
       type: object
       required:
@@ -2773,6 +3160,48 @@ components:
           content: Deploys go through Flux; never kubectl apply to the dev cluster by hand.
           createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
           createdAt: '2026-02-07T11:30:00Z'
+    OperationMetadata:
+      type: object
+      required:
+        - target
+        - verb
+        - createTime
+        - passes
+      properties:
+        target:
+          type: string
+          description: Name of the resource the operation acts on, such as `organizations/acme`.
+        verb:
+          $ref: '#/components/schemas/OperationVerb'
+          description: What the operation does to the target.
+        createTime:
+          type: string
+          format: date-time
+          description: When the operation started.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+        endTime:
+          type: string
+          format: date-time
+          description: When the operation finished. Absent while it runs.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+        passes:
+          type: integer
+          format: int32
+          description: Passes the job has made over the target's data so far.
+      description: Progress of a long-running operation.
+      examples:
+        - target: organizations/acme
+          verb: delete
+          createTime: '2026-04-01T10:00:00Z'
+          passes: 1
+    OperationVerb:
+      type: string
+      enum:
+        - delete
+        - undelete
+      description: What a long-running operation does to its target.
+      examples:
+        - delete
     Organization:
       type: object
       required:
@@ -2837,6 +3266,32 @@ components:
           createdBy: users/alice
           createdAt: '2026-01-15T09:30:00Z'
           updatedAt: '2026-03-02T14:05:00Z'
+    OrganizationOperation:
+      type: object
+      required:
+        - name
+        - done
+        - metadata
+      properties:
+        name:
+          type: string
+          description: 'Resource name: `<target>/operations/{operation}`.'
+        done:
+          type: boolean
+          description: Whether the operation has finished, with a response or an error.
+        metadata:
+          $ref: '#/components/schemas/OperationMetadata'
+          description: What the operation does and how far it has got.
+        response:
+          $ref: '#/components/schemas/Organization'
+          description: The target as the operation left it. Set when done without an error.
+        error:
+          $ref: '#/components/schemas/Problem'
+          description: Why the operation failed or was cancelled. Set when done with an error.
+      description: |-
+        A long-running operation (AIP-151). While `done` is false, poll it with get
+        or block on `:wait`. When done, exactly one of `response` and `error` is
+        set.
     OrganizationState:
       type: string
       enum:
@@ -3126,3 +3581,7 @@ x-speakeasy-name-override:
     methodNameOverride: accept
   - operationId: ^.+_decline$
     methodNameOverride: decline
+  - operationId: ^.+_wait$
+    methodNameOverride: wait
+  - operationId: ^.+_cancel$
+    methodNameOverride: cancel

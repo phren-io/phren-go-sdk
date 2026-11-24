@@ -188,13 +188,29 @@ exists. Reusing a `requestId` for different content is a 409.
 * [Get](docs/sdks/memories/README.md#get) - Get
 * [Delete](docs/sdks/memories/README.md#delete) - Delete. Its vectors are removed from the space in the background.
 
+### [OrganizationOperations](docs/sdks/organizationoperations/README.md)
+
+* [List](docs/sdks/organizationoperations/README.md#list) - List, newest first.
+* [Get](docs/sdks/organizationoperations/README.md#get) - Get
+* [Cancel](docs/sdks/organizationoperations/README.md#cancel) - Cancel a delete in flight: the delete stops, its operation is done with a
+`Cancelled` error, and a new undelete operation restores the
+organization. Returns that undelete operation. Fails with 409 if the
+operation has already finished (undelete the organization instead) or is
+not a delete. Only admins can cancel.
+* [Wait](docs/sdks/organizationoperations/README.md#wait) - Wait for the operation to finish. Returns it when it is done or when
+`timeout` passes, whichever is first; check `done` and call again if it
+is still running.
+
 ### [Organizations](docs/sdks/organizations/README.md)
 
 * [List](docs/sdks/organizations/README.md#list) - List
 * [Create](docs/sdks/organizations/README.md#create) - Create
 * [Get](docs/sdks/organizations/README.md#get) - Get
-* [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete
-* [Undelete](docs/sdks/organizations/README.md#undelete) - Undelete
+* [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete. The delete runs in the background: this returns its
+long-running operation, which `OrganizationOperations` get and `:wait`
+follow until it is done, with the organization `DELETED`.
+* [Undelete](docs/sdks/organizations/README.md#undelete) - Undelete. The restore runs in the background: this returns its
+long-running operation, done when the organization is `ACTIVE` again.
 
 ### [ProjectMembers](docs/sdks/projectmembers/README.md)
 

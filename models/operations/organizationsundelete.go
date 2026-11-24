@@ -22,7 +22,7 @@ func (o *OrganizationsUndeleteRequest) GetOrganization() string {
 type OrganizationsUndeleteResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
 	// The request has succeeded.
-	Organization *components.Organization
+	OrganizationOperation *components.OrganizationOperation
 }
 
 func (o OrganizationsUndeleteResponse) MarshalJSON() ([]byte, error) {
@@ -43,9 +43,9 @@ func (o *OrganizationsUndeleteResponse) GetHTTPMeta() components.HTTPMetadata {
 	return o.HTTPMeta
 }
 
-func (o *OrganizationsUndeleteResponse) GetOrganization() *components.Organization {
+func (o *OrganizationsUndeleteResponse) GetOrganizationOperation() *components.OrganizationOperation {
 	if o == nil {
 		return nil
 	}
-	return o.Organization
+	return o.OrganizationOperation
 }

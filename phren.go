@@ -52,14 +52,15 @@ func Float64(f float64) *float64 { return &f }
 func Pointer[T any](v T) *T { return &v }
 
 type Phren struct {
-	SDKVersion     string
-	Organizations  *Organizations
-	Invitations    *Invitations
-	Members        *Members
-	Projects       *Projects
-	ProjectMembers *ProjectMembers
-	Spaces         *Spaces
-	Memories       *Memories
+	SDKVersion             string
+	Organizations          *Organizations
+	Invitations            *Invitations
+	Members                *Members
+	OrganizationOperations *OrganizationOperations
+	Projects               *Projects
+	ProjectMembers         *ProjectMembers
+	Spaces                 *Spaces
+	Memories               *Memories
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -136,10 +137,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *Phren {
 	sdk := &Phren{
-		SDKVersion: "0.3.15",
+		SDKVersion: "0.3.16",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "speakeasy-sdk/go 0.3.15 2.968.1 0.0.0 github.com/phren-io/phren-go-sdk",
-			SDKVersion:        "0.3.15",
+			UserAgent:         "speakeasy-sdk/go 0.3.16 2.968.1 0.0.0 github.com/phren-io/phren-go-sdk",
+			SDKVersion:        "0.3.16",
 			GenVersion:        "2.968.1",
 			OpenAPIDocVersion: "0.0.0",
 			ServerList:        ServerList,
@@ -167,6 +168,7 @@ func New(opts ...SDKOption) *Phren {
 	sdk.Organizations = newOrganizations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Invitations = newInvitations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Members = newMembers(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.OrganizationOperations = newOrganizationOperations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Projects = newProjects(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.ProjectMembers = newProjectMembers(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Spaces = newSpaces(sdk, sdk.sdkConfiguration, sdk.hooks)
