@@ -21,6 +21,8 @@ type SpacesListRequest struct {
 	// still checked when the method is called.
 	Include      *components.Include `queryParam:"style=form,explode=false,name=include"`
 	Organization string              `pathParam:"style=simple,explode=false,name=organization"`
+	// Include soft-deleted resources in the results.
+	ShowDeleted *bool `default:"false" queryParam:"style=form,explode=false,name=showDeleted"`
 }
 
 func (s SpacesListRequest) MarshalJSON() ([]byte, error) {
@@ -67,6 +69,13 @@ func (s *SpacesListRequest) GetOrganization() string {
 		return ""
 	}
 	return s.Organization
+}
+
+func (s *SpacesListRequest) GetShowDeleted() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.ShowDeleted
 }
 
 type SpacesListResponse struct {

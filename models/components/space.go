@@ -19,6 +19,8 @@ type Space struct {
 	Project string `json:"project"`
 	// Human-readable name.
 	DisplayName string `json:"displayName"`
+	// Lifecycle state of a space.
+	State SpaceState `json:"state"`
 	// Name of the user that created the space.
 	CreatedBy string `json:"createdBy"`
 	// Name of the agent that created the space for the user: `agents/{agent}`
@@ -62,6 +64,13 @@ func (s *Space) GetDisplayName() string {
 		return ""
 	}
 	return s.DisplayName
+}
+
+func (s *Space) GetState() SpaceState {
+	if s == nil {
+		return SpaceState("")
+	}
+	return s.State
 }
 
 func (s *Space) GetCreatedBy() string {
