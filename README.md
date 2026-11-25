@@ -230,6 +230,19 @@ Organization admins see every project.
 joining: add a member as the project's admin to hand it over.
 * [Get](docs/sdks/projects/README.md#get) - Get
 
+### [SpaceOperations](docs/sdks/spaceoperations/README.md)
+
+* [List](docs/sdks/spaceoperations/README.md#list) - List, newest first.
+* [Get](docs/sdks/spaceoperations/README.md#get) - Get
+* [Cancel](docs/sdks/spaceoperations/README.md#cancel) - Cancel a delete in flight: the delete stops, its operation is done with a
+`Cancelled` error, and a new undelete operation restores the space.
+Returns that undelete operation. Fails with 409 if the operation has
+already finished (undelete the space instead) or is not a delete. The
+admins of the space's project can cancel.
+* [Wait](docs/sdks/spaceoperations/README.md#wait) - Wait for the operation to finish. Returns it when it is done or when
+`timeout` passes, whichever is first; check `done` and call again if it
+is still running.
+
 ### [Spaces](docs/sdks/spaces/README.md)
 
 * [List](docs/sdks/spaces/README.md#list) - List the spaces in the organization the caller can see.
@@ -237,11 +250,20 @@ joining: add a member as the project's admin to hand it over.
 `filter` takes an AIP-160 expression on `project`, the only field it
 supports: `project = "organizations/{organization}/projects/{project}"`
 lists that project's spaces. With `include=permissions`, the list's
-`create` is known only when `filter` names the project.
+`create` is known only when `filter` names the project. With
+`showDeleted`, it also lists the deleted spaces the caller can undelete.
 * [Create](docs/sdks/spaces/README.md#create) - Create. The project's admins create spaces in it.
 * [Get](docs/sdks/spaces/README.md#get) - Get
+* [Delete](docs/sdks/spaces/README.md#delete) - Soft-delete. The space's admins delete it. The delete runs in the
+background: this returns its long-running operation, which
+`SpaceOperations` get and `:wait` follow until it is done, with the space
+`DELETED`. A deleted space's memories are hidden, and its project's admins
+can undelete it.
 * [SpacesQuery](docs/sdks/spaces/README.md#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
 query it.
+* [Undelete](docs/sdks/spaces/README.md#undelete) - Undelete. The admins of the space's project undelete it. The restore runs
+in the background: this returns its long-running operation, done when the
+space is `ACTIVE` again.
 
 </details>
 <!-- End Available Resources and Operations [operations] -->

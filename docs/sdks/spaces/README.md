@@ -9,11 +9,20 @@
 `filter` takes an AIP-160 expression on `project`, the only field it
 supports: `project = "organizations/{organization}/projects/{project}"`
 lists that project's spaces. With `include=permissions`, the list's
-`create` is known only when `filter` names the project.
+`create` is known only when `filter` names the project. With
+`showDeleted`, it also lists the deleted spaces the caller can undelete.
 * [Create](#create) - Create. The project's admins create spaces in it.
 * [Get](#get) - Get
+* [Delete](#delete) - Soft-delete. The space's admins delete it. The delete runs in the
+background: this returns its long-running operation, which
+`SpaceOperations` get and `:wait` follow until it is done, with the space
+`DELETED`. A deleted space's memories are hidden, and its project's admins
+can undelete it.
 * [SpacesQuery](#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
 query it.
+* [Undelete](#undelete) - Undelete. The admins of the space's project undelete it. The restore runs
+in the background: this returns its long-running operation, done when the
+space is `ACTIVE` again.
 
 ## List
 
@@ -22,7 +31,8 @@ List the spaces in the organization the caller can see.
 `filter` takes an AIP-160 expression on `project`, the only field it
 supports: `project = "organizations/{organization}/projects/{project}"`
 lists that project's spaces. With `include=permissions`, the list's
-`create` is known only when `filter` names the project.
+`create` is known only when `filter` names the project. With
+`showDeleted`, it also lists the deleted spaces the caller can undelete.
 
 ### Example Usage: With permissions
 
@@ -339,6 +349,64 @@ func main() {
 | apierrors.ProblemError   | 400, 401, 403, 404       | application/problem+json |
 | apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
 
+## Delete
+
+Soft-delete. The space's admins delete it. The delete runs in the
+background: this returns its long-running operation, which
+`SpaceOperations` get and `:wait` follow until it is done, with the space
+`DELETED`. A deleted space's memories are hidden, and its project's admins
+can undelete it.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="Spaces_delete" method="delete" path="/v1/organizations/{organization}/spaces/{space}" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Spaces.Delete(ctx, "acme", "notes")
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.SpaceOperation != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
+| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | notes                                                    |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
+
+### Response
+
+**[*operations.SpacesDeleteResponse](../../models/operations/spacesdeleteresponse.md), error**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
 ## SpacesQuery
 
 Search the space's memories. The space's viewers, editors and admins can
@@ -399,4 +467,60 @@ func main() {
 | apierrors.ProblemError   | 400, 401, 403, 404       | application/problem+json |
 | apierrors.ProblemError   | 429                      | application/problem+json |
 | apierrors.ProblemError   | 503                      | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
+## Undelete
+
+Undelete. The admins of the space's project undelete it. The restore runs
+in the background: this returns its long-running operation, done when the
+space is `ACTIVE` again.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="Spaces_undelete" method="post" path="/v1/organizations/{organization}/spaces/{space}:undelete" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Spaces.Undelete(ctx, "acme", "notes")
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.SpaceOperation != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
+| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | notes                                                    |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
+
+### Response
+
+**[*operations.SpacesUndeleteResponse](../../models/operations/spacesundeleteresponse.md), error**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
 | apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |

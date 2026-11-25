@@ -10,6 +10,7 @@ tags:
   - name: projects
   - name: projectMembers
   - name: spaces
+  - name: spaceOperations
   - name: memories
 paths:
   /v1/organizations:
@@ -1888,7 +1889,8 @@ paths:
         `filter` takes an AIP-160 expression on `project`, the only field it
         supports: `project = "organizations/{organization}/projects/{project}"`
         lists that project's spaces. With `include=permissions`, the list's
-        `create` is known only when `filter` names the project.
+        `create` is known only when `filter` names the project. With
+        `showDeleted`, it also lists the deleted spaces the caller can undelete.
       parameters:
         - name: pageSize
           in: query
@@ -1958,6 +1960,14 @@ paths:
               value: acme
             example2:
               value: acme
+        - name: showDeleted
+          in: query
+          required: false
+          description: Include soft-deleted resources in the results.
+          schema:
+            type: boolean
+            default: false
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -1973,6 +1983,7 @@ paths:
                       - name: organizations/acme/spaces/notes
                         project: organizations/acme/projects/agent
                         displayName: Notes
+                        state: active
                         createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                         createdAt: '2026-02-07T11:00:00Z'
                         permissions:
@@ -1985,6 +1996,7 @@ paths:
                       - name: organizations/acme/spaces/notes
                         project: organizations/acme/projects/agent
                         displayName: Notes
+                        state: active
                         createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                         createdAt: '2026-02-07T11:00:00Z'
                 example2:
@@ -1993,6 +2005,7 @@ paths:
                       - name: organizations/acme/spaces/notes
                         project: organizations/acme/projects/agent
                         displayName: Notes
+                        state: active
                         createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                         createdAt: '2026-02-07T11:00:00Z'
         '400':
@@ -2051,6 +2064,7 @@ paths:
                 name: organizations/acme/spaces/notes
                 project: organizations/acme/projects/agent
                 displayName: Notes
+                state: active
                 createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                 createdAt: '2026-02-07T11:00:00Z'
         '400':
@@ -2127,6 +2141,7 @@ paths:
                 name: organizations/acme/spaces/notes
                 project: organizations/acme/projects/agent
                 displayName: Notes
+                state: active
                 createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                 createdAt: '2026-02-07T11:00:00Z'
         '400':
@@ -2149,6 +2164,74 @@ paths:
                 $ref: '#/components/schemas/Problem'
         '404':
           description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaces
+    delete:
+      operationId: Spaces_delete
+      description: |-
+        Soft-delete. The space's admins delete it. The delete runs in the
+        background: this returns its long-running operation, which
+        `SpaceOperations` get and `:wait` follow until it is done, with the space
+        `DELETED`. A deleted space's memories are hidden, and its project's admins
+        can undelete it.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceOperation'
+              example:
+                name: organizations/acme/spaces/notes/operations/019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+                done: false
+                metadata:
+                  target: organizations/acme/spaces/notes
+                  verb: delete
+                  createTime: '2026-04-01T10:00:00Z'
+                  passes: 0
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
           content:
             application/problem+json:
               schema:
@@ -2481,6 +2564,367 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - memories
+  /v1/organizations/{organization}/spaces/{space}/operations:
+    get:
+      operationId: SpaceOperations_list
+      description: List, newest first.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          examples:
+            Deleted and undeleted:
+              summary: Deleted and undeleted
+              value: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: filter
+          in: query
+          required: false
+          description: AIP-160 filter expression.
+          schema:
+            type: string
+            maxLength: 1024
+          explode: false
+        - name: include
+          in: query
+          required: false
+          description: |-
+            Extra data to return. With `permissions`, each resource lists the methods
+            the caller may call on it, and a list response the methods on the
+            collection. Rules that depend on data, such as keeping the last admin, are
+            still checked when the method is called.
+          schema:
+            $ref: '#/components/schemas/Include'
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            Deleted and undeleted:
+              summary: Deleted and undeleted
+              value: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            Deleted and undeleted:
+              summary: Deleted and undeleted
+              value: notes
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSpaceOperationsResponse'
+              examples:
+                Deleted and undeleted:
+                  summary: Deleted and undeleted
+                  value:
+                    operations:
+                      - name: organizations/acme/spaces/notes/operations/019a9a07-1c5d-7e2f-8a4b-3d5e7f9a1b22
+                        done: true
+                        metadata:
+                          target: organizations/acme/spaces/notes
+                          verb: undelete
+                          createTime: '2026-04-02T08:00:00Z'
+                          endTime: '2026-04-02T08:00:00.894Z'
+                          passes: 2
+                        response:
+                          name: organizations/acme/spaces/notes
+                          project: organizations/acme/projects/agent
+                          displayName: Notes
+                          state: active
+                          createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                          createdAt: '2026-02-07T11:00:00Z'
+                      - name: organizations/acme/spaces/notes/operations/019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+                        done: true
+                        metadata:
+                          target: organizations/acme/spaces/notes
+                          verb: delete
+                          createTime: '2026-04-01T10:00:00Z'
+                          endTime: '2026-04-01T10:00:00.912Z'
+                          passes: 2
+                        response:
+                          name: organizations/acme/spaces/notes
+                          project: organizations/acme/projects/agent
+                          displayName: Notes
+                          state: deleted
+                          createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                          createdAt: '2026-02-07T11:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaceOperations
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+  /v1/organizations/{organization}/spaces/{space}/operations/{operation}:
+    get:
+      operationId: SpaceOperations_get
+      description: Get
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+        - name: operation
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceOperation'
+              example:
+                name: organizations/acme/spaces/notes/operations/019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+                done: false
+                metadata:
+                  target: organizations/acme/spaces/notes
+                  verb: delete
+                  createTime: '2026-04-01T10:00:00Z'
+                  passes: 0
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaceOperations
+  /v1/organizations/{organization}/spaces/{space}/operations/{operation}:cancel:
+    post:
+      operationId: SpaceOperations_cancel
+      description: |-
+        Cancel a delete in flight: the delete stops, its operation is done with a
+        `Cancelled` error, and a new undelete operation restores the space.
+        Returns that undelete operation. Fails with 409 if the operation has
+        already finished (undelete the space instead) or is not a delete. The
+        admins of the space's project can cancel.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+        - name: operation
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceOperation'
+              example:
+                name: organizations/acme/spaces/notes/operations/019a9a07-1c5d-7e2f-8a4b-3d5e7f9a1b22
+                done: false
+                metadata:
+                  target: organizations/acme/spaces/notes
+                  verb: undelete
+                  createTime: '2026-04-02T08:00:00Z'
+                  passes: 0
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaceOperations
+  /v1/organizations/{organization}/spaces/{space}/operations/{operation}:wait:
+    post:
+      operationId: SpaceOperations_wait
+      description: |-
+        Wait for the operation to finish. Returns it when it is done or when
+        `timeout` passes, whichever is first; check `done` and call again if it
+        is still running.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+        - name: operation
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+        - name: timeout
+          in: query
+          required: false
+          description: |-
+            How long to wait for the operation to finish, as seconds with an `s`
+            suffix (`10s`, `2.5s`). The call returns the operation when it is done or
+            when the timeout passes, whichever is first; check `done`. At most `60s`.
+          schema:
+            type: string
+            pattern: ^[0-9]+(\.[0-9]+)?s$
+            default: 10s
+          explode: false
+          example: 10s
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceOperation'
+              example:
+                name: organizations/acme/spaces/notes/operations/019a8f3e-4b2c-7d1e-9f3a-2c4b6d8e0f11
+                done: true
+                metadata:
+                  target: organizations/acme/spaces/notes
+                  verb: delete
+                  createTime: '2026-04-01T10:00:00Z'
+                  endTime: '2026-04-01T10:00:00.912Z'
+                  passes: 2
+                response:
+                  name: organizations/acme/spaces/notes
+                  project: organizations/acme/projects/agent
+                  displayName: Notes
+                  state: deleted
+                  createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                  createdAt: '2026-02-07T11:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaceOperations
   /v1/organizations/{organization}/spaces/{space}:query:
     post:
       operationId: Spaces_query
@@ -2579,6 +3023,73 @@ paths:
             example:
               query: How do deploys work?
               pageSize: 5
+  /v1/organizations/{organization}/spaces/{space}:undelete:
+    post:
+      operationId: Spaces_undelete
+      description: |-
+        Undelete. The admins of the space's project undelete it. The restore runs
+        in the background: this returns its long-running operation, done when the
+        space is `ACTIVE` again.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceOperation'
+              example:
+                name: organizations/acme/spaces/notes/operations/019a9a07-1c5d-7e2f-8a4b-3d5e7f9a1b22
+                done: false
+                metadata:
+                  target: organizations/acme/spaces/notes
+                  verb: undelete
+                  createTime: '2026-04-02T08:00:00Z'
+                  passes: 0
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaces
   /v1/organizations/{organization}:undelete:
     post:
       operationId: Organizations_undelete
@@ -3054,6 +3565,20 @@ components:
               displayName: Agent
               createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
               createdAt: '2026-02-06T10:00:00Z'
+    ListSpaceOperationsResponse:
+      type: object
+      required:
+        - operations
+      properties:
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpaceOperation'
+          description: The operations on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of a resource's operations, newest first.
     ListSpacesResponse:
       type: object
       required:
@@ -3081,6 +3606,7 @@ components:
             - name: organizations/acme/spaces/notes
               project: organizations/acme/projects/agent
               displayName: Notes
+              state: active
               createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
               createdAt: '2026-02-07T11:00:00Z'
     Member:
@@ -3590,6 +4116,7 @@ components:
         - name
         - project
         - displayName
+        - state
         - createdBy
         - createdAt
       properties:
@@ -3606,6 +4133,10 @@ components:
         displayName:
           type: string
           description: Human-readable name.
+        state:
+          $ref: '#/components/schemas/SpaceState'
+          description: Current lifecycle state.
+          readOnly: true
         createdBy:
           type: string
           description: Name of the user that created the space.
@@ -3638,8 +4169,45 @@ components:
         - name: organizations/acme/spaces/notes
           project: organizations/acme/projects/agent
           displayName: Notes
+          state: active
           createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
           createdAt: '2026-02-07T11:00:00Z'
+    SpaceOperation:
+      type: object
+      required:
+        - name
+        - done
+        - metadata
+      properties:
+        name:
+          type: string
+          description: 'Resource name: `<target>/operations/{operation}`.'
+        done:
+          type: boolean
+          description: Whether the operation has finished, with a response or an error.
+        metadata:
+          $ref: '#/components/schemas/OperationMetadata'
+          description: What the operation does and how far it has got.
+        response:
+          $ref: '#/components/schemas/Space'
+          description: The target as the operation left it. Set when done without an error.
+        error:
+          $ref: '#/components/schemas/Problem'
+          description: Why the operation failed or was cancelled. Set when done with an error.
+      description: |-
+        A long-running operation (AIP-151). While `done` is false, poll it with get
+        or block on `:wait`. When done, exactly one of `response` and `error` is
+        set.
+    SpaceState:
+      type: string
+      enum:
+        - active
+        - deleting
+        - deleted
+        - restoring
+      description: Lifecycle state of a space.
+      examples:
+        - active
   securitySchemes:
     BearerAuth:
       type: http
