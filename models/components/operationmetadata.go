@@ -20,6 +20,11 @@ type OperationMetadata struct {
 	EndTime *time.Time `json:"endTime,omitzero"`
 	// Passes the job has made over the target's data so far.
 	Passes int `json:"passes"`
+	// How far an export or import has got, in memories (RFC 008). A memory the
+	// target already holds is skipped, not an error. An export's `total` is the
+	// memories it holds. An import is done when its memories are searchable:
+	// `indexed` reaches the imported memories that recall can index.
+	Progress *OperationProgress `json:"progress,omitzero"`
 }
 
 func (o OperationMetadata) MarshalJSON() ([]byte, error) {
@@ -66,4 +71,11 @@ func (o *OperationMetadata) GetPasses() int {
 		return 0
 	}
 	return o.Passes
+}
+
+func (o *OperationMetadata) GetProgress() *OperationProgress {
+	if o == nil {
+		return nil
+	}
+	return o.Progress
 }

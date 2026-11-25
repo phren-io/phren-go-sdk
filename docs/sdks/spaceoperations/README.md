@@ -6,11 +6,27 @@
 
 * [List](#list) - List, newest first.
 * [Get](#get) - Get
+* [SpaceOperationsListDownloads](#spaceoperationslistdownloads) - List an export's downloads, newest first: who downloaded it, or imported
+from it, and when. Only the space's exporters can read them.
+* [SpaceOperationsAppend](#spaceoperationsappend) - Append a piece of a `phren.space/v1` file to an import started without
+`from`: at most 100 lines and 120,000 bytes, the header first and the
+trailer last. Every line is checked as it arrives: a line that isn't a
+valid memory (its shape, kind, labels or source, or over 32 KiB) is a 400
+naming its line number, and nothing in the piece is staged. An import
+holds at most 10,000 lines and 64 MB (413). The trailer's count and
+SHA-256 are checked against every line received, and the import starts.
+Only the person and agent that started the import may append; an import
+that receives nothing for 15 minutes, or no trailer within an hour,
+fails.
 * [Cancel](#cancel) - Cancel a delete in flight: the delete stops, its operation is done with a
 `Cancelled` error, and a new undelete operation restores the space.
 Returns that undelete operation. Fails with 409 if the operation has
 already finished (undelete the space instead) or is not a delete. The
 admins of the space's project can cancel.
+* [SpaceOperationsDownload](#spaceoperationsdownload) - Download an export's `phren.space/v1` file: the memories it holds that
+still exist. Fails with 409 if the operation is not an export. The
+space's exporters can download it; each download is recorded and
+publishes `space.exported`.
 * [Wait](#wait) - Wait for the operation to finish. Returns it when it is done or when
 `timeout` passes, whichever is first; check `done` and call again if it
 is still running.
@@ -139,6 +155,132 @@ func main() {
 | apierrors.ProblemError   | 400, 401, 403, 404       | application/problem+json |
 | apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
 
+## SpaceOperationsListDownloads
+
+List an export's downloads, newest first: who downloaded it, or imported
+from it, and when. Only the space's exporters can read them.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="SpaceOperations_listDownloads" method="get" path="/v1/organizations/{organization}/spaces/{space}/operations/{operation}/downloads" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.SpaceOperations.SpaceOperationsListDownloads(ctx, "<value>", "<value>", "<value>")
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.ListExportDownloadsResponse != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `operation`                                              | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
+
+### Response
+
+**[*operations.SpaceOperationsListDownloadsResponse](../../models/operations/spaceoperationslistdownloadsresponse.md), error**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404       | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
+## SpaceOperationsAppend
+
+Append a piece of a `phren.space/v1` file to an import started without
+`from`: at most 100 lines and 120,000 bytes, the header first and the
+trailer last. Every line is checked as it arrives: a line that isn't a
+valid memory (its shape, kind, labels or source, or over 32 KiB) is a 400
+naming its line number, and nothing in the piece is staged. An import
+holds at most 10,000 lines and 64 MB (413). The trailer's count and
+SHA-256 are checked against every line received, and the import starts.
+Only the person and agent that started the import may append; an import
+that receives nothing for 15 minutes, or no trailer within an hour,
+fails.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="SpaceOperations_append" method="post" path="/v1/organizations/{organization}/spaces/{space}/operations/{operation}:append" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    example, fileErr := os.Open("example.file")
+    if fileErr != nil {
+        panic(fileErr)
+    }
+
+    res, err := s.SpaceOperations.SpaceOperationsAppend(ctx, "<value>", "<value>", "<value>", example)
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.SpaceOperation != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `operation`                                              | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `body`                                                   | `any`                                                    | :heavy_check_mark:                                       | N/A                                                      |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
+
+### Response
+
+**[*operations.SpaceOperationsAppendResponse](../../models/operations/spaceoperationsappendresponse.md), error**
+
+### Errors
+
+| Error Type                   | Status Code                  | Content Type                 |
+| ---------------------------- | ---------------------------- | ---------------------------- |
+| apierrors.ProblemError       | 400, 401, 403, 404, 409, 413 | application/problem+json     |
+| apierrors.APIError           | 4XX, 5XX                     | \*/\*                        |
+
 ## Cancel
 
 Cancel a delete in flight: the delete stops, its operation is done with a
@@ -190,6 +332,64 @@ func main() {
 ### Response
 
 **[*operations.SpaceOperationsCancelResponse](../../models/operations/spaceoperationscancelresponse.md), error**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
+## SpaceOperationsDownload
+
+Download an export's `phren.space/v1` file: the memories it holds that
+still exist. Fails with 409 if the operation is not an export. The
+space's exporters can download it; each download is recorded and
+publishes `space.exported`.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="SpaceOperations_download" method="get" path="/v1/organizations/{organization}/spaces/{space}/operations/{operation}:download" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.SpaceOperations.SpaceOperationsDownload(ctx, "acme", "notes", "019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33")
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.Body != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
+| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | notes                                                    |
+| `operation`                                              | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | 019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33                     |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
+
+### Response
+
+**[*operations.SpaceOperationsDownloadResponse](../../models/operations/spaceoperationsdownloadresponse.md), error**
 
 ### Errors
 
