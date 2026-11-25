@@ -8,9 +8,8 @@ import (
 	"time"
 )
 
-// MemoryOrigin - An imported memory's original identity. The importer can't change it: it
-// comes from the exported file, and `createdBy` and `createdAt` on the memory
-// itself stay the import's.
+// MemoryOrigin - An imported memory's original identity. `createdBy` and `createdAt` on the
+// memory itself stay the import's.
 type MemoryOrigin struct {
 	// The memory's resource name where it was created.
 	Name string `json:"name"`
@@ -20,10 +19,6 @@ type MemoryOrigin struct {
 	CreatedWith *string `json:"createdWith,omitzero"`
 	// When it was created there.
 	CreatedAt time.Time `json:"createdAt"`
-	// For a memory split on import: which part this is, from 1.
-	Part *int `json:"part,omitzero"`
-	// For a memory split on import: how many parts there are.
-	Parts *int `json:"parts,omitzero"`
 }
 
 func (m MemoryOrigin) MarshalJSON() ([]byte, error) {
@@ -63,18 +58,4 @@ func (m *MemoryOrigin) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return m.CreatedAt
-}
-
-func (m *MemoryOrigin) GetPart() *int {
-	if m == nil {
-		return nil
-	}
-	return m.Part
-}
-
-func (m *MemoryOrigin) GetParts() *int {
-	if m == nil {
-		return nil
-	}
-	return m.Parts
 }

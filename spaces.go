@@ -1093,18 +1093,19 @@ func (s *Spaces) Delete(ctx context.Context, organization string, space string, 
 
 }
 
-// SpacesExport - Export the space: its memories as one `phren.space/v1` file. The space's
-// exporters can export it (its admins, and whoever they grant it to). This
-// returns a long-running operation; once it is done, `SpaceOperations`
-// `:download` serves the file. The file holds the memories that exist when
-// the export starts.
+// SpacesExport - Export the space (RFC 008). The space's exporters can export it: its
+// admins by default. In one transaction this records which memories the
+// export holds and closes the returned operation; `SpaceOperations`
+// `:download` then serves its `phren.space/v1` file, and an import can take
+// it as `from`.
 //
-// `phren.space/v1` is JSON Lines. The first line is the manifest, with
-// `format` (`phren.space/v1`), `space`, `displayName`, `exportTime`,
-// `count` and `sha256`, the hex SHA-256 of the lines after it. Each later
-// line is one memory, with `content`, `kind`, `labels`, `source` and
-// `origin` (`name`, `createdAt`, `createdBy`, `createdWith`, and `part` and
-// `parts` for a split one). Readers ignore fields they don't know.
+// `phren.space/v1` is JSON Lines: a header (`format`, `space` with
+// `displayName`, `source`, `exportedAt`, `export`), one line per memory
+// (`content`, `kind`, `labels`, `source`, `origin` with `name`,
+// `createdAt`, `createdBy`, `createdWith`, and `verified: false` when the
+// origin was itself only claimed), and a trailer (`count`, `deleted`,
+// `sha256`, the hex SHA-256 of the memory lines). Readers ignore fields
+// they don't know.
 func (s *Spaces) SpacesExport(ctx context.Context, organization string, space string, opts ...operations.Option) (*operations.SpacesExportResponse, error) {
 	request := operations.SpacesExportRequest{
 		Organization: organization,
@@ -1353,15 +1354,18 @@ func (s *Spaces) SpacesExport(ctx context.Context, organization string, space st
 
 }
 
-// SpacesImport - Import a `phren.space/v1` file into the space, as its importer: the
-// space's editors can import. This returns a long-running operation whose
-// `progress` counts the memories as they are written. Each memory keeps
-// its original author and time as `origin` and names the space it came
-// from in `importedFrom`. A line the space already holds, by origin or by
-// content, is skipped, so importing the same file again adds nothing. A
-// line over 32 KiB is split on paragraph boundaries into numbered parts.
-// The file is at most 32 MB.
-func (s *Spaces) SpacesImport(ctx context.Context, organization string, space string, body any, opts ...operations.Option) (*operations.SpacesImportResponse, error) {
+// SpacesImport - Import into the space, as its importer: the space's editors can import.
+// With `from`, an export of this deployment, memory copies the source's
+// rows, so each memory's `origin` is verified, and a memory already
+// imported from the same origin is skipped: importing the same export
+// again adds nothing. `from` also needs `can_export` on the source, and
+// counts as a download of it. Without `from`, send the file to the
+// returned operation's `:append`; the import starts at its trailer. A
+// file's origins are claims (`claimedOrigin`), and a line whose content the
+// space held before the import is skipped. A line over 32 KiB is split on
+// paragraph boundaries into numbered parts. One import runs per
+// organization at a time (409).
+func (s *Spaces) SpacesImport(ctx context.Context, organization string, space string, body components.ImportSpaceRequest, opts ...operations.Option) (*operations.SpacesImportResponse, error) {
 	request := operations.SpacesImportRequest{
 		Organization: organization,
 		Space:        space,
@@ -1399,7 +1403,7 @@ func (s *Spaces) SpacesImport(ctx context.Context, organization string, space st
 		OperationID:      "Spaces_import",
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
-	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "raw", `request:"mediaType=application/octet-stream"`)
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "json", `request:"mediaType=application/json"`)
 	if err != nil {
 		return nil, err
 	}
@@ -1569,8 +1573,6 @@ func (s *Spaces) SpacesImport(ctx context.Context, organization string, space st
 	case httpRes.StatusCode == 404:
 		fallthrough
 	case httpRes.StatusCode == 409:
-		fallthrough
-	case httpRes.StatusCode == 413:
 		switch {
 		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/problem+json`):
 			rawBody, err := utils.ConsumeRawBody(httpRes)

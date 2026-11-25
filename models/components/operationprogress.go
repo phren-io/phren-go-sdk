@@ -3,18 +3,17 @@
 
 package components
 
-// OperationProgress - How far an export or import has got, in memories. A line of the file that
-// the target already holds (the same origin, or the same content) is skipped,
-// not an error.
+// OperationProgress - How far an import has got, in the file's lines (RFC 008). A line the target
+// already holds is skipped, not an error. An export's `total` is the memories
+// it holds.
 type OperationProgress struct {
-	// Memories in the file.
+	// Lines to import, or memories exported.
 	Total int `json:"total"`
-	// Memories written so far: exported, or created by the import.
-	Done int `json:"done"`
+	// Lines written so far, whole or split into parts.
+	Imported int `json:"imported"`
 	// Lines skipped because the target already holds them.
-	SkippedDuplicate int `json:"skippedDuplicate"`
-	// Lines over the 32 KiB memory limit, each split into numbered parts that
-	// share its origin.
+	Skipped int `json:"skipped"`
+	// Lines over the 32 KiB memory limit, each written as numbered parts.
 	Split int `json:"split"`
 }
 
@@ -25,18 +24,18 @@ func (o *OperationProgress) GetTotal() int {
 	return o.Total
 }
 
-func (o *OperationProgress) GetDone() int {
+func (o *OperationProgress) GetImported() int {
 	if o == nil {
 		return 0
 	}
-	return o.Done
+	return o.Imported
 }
 
-func (o *OperationProgress) GetSkippedDuplicate() int {
+func (o *OperationProgress) GetSkipped() int {
 	if o == nil {
 		return 0
 	}
-	return o.SkippedDuplicate
+	return o.Skipped
 }
 
 func (o *OperationProgress) GetSplit() int {

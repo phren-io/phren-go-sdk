@@ -18,26 +18,30 @@ background: this returns its long-running operation, which
 `SpaceOperations` get and `:wait` follow until it is done, with the space
 `DELETED`. A deleted space's memories are hidden, and its project's admins
 can undelete it.
-* [SpacesExport](#spacesexport) - Export the space: its memories as one `phren.space/v1` file. The space's
-exporters can export it (its admins, and whoever they grant it to). This
-returns a long-running operation; once it is done, `SpaceOperations`
-`:download` serves the file. The file holds the memories that exist when
-the export starts.
+* [SpacesExport](#spacesexport) - Export the space (RFC 008). The space's exporters can export it: its
+admins by default. In one transaction this records which memories the
+export holds and closes the returned operation; `SpaceOperations`
+`:download` then serves its `phren.space/v1` file, and an import can take
+it as `from`.
 
-`phren.space/v1` is JSON Lines. The first line is the manifest, with
-`format` (`phren.space/v1`), `space`, `displayName`, `exportTime`,
-`count` and `sha256`, the hex SHA-256 of the lines after it. Each later
-line is one memory, with `content`, `kind`, `labels`, `source` and
-`origin` (`name`, `createdAt`, `createdBy`, `createdWith`, and `part` and
-`parts` for a split one). Readers ignore fields they don't know.
-* [SpacesImport](#spacesimport) - Import a `phren.space/v1` file into the space, as its importer: the
-space's editors can import. This returns a long-running operation whose
-`progress` counts the memories as they are written. Each memory keeps
-its original author and time as `origin` and names the space it came
-from in `importedFrom`. A line the space already holds, by origin or by
-content, is skipped, so importing the same file again adds nothing. A
-line over 32 KiB is split on paragraph boundaries into numbered parts.
-The file is at most 32 MB.
+`phren.space/v1` is JSON Lines: a header (`format`, `space` with
+`displayName`, `source`, `exportedAt`, `export`), one line per memory
+(`content`, `kind`, `labels`, `source`, `origin` with `name`,
+`createdAt`, `createdBy`, `createdWith`, and `verified: false` when the
+origin was itself only claimed), and a trailer (`count`, `deleted`,
+`sha256`, the hex SHA-256 of the memory lines). Readers ignore fields
+they don't know.
+* [SpacesImport](#spacesimport) - Import into the space, as its importer: the space's editors can import.
+With `from`, an export of this deployment, memory copies the source's
+rows, so each memory's `origin` is verified, and a memory already
+imported from the same origin is skipped: importing the same export
+again adds nothing. `from` also needs `can_export` on the source, and
+counts as a download of it. Without `from`, send the file to the
+returned operation's `:append`; the import starts at its trailer. A
+file's origins are claims (`claimedOrigin`), and a line whose content the
+space held before the import is skipped. A line over 32 KiB is split on
+paragraph boundaries into numbered parts. One import runs per
+organization at a time (409).
 * [SpacesQuery](#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
 query it.
 * [Undelete](#undelete) - Undelete. The admins of the space's project undelete it. The restore runs
@@ -429,18 +433,19 @@ func main() {
 
 ## SpacesExport
 
-Export the space: its memories as one `phren.space/v1` file. The space's
-exporters can export it (its admins, and whoever they grant it to). This
-returns a long-running operation; once it is done, `SpaceOperations`
-`:download` serves the file. The file holds the memories that exist when
-the export starts.
+Export the space (RFC 008). The space's exporters can export it: its
+admins by default. In one transaction this records which memories the
+export holds and closes the returned operation; `SpaceOperations`
+`:download` then serves its `phren.space/v1` file, and an import can take
+it as `from`.
 
-`phren.space/v1` is JSON Lines. The first line is the manifest, with
-`format` (`phren.space/v1`), `space`, `displayName`, `exportTime`,
-`count` and `sha256`, the hex SHA-256 of the lines after it. Each later
-line is one memory, with `content`, `kind`, `labels`, `source` and
-`origin` (`name`, `createdAt`, `createdBy`, `createdWith`, and `part` and
-`parts` for a split one). Readers ignore fields they don't know.
+`phren.space/v1` is JSON Lines: a header (`format`, `space` with
+`displayName`, `source`, `exportedAt`, `export`), one line per memory
+(`content`, `kind`, `labels`, `source`, `origin` with `name`,
+`createdAt`, `createdBy`, `createdWith`, and `verified: false` when the
+origin was itself only claimed), and a trailer (`count`, `deleted`,
+`sha256`, the hex SHA-256 of the memory lines). Readers ignore fields
+they don't know.
 
 ### Example Usage
 
@@ -494,14 +499,17 @@ func main() {
 
 ## SpacesImport
 
-Import a `phren.space/v1` file into the space, as its importer: the
-space's editors can import. This returns a long-running operation whose
-`progress` counts the memories as they are written. Each memory keeps
-its original author and time as `origin` and names the space it came
-from in `importedFrom`. A line the space already holds, by origin or by
-content, is skipped, so importing the same file again adds nothing. A
-line over 32 KiB is split on paragraph boundaries into numbered parts.
-The file is at most 32 MB.
+Import into the space, as its importer: the space's editors can import.
+With `from`, an export of this deployment, memory copies the source's
+rows, so each memory's `origin` is verified, and a memory already
+imported from the same origin is skipped: importing the same export
+again adds nothing. `from` also needs `can_export` on the source, and
+counts as a download of it. Without `from`, send the file to the
+returned operation's `:append`; the import starts at its trailer. A
+file's origins are claims (`claimedOrigin`), and a line whose content the
+space held before the import is skipped. A line over 32 KiB is split on
+paragraph boundaries into numbered parts. One import runs per
+organization at a time (409).
 
 ### Example Usage
 
@@ -513,6 +521,7 @@ import(
 	"context"
 	"os"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/components"
 	"log"
 )
 
@@ -523,12 +532,9 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    example, fileErr := os.Open("example.file")
-    if fileErr != nil {
-        panic(fileErr)
-    }
-
-    res, err := s.Spaces.SpacesImport(ctx, "<value>", "<value>", example)
+    res, err := s.Spaces.SpacesImport(ctx, "acme", "handbook", components.ImportSpaceRequest{
+        From: phren.Pointer("organizations/acme/spaces/notes/operations/019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33"),
+    })
     if err != nil {
         log.Fatal(err)
     }
@@ -540,13 +546,13 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
-| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
-| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
-| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
-| `body`                                                   | `any`                                                    | :heavy_check_mark:                                       | N/A                                                      |
-| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
+| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    | Example                                                                        |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |                                                                                |
+| `organization`                                                                 | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | acme                                                                           |
+| `space`                                                                        | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | handbook                                                                       |
+| `body`                                                                         | [components.ImportSpaceRequest](../../models/components/importspacerequest.md) | :heavy_check_mark:                                                             | N/A                                                                            |                                                                                |
+| `opts`                                                                         | [][operations.Option](../../models/operations/option.md)                       | :heavy_minus_sign:                                                             | The options for this request.                                                  |                                                                                |
 
 ### Response
 
@@ -554,10 +560,10 @@ func main() {
 
 ### Errors
 
-| Error Type                   | Status Code                  | Content Type                 |
-| ---------------------------- | ---------------------------- | ---------------------------- |
-| apierrors.ProblemError       | 400, 401, 403, 404, 409, 413 | application/problem+json     |
-| apierrors.APIError           | 4XX, 5XX                     | \*/\*                        |
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
 
 ## SpacesQuery
 

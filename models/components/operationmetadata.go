@@ -20,9 +20,9 @@ type OperationMetadata struct {
 	EndTime *time.Time `json:"endTime,omitzero"`
 	// Passes the job has made over the target's data so far.
 	Passes int `json:"passes"`
-	// How far an export or import has got, in memories. A line of the file that
-	// the target already holds (the same origin, or the same content) is skipped,
-	// not an error.
+	// How far an import has got, in the file's lines (RFC 008). A line the target
+	// already holds is skipped, not an error. An export's `total` is the memories
+	// it holds.
 	Progress *OperationProgress `json:"progress,omitzero"`
 }
 

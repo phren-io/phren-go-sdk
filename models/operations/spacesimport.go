@@ -9,10 +9,9 @@ import (
 )
 
 type SpacesImportRequest struct {
-	Organization string `pathParam:"style=simple,explode=false,name=organization"`
-	Space        string `pathParam:"style=simple,explode=false,name=space"`
-	// This field accepts []byte data or io.Reader implementations, such as *os.File.
-	Body any `request:"mediaType=application/octet-stream"`
+	Organization string                        `pathParam:"style=simple,explode=false,name=organization"`
+	Space        string                        `pathParam:"style=simple,explode=false,name=space"`
+	Body         components.ImportSpaceRequest `request:"mediaType=application/json"`
 }
 
 func (s *SpacesImportRequest) GetOrganization() string {
@@ -29,9 +28,9 @@ func (s *SpacesImportRequest) GetSpace() string {
 	return s.Space
 }
 
-func (s *SpacesImportRequest) GetBody() any {
+func (s *SpacesImportRequest) GetBody() components.ImportSpaceRequest {
 	if s == nil {
-		return nil
+		return components.ImportSpaceRequest{}
 	}
 	return s.Body
 }

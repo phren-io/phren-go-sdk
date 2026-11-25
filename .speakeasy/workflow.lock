@@ -13,7 +13,7 @@ targets:
         sourceRevisionDigest: sha256:4e4907c198f9e72440742f29a87789936072d7c55d4c279f00952a8273f60ada
         sourceBlobDigest: sha256:5c330d083b35717d782661bda1509c5bc7665ca5c36b58391825c919218590af
         codeSamplesNamespace: phren-api-go-code-samples
-        codeSamplesRevisionDigest: sha256:f288ad064dea7f74f509fd9d87eae2f61a3d6e326cf548de0d549c502b4568a9
+        codeSamplesRevisionDigest: sha256:191d38dc1305f1cefcbf9e759157d94f758b5452eeaa6f50ce3b83066f36e8e6
 workflow:
     workflowVersion: 1.0.0
     speakeasyVersion: latest

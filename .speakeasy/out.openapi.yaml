@@ -2762,6 +2762,82 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - spaceOperations
+  /v1/organizations/{organization}/spaces/{space}/operations/{operation}:append:
+    post:
+      operationId: SpaceOperations_append
+      description: |-
+        Append a piece of a `phren.space/v1` file to an import started without
+        `from`: at most 100 lines and 120,000 bytes, the header first and the
+        trailer last. The trailer's count and SHA-256 are checked against every
+        line received, and the import starts. Only the person and agent that
+        started the import may append.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: operation
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceOperation'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '413':
+          description: The request body is larger than the method accepts.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaceOperations
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              contentMediaType: application/octet-stream
   /v1/organizations/{organization}/spaces/{space}/operations/{operation}:cancel:
     post:
       operationId: SpaceOperations_cancel
@@ -2841,9 +2917,10 @@ paths:
     get:
       operationId: SpaceOperations_download
       description: |-
-        Download an export's `phren.space/v1` file. Fails with 409 while the
-        export runs, or if the operation is not an export. The space's exporters
-        can download it.
+        Download an export's `phren.space/v1` file: the memories it holds that
+        still exist. Fails with 409 if the operation is not an export. The
+        space's exporters can download it; each download is recorded and
+        publishes `space.exported`.
       parameters:
         - name: organization
           in: path
@@ -3000,18 +3077,19 @@ paths:
     post:
       operationId: Spaces_export
       description: |-
-        Export the space: its memories as one `phren.space/v1` file. The space's
-        exporters can export it (its admins, and whoever they grant it to). This
-        returns a long-running operation; once it is done, `SpaceOperations`
-        `:download` serves the file. The file holds the memories that exist when
-        the export starts.
+        Export the space (RFC 008). The space's exporters can export it: its
+        admins by default. In one transaction this records which memories the
+        export holds and closes the returned operation; `SpaceOperations`
+        `:download` then serves its `phren.space/v1` file, and an import can take
+        it as `from`.
 
-        `phren.space/v1` is JSON Lines. The first line is the manifest, with
-        `format` (`phren.space/v1`), `space`, `displayName`, `exportTime`,
-        `count` and `sha256`, the hex SHA-256 of the lines after it. Each later
-        line is one memory, with `content`, `kind`, `labels`, `source` and
-        `origin` (`name`, `createdAt`, `createdBy`, `createdWith`, and `part` and
-        `parts` for a split one). Readers ignore fields they don't know.
+        `phren.space/v1` is JSON Lines: a header (`format`, `space` with
+        `displayName`, `source`, `exportedAt`, `export`), one line per memory
+        (`content`, `kind`, `labels`, `source`, `origin` with `name`,
+        `createdAt`, `createdBy`, `createdWith`, and `verified: false` when the
+        origin was itself only claimed), and a trailer (`count`, `deleted`,
+        `sha256`, the hex SHA-256 of the memory lines). Readers ignore fields
+        they don't know.
       parameters:
         - name: organization
           in: path
@@ -3034,17 +3112,25 @@ paths:
                 $ref: '#/components/schemas/SpaceOperation'
               example:
                 name: organizations/acme/spaces/notes/operations/019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33
-                done: false
+                done: true
                 metadata:
                   target: organizations/acme/spaces/notes
                   verb: export
                   createTime: '2026-04-03T09:00:00Z'
-                  passes: 0
+                  endTime: '2026-04-03T09:00:00.021Z'
+                  passes: 1
                   progress:
                     total: 36
-                    done: 0
-                    skippedDuplicate: 0
+                    imported: 0
+                    skipped: 0
                     split: 0
+                response:
+                  name: organizations/acme/spaces/notes
+                  project: organizations/acme/projects/agent
+                  displayName: Notes
+                  state: active
+                  createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                  createdAt: '2026-02-07T11:00:00Z'
         '400':
           description: The request is malformed or fails validation.
           content:
@@ -3081,25 +3167,30 @@ paths:
     post:
       operationId: Spaces_import
       description: |-
-        Import a `phren.space/v1` file into the space, as its importer: the
-        space's editors can import. This returns a long-running operation whose
-        `progress` counts the memories as they are written. Each memory keeps
-        its original author and time as `origin` and names the space it came
-        from in `importedFrom`. A line the space already holds, by origin or by
-        content, is skipped, so importing the same file again adds nothing. A
-        line over 32 KiB is split on paragraph boundaries into numbered parts.
-        The file is at most 32 MB.
+        Import into the space, as its importer: the space's editors can import.
+        With `from`, an export of this deployment, memory copies the source's
+        rows, so each memory's `origin` is verified, and a memory already
+        imported from the same origin is skipped: importing the same export
+        again adds nothing. `from` also needs `can_export` on the source, and
+        counts as a download of it. Without `from`, send the file to the
+        returned operation's `:append`; the import starts at its trailer. A
+        file's origins are claims (`claimedOrigin`), and a line whose content the
+        space held before the import is skipped. A line over 32 KiB is split on
+        paragraph boundaries into numbered parts. One import runs per
+        organization at a time (409).
       parameters:
         - name: organization
           in: path
           required: true
           schema:
             type: string
+          example: acme
         - name: space
           in: path
           required: true
           schema:
             type: string
+          example: handbook
       responses:
         '200':
           description: The request has succeeded.
@@ -3107,6 +3198,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SpaceOperation'
+              example:
+                name: organizations/acme/spaces/handbook/operations/019aa1b4-5e6f-7a8b-9c0d-1e2f3a4b5c44
+                done: false
+                metadata:
+                  target: organizations/acme/spaces/handbook
+                  verb: import
+                  createTime: '2026-04-03T09:01:00Z'
+                  passes: 0
+                  progress:
+                    total: 36
+                    imported: 0
+                    skipped: 0
+                    split: 0
         '400':
           description: The request is malformed or fails validation.
           content:
@@ -3137,20 +3241,16 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        '413':
-          description: The request body is larger than the method accepts.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
       tags:
         - spaces
       requestBody:
         required: true
         content:
-          application/octet-stream:
+          application/json:
             schema:
-              contentMediaType: application/octet-stream
+              $ref: '#/components/schemas/ImportSpaceRequest'
+            example:
+              from: organizations/acme/spaces/notes/operations/019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33
   /v1/organizations/{organization}/spaces/{space}:query:
     post:
       operationId: Spaces_query
@@ -3495,6 +3595,15 @@ components:
       examples:
         - project: organizations/acme/projects/agent
           displayName: Notes
+    ImportSpaceRequest:
+      type: object
+      properties:
+        from:
+          type: string
+          description: |-
+            An export to copy: `organizations/{organization}/spaces/{space}/operations/{operation}`.
+            Absent to send a file to the operation's `:append` instead.
+      description: What `:import` imports.
     Include:
       type: string
       enum:
@@ -3950,12 +4059,23 @@ components:
         origin:
           $ref: '#/components/schemas/MemoryOrigin'
           description: |-
-            Where an imported memory first came from: its name, author and time in
-            the space it was exported from. Absent for a memory created here.
+            Where a memory imported from an export first came from: its name, author
+            and time where it was created, verified from phren's own rows. Absent for
+            a memory created here or imported from a file.
+          readOnly: true
+        claimedOrigin:
+          $ref: '#/components/schemas/MemoryOrigin'
+          description: |-
+            Where a memory imported from a file says it came from. Nobody verified
+            it.
           readOnly: true
         importedFrom:
           type: string
           description: The space an imported memory was exported from.
+          readOnly: true
+        part:
+          $ref: '#/components/schemas/MemoryPart'
+          description: 'For a part of a line the import split: which part, of how many.'
           readOnly: true
         permissions:
           type: array
@@ -4012,18 +4132,24 @@ components:
           format: date-time
           description: When it was created there.
           x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
-        part:
-          type: integer
-          format: int32
-          description: 'For a memory split on import: which part this is, from 1.'
-        parts:
-          type: integer
-          format: int32
-          description: 'For a memory split on import: how many parts there are.'
       description: |-
-        An imported memory's original identity. The importer can't change it: it
-        comes from the exported file, and `createdBy` and `createdAt` on the memory
-        itself stay the import's.
+        An imported memory's original identity. `createdBy` and `createdAt` on the
+        memory itself stay the import's.
+    MemoryPart:
+      type: object
+      required:
+        - i
+        - 'n'
+      properties:
+        i:
+          type: integer
+          format: int32
+          description: Which part, from 1.
+        'n':
+          type: integer
+          format: int32
+          description: How many parts.
+      description: One part of a line an import split.
     OperationMetadata:
       type: object
       required:
@@ -4065,32 +4191,30 @@ components:
       type: object
       required:
         - total
-        - done
-        - skippedDuplicate
+        - imported
+        - skipped
         - split
       properties:
         total:
           type: integer
           format: int32
-          description: Memories in the file.
-        done:
+          description: Lines to import, or memories exported.
+        imported:
           type: integer
           format: int32
-          description: 'Memories written so far: exported, or created by the import.'
-        skippedDuplicate:
+          description: Lines written so far, whole or split into parts.
+        skipped:
           type: integer
           format: int32
           description: Lines skipped because the target already holds them.
         split:
           type: integer
           format: int32
-          description: |-
-            Lines over the 32 KiB memory limit, each split into numbered parts that
-            share its origin.
+          description: Lines over the 32 KiB memory limit, each written as numbered parts.
       description: |-
-        How far an export or import has got, in memories. A line of the file that
-        the target already holds (the same origin, or the same content) is skipped,
-        not an error.
+        How far an import has got, in the file's lines (RFC 008). A line the target
+        already holds is skipped, not an error. An export's `total` is the memories
+        it holds.
     OperationVerb:
       type: string
       enum:

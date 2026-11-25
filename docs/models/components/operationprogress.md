@@ -1,15 +1,15 @@
 # OperationProgress
 
-How far an export or import has got, in memories. A line of the file that
-the target already holds (the same origin, or the same content) is skipped,
-not an error.
+How far an import has got, in the file's lines (RFC 008). A line the target
+already holds is skipped, not an error. An export's `total` is the memories
+it holds.
 
 
 ## Fields
 
-| Field                                                                                     | Type                                                                                      | Required                                                                                  | Description                                                                               |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `Total`                                                                                   | `int`                                                                                     | :heavy_check_mark:                                                                        | Memories in the file.                                                                     |
-| `Done`                                                                                    | `int`                                                                                     | :heavy_check_mark:                                                                        | Memories written so far: exported, or created by the import.                              |
-| `SkippedDuplicate`                                                                        | `int`                                                                                     | :heavy_check_mark:                                                                        | Lines skipped because the target already holds them.                                      |
-| `Split`                                                                                   | `int`                                                                                     | :heavy_check_mark:                                                                        | Lines over the 32 KiB memory limit, each split into numbered parts that<br/>share its origin. |
+| Field                                                               | Type                                                                | Required                                                            | Description                                                         |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `Total`                                                             | `int`                                                               | :heavy_check_mark:                                                  | Lines to import, or memories exported.                              |
+| `Imported`                                                          | `int`                                                               | :heavy_check_mark:                                                  | Lines written so far, whole or split into parts.                    |
+| `Skipped`                                                           | `int`                                                               | :heavy_check_mark:                                                  | Lines skipped because the target already holds them.                |
+| `Split`                                                             | `int`                                                               | :heavy_check_mark:                                                  | Lines over the 32 KiB memory limit, each written as numbered parts. |
