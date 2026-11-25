@@ -1,0 +1,10 @@
+# SpacesImportRequest
+
+
+## Fields
+
+| Field                                                                          | Type                                                                           | Required                                                                       | Description                                                                    | Example                                                                        |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `Organization`                                                                 | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | acme                                                                           |
+| `Space`                                                                        | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | handbook                                                                       |
+| `Body`                                                                         | [components.ImportSpaceRequest](../../models/components/importspacerequest.md) | :heavy_check_mark:                                                             | N/A                                                                            |                                                                                |

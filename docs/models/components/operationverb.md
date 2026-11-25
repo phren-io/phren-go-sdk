@@ -22,3 +22,5 @@ custom := components.OperationVerb("custom_value")
 | ----------------------- | ----------------------- |
 | `OperationVerbDelete`   | delete                  |
 | `OperationVerbUndelete` | undelete                |
+| `OperationVerbExport`   | export                  |
+| `OperationVerbImport`   | import                  |

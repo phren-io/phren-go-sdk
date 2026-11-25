@@ -571,6 +571,524 @@ func (s *SpaceOperations) Get(ctx context.Context, organization string, space st
 
 }
 
+// SpaceOperationsListDownloads - List an export's downloads, newest first: who downloaded it, or imported
+// from it, and when. Only the space's exporters can read them.
+func (s *SpaceOperations) SpaceOperationsListDownloads(ctx context.Context, organization string, space string, operation string, opts ...operations.Option) (*operations.SpaceOperationsListDownloadsResponse, error) {
+	request := operations.SpaceOperationsListDownloadsRequest{
+		Organization: organization,
+		Space:        space,
+		Operation:    operation,
+	}
+
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionRetries,
+		operations.SupportedOptionTimeout,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}/spaces/{space}/operations/{operation}/downloads", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "SpaceOperations_listDownloads",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", opURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	globalRetryConfig := s.sdkConfiguration.RetryConfig
+	retryConfig := o.Retries
+	if retryConfig == nil {
+		if globalRetryConfig != nil {
+			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 10,
+					MaxInterval:     200,
+					Exponent:        1.5,
+					MaxElapsedTime:  1000,
+				},
+				RetryConnectionErrors: true,
+			}
+		}
+	}
+
+	var httpRes *http.Response
+	if retryConfig != nil {
+		httpRes, err = utils.Retry(ctx, utils.Retries{
+			Config: retryConfig,
+			StatusCodes: []string{
+				"429",
+				"5XX",
+			},
+		}, func() (*http.Response, error) {
+			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
+				copyBody, err := req.GetBody()
+
+				if err != nil {
+					return nil, err
+				}
+
+				req.Body = copyBody
+			}
+
+			req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+			if err != nil {
+				if retry.IsPermanentError(err) || retry.IsTemporaryError(err) {
+					return nil, err
+				}
+
+				return nil, retry.Permanent(err)
+			}
+
+			httpRes, err := s.sdkConfiguration.Client.Do(req)
+			if err != nil || httpRes == nil {
+				if err != nil {
+					err = fmt.Errorf("error sending request: %w", err)
+				} else {
+					err = fmt.Errorf("error sending request: no response")
+				}
+
+				_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+			}
+			return httpRes, err
+		})
+
+		if err != nil {
+			return nil, err
+		} else {
+			httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+		if err != nil {
+			return nil, err
+		}
+
+		httpRes, err = s.sdkConfiguration.Client.Do(req)
+		if err != nil || httpRes == nil {
+			if err != nil {
+				err = fmt.Errorf("error sending request: %w", err)
+			} else {
+				err = fmt.Errorf("error sending request: no response")
+			}
+
+			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+			return nil, err
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+			if err != nil {
+				return nil, err
+			} else if _httpRes != nil {
+				httpRes = _httpRes
+			}
+		} else {
+			httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	res := &operations.SpaceOperationsListDownloadsResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out components.ListExportDownloadsResponse
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.ListExportDownloadsResponse = &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 400:
+		fallthrough
+	case httpRes.StatusCode == 401:
+		fallthrough
+	case httpRes.StatusCode == 403:
+		fallthrough
+	case httpRes.StatusCode == 404:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/problem+json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out apierrors.ProblemError
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, apierrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			out.HTTPMeta = components.HTTPMetadata{
+				Request:  req,
+				Response: httpRes,
+			}
+			return nil, &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// SpaceOperationsAppend - Append a piece of a `phren.space/v1` file to an import started without
+// `from`: at most 100 lines and 120,000 bytes, the header first and the
+// trailer last. Every line is checked as it arrives: a line that isn't a
+// valid memory (its shape, kind, labels or source, or over 32 KiB) is a 400
+// naming its line number, and nothing in the piece is staged. An import
+// holds at most 10,000 lines and 64 MB (413). The trailer's count and
+// SHA-256 are checked against every line received, and the import starts.
+// Only the person and agent that started the import may append; an import
+// that receives nothing for 15 minutes, or no trailer within an hour,
+// fails.
+func (s *SpaceOperations) SpaceOperationsAppend(ctx context.Context, organization string, space string, operation string, body any, opts ...operations.Option) (*operations.SpaceOperationsAppendResponse, error) {
+	request := operations.SpaceOperationsAppendRequest{
+		Organization: organization,
+		Space:        space,
+		Operation:    operation,
+		Body:         body,
+	}
+
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionRetries,
+		operations.SupportedOptionTimeout,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}/spaces/{space}/operations/{operation}:append", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "SpaceOperations_append",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Body", "raw", `request:"mediaType=application/octet-stream"`)
+	if err != nil {
+		return nil, err
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", opURL, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+	if reqContentType != "" {
+		req.Header.Set("Content-Type", reqContentType)
+	}
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	globalRetryConfig := s.sdkConfiguration.RetryConfig
+	retryConfig := o.Retries
+	if retryConfig == nil {
+		if globalRetryConfig != nil {
+			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 10,
+					MaxInterval:     200,
+					Exponent:        1.5,
+					MaxElapsedTime:  1000,
+				},
+				RetryConnectionErrors: true,
+			}
+		}
+	}
+
+	var httpRes *http.Response
+	if retryConfig != nil {
+		httpRes, err = utils.Retry(ctx, utils.Retries{
+			Config: retryConfig,
+			StatusCodes: []string{
+				"429",
+				"5XX",
+			},
+		}, func() (*http.Response, error) {
+			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
+				copyBody, err := req.GetBody()
+
+				if err != nil {
+					return nil, err
+				}
+
+				req.Body = copyBody
+			}
+
+			req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+			if err != nil {
+				if retry.IsPermanentError(err) || retry.IsTemporaryError(err) {
+					return nil, err
+				}
+
+				return nil, retry.Permanent(err)
+			}
+
+			httpRes, err := s.sdkConfiguration.Client.Do(req)
+			if err != nil || httpRes == nil {
+				if err != nil {
+					err = fmt.Errorf("error sending request: %w", err)
+				} else {
+					err = fmt.Errorf("error sending request: no response")
+				}
+
+				_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+			}
+			return httpRes, err
+		})
+
+		if err != nil {
+			return nil, err
+		} else {
+			httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+		if err != nil {
+			return nil, err
+		}
+
+		httpRes, err = s.sdkConfiguration.Client.Do(req)
+		if err != nil || httpRes == nil {
+			if err != nil {
+				err = fmt.Errorf("error sending request: %w", err)
+			} else {
+				err = fmt.Errorf("error sending request: no response")
+			}
+
+			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+			return nil, err
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+			if err != nil {
+				return nil, err
+			} else if _httpRes != nil {
+				httpRes = _httpRes
+			}
+		} else {
+			httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	res := &operations.SpaceOperationsAppendResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out components.SpaceOperation
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.SpaceOperation = &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 400:
+		fallthrough
+	case httpRes.StatusCode == 401:
+		fallthrough
+	case httpRes.StatusCode == 403:
+		fallthrough
+	case httpRes.StatusCode == 404:
+		fallthrough
+	case httpRes.StatusCode == 409:
+		fallthrough
+	case httpRes.StatusCode == 413:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/problem+json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out apierrors.ProblemError
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, apierrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			out.HTTPMeta = components.HTTPMetadata{
+				Request:  req,
+				Response: httpRes,
+			}
+			return nil, &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
 // Cancel a delete in flight: the delete stops, its operation is done with a
 // `Cancelled` error, and a new undelete operation restores the space.
 // Returns that undelete operation. Fails with 409 if the operation has
@@ -761,6 +1279,256 @@ func (s *SpaceOperations) Cancel(ctx context.Context, organization string, space
 			}
 
 			res.SpaceOperation = &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 400:
+		fallthrough
+	case httpRes.StatusCode == 401:
+		fallthrough
+	case httpRes.StatusCode == 403:
+		fallthrough
+	case httpRes.StatusCode == 404:
+		fallthrough
+	case httpRes.StatusCode == 409:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/problem+json`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			var out apierrors.ProblemError
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, apierrors.NewResponseValidationError("response did not match the declared error schema", httpRes.StatusCode, string(rawBody), httpRes, err)
+			}
+
+			out.HTTPMeta = components.HTTPMetadata{
+				Request:  req,
+				Response: httpRes,
+			}
+			return nil, &out
+		default:
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+			return nil, apierrors.NewAPIError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	default:
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+		return nil, apierrors.NewAPIError("unknown status code returned", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+
+}
+
+// SpaceOperationsDownload - Download an export's `phren.space/v1` file: the memories it holds that
+// still exist. Fails with 409 if the operation is not an export. The
+// space's exporters can download it; each download is recorded and
+// publishes `space.exported`.
+func (s *SpaceOperations) SpaceOperationsDownload(ctx context.Context, organization string, space string, operation string, opts ...operations.Option) (*operations.SpaceOperationsDownloadResponse, error) {
+	request := operations.SpaceOperationsDownloadRequest{
+		Organization: organization,
+		Space:        space,
+		Operation:    operation,
+	}
+
+	o := operations.Options{}
+	supportedOptions := []string{
+		operations.SupportedOptionRetries,
+		operations.SupportedOptionTimeout,
+	}
+
+	for _, opt := range opts {
+		if err := opt(&o, supportedOptions...); err != nil {
+			return nil, fmt.Errorf("error applying option: %w", err)
+		}
+	}
+
+	var baseURL string
+	if o.ServerURL == nil {
+		baseURL = utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	} else {
+		baseURL = *o.ServerURL
+	}
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/organizations/{organization}/spaces/{space}/operations/{operation}:download", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	hookCtx := hooks.HookContext{
+		SDK:              s.rootSDK,
+		SDKConfiguration: s.sdkConfiguration,
+		BaseURL:          baseURL,
+		Context:          ctx,
+		OperationID:      "SpaceOperations_download",
+		SecuritySource:   s.sdkConfiguration.Security,
+	}
+
+	timeout := o.Timeout
+	if timeout == nil {
+		timeout = s.sdkConfiguration.Timeout
+	}
+
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", opURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/octet-stream")
+	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
+		return nil, err
+	}
+
+	for k, v := range o.SetHeaders {
+		req.Header.Set(k, v)
+	}
+
+	globalRetryConfig := s.sdkConfiguration.RetryConfig
+	retryConfig := o.Retries
+	if retryConfig == nil {
+		if globalRetryConfig != nil {
+			retryConfig = globalRetryConfig
+		} else {
+			retryConfig = &retry.Config{
+				Strategy: "backoff", Backoff: &retry.BackoffStrategy{
+					InitialInterval: 10,
+					MaxInterval:     200,
+					Exponent:        1.5,
+					MaxElapsedTime:  1000,
+				},
+				RetryConnectionErrors: true,
+			}
+		}
+	}
+
+	var httpRes *http.Response
+	if retryConfig != nil {
+		httpRes, err = utils.Retry(ctx, utils.Retries{
+			Config: retryConfig,
+			StatusCodes: []string{
+				"429",
+				"5XX",
+			},
+		}, func() (*http.Response, error) {
+			if req.Body != nil && req.Body != http.NoBody && req.GetBody != nil {
+				copyBody, err := req.GetBody()
+
+				if err != nil {
+					return nil, err
+				}
+
+				req.Body = copyBody
+			}
+
+			req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+			if err != nil {
+				if retry.IsPermanentError(err) || retry.IsTemporaryError(err) {
+					return nil, err
+				}
+
+				return nil, retry.Permanent(err)
+			}
+
+			httpRes, err := s.sdkConfiguration.Client.Do(req)
+			if err != nil || httpRes == nil {
+				if err != nil {
+					err = fmt.Errorf("error sending request: %w", err)
+				} else {
+					err = fmt.Errorf("error sending request: no response")
+				}
+
+				_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+			}
+			return httpRes, err
+		})
+
+		if err != nil {
+			return nil, err
+		} else {
+			httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		req, err = s.hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
+		if err != nil {
+			return nil, err
+		}
+
+		httpRes, err = s.sdkConfiguration.Client.Do(req)
+		if err != nil || httpRes == nil {
+			if err != nil {
+				err = fmt.Errorf("error sending request: %w", err)
+			} else {
+				err = fmt.Errorf("error sending request: no response")
+			}
+
+			_, err = s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
+			return nil, err
+		} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
+			_httpRes, err := s.hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
+			if err != nil {
+				return nil, err
+			} else if _httpRes != nil {
+				httpRes = _httpRes
+			}
+		} else {
+			httpRes, err = s.hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	res := &operations.SpaceOperationsDownloadResponse{
+		HTTPMeta: components.HTTPMetadata{
+			Request:  req,
+			Response: httpRes,
+		},
+	}
+
+	switch {
+	case httpRes.StatusCode == 200:
+		res.Headers = httpRes.Header
+
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/octet-stream`):
+			rawBody, err := utils.ConsumeRawBody(httpRes)
+			if err != nil {
+				return nil, err
+			}
+
+			res.Body = rawBody
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
 			if err != nil {

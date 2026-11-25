@@ -1,0 +1,9 @@
+# SpaceOperationsListDownloadsResponse
+
+
+## Fields
+
+| Field                                                                                             | Type                                                                                              | Required                                                                                          | Description                                                                                       |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `HTTPMeta`                                                                                        | [components.HTTPMetadata](../../models/components/httpmetadata.md)                                | :heavy_check_mark:                                                                                | N/A                                                                                               |
+| `ListExportDownloadsResponse`                                                                     | [*components.ListExportDownloadsResponse](../../models/components/listexportdownloadsresponse.md) | :heavy_minus_sign:                                                                                | The request has succeeded.                                                                        |

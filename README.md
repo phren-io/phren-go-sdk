@@ -234,11 +234,27 @@ joining: add a member as the project's admin to hand it over.
 
 * [List](docs/sdks/spaceoperations/README.md#list) - List, newest first.
 * [Get](docs/sdks/spaceoperations/README.md#get) - Get
+* [SpaceOperationsListDownloads](docs/sdks/spaceoperations/README.md#spaceoperationslistdownloads) - List an export's downloads, newest first: who downloaded it, or imported
+from it, and when. Only the space's exporters can read them.
+* [SpaceOperationsAppend](docs/sdks/spaceoperations/README.md#spaceoperationsappend) - Append a piece of a `phren.space/v1` file to an import started without
+`from`: at most 100 lines and 120,000 bytes, the header first and the
+trailer last. Every line is checked as it arrives: a line that isn't a
+valid memory (its shape, kind, labels or source, or over 32 KiB) is a 400
+naming its line number, and nothing in the piece is staged. An import
+holds at most 10,000 lines and 64 MB (413). The trailer's count and
+SHA-256 are checked against every line received, and the import starts.
+Only the person and agent that started the import may append; an import
+that receives nothing for 15 minutes, or no trailer within an hour,
+fails.
 * [Cancel](docs/sdks/spaceoperations/README.md#cancel) - Cancel a delete in flight: the delete stops, its operation is done with a
 `Cancelled` error, and a new undelete operation restores the space.
 Returns that undelete operation. Fails with 409 if the operation has
 already finished (undelete the space instead) or is not a delete. The
 admins of the space's project can cancel.
+* [SpaceOperationsDownload](docs/sdks/spaceoperations/README.md#spaceoperationsdownload) - Download an export's `phren.space/v1` file: the memories it holds that
+still exist. Fails with 409 if the operation is not an export. The
+space's exporters can download it; each download is recorded and
+publishes `space.exported`.
 * [Wait](docs/sdks/spaceoperations/README.md#wait) - Wait for the operation to finish. Returns it when it is done or when
 `timeout` passes, whichever is first; check `done` and call again if it
 is still running.
@@ -259,6 +275,31 @@ background: this returns its long-running operation, which
 `SpaceOperations` get and `:wait` follow until it is done, with the space
 `DELETED`. A deleted space's memories are hidden, and its project's admins
 can undelete it.
+* [SpacesExport](docs/sdks/spaces/README.md#spacesexport) - Export the space (RFC 008). The space's exporters can export it: its
+admins by default. In one transaction this records which memories the
+export holds and closes the returned operation; `SpaceOperations`
+`:download` then serves its `phren.space/v1` file, and an import can take
+it as `from`.
+
+`phren.space/v1` is JSON Lines: a header (`format`, `space` with
+`displayName`, `source`, `exportedAt`, `export`), one line per memory
+(`content`, `kind`, `labels`, `source`, `origin` with `name`,
+`createdAt`, `createdBy`, `createdWith`, and `verified: false` when the
+origin was itself only claimed), and a trailer (`count`, `deleted`,
+`sha256`, the hex SHA-256 of the memory lines). Readers ignore fields
+they don't know.
+* [SpacesImport](docs/sdks/spaces/README.md#spacesimport) - Import into the space, as its importer: the space's editors can import.
+With `from`, an export of this deployment, memory copies the source's
+rows, so each memory's `origin` is verified, and a memory already
+imported from the same origin is skipped: importing the same export
+again adds nothing. `from` also needs `can_export` on the source, and
+counts as a download of it. Without `from`, send the file to the
+returned operation's `:append`; the import starts at its trailer. A
+file's origins are claims (`claimedOrigin`), and a line whose content the
+space held before the import is skipped. Each line is one memory: a line
+over 32 KiB, a memory's limit, is refused with its line number. One
+import runs per organization at a time (409). The operation is done when
+the imported memories are searchable (`progress.indexed`).
 * [SpacesQuery](docs/sdks/spaces/README.md#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
 query it.
 * [Undelete](docs/sdks/spaces/README.md#undelete) - Undelete. The admins of the space's project undelete it. The restore runs

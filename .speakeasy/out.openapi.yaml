@@ -2762,6 +2762,142 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - spaceOperations
+  /v1/organizations/{organization}/spaces/{space}/operations/{operation}/downloads:
+    get:
+      operationId: SpaceOperations_listDownloads
+      description: |-
+        List an export's downloads, newest first: who downloaded it, or imported
+        from it, and when. Only the space's exporters can read them.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: operation
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListExportDownloadsResponse'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaceOperations
+  /v1/organizations/{organization}/spaces/{space}/operations/{operation}:append:
+    post:
+      operationId: SpaceOperations_append
+      description: |-
+        Append a piece of a `phren.space/v1` file to an import started without
+        `from`: at most 100 lines and 120,000 bytes, the header first and the
+        trailer last. Every line is checked as it arrives: a line that isn't a
+        valid memory (its shape, kind, labels or source, or over 32 KiB) is a 400
+        naming its line number, and nothing in the piece is staged. An import
+        holds at most 10,000 lines and 64 MB (413). The trailer's count and
+        SHA-256 are checked against every line received, and the import starts.
+        Only the person and agent that started the import may append; an import
+        that receives nothing for 15 minutes, or no trailer within an hour,
+        fails.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: operation
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceOperation'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '413':
+          description: The request body is larger than the method accepts.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaceOperations
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              contentMediaType: application/octet-stream
   /v1/organizations/{organization}/spaces/{space}/operations/{operation}:cancel:
     post:
       operationId: SpaceOperations_cancel
@@ -2805,6 +2941,78 @@ paths:
                   verb: undelete
                   createTime: '2026-04-02T08:00:00Z'
                   passes: 0
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaceOperations
+  /v1/organizations/{organization}/spaces/{space}/operations/{operation}:download:
+    get:
+      operationId: SpaceOperations_download
+      description: |-
+        Download an export's `phren.space/v1` file: the memories it holds that
+        still exist. Fails with 409 if the operation is not an export. The
+        space's exporters can download it; each download is recorded and
+        publishes `space.exported`.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+        - name: operation
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33
+      responses:
+        '200':
+          description: "An export's `phren.space/v1` file: JSON Lines, the manifest first."
+          headers:
+            Content-Disposition:
+              required: false
+              description: Suggests `<space>.phren.jsonl` as the file's name.
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                contentMediaType: application/octet-stream
         '400':
           description: The request is malformed or fails validation.
           content:
@@ -2925,6 +3133,185 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - spaceOperations
+  /v1/organizations/{organization}/spaces/{space}:export:
+    post:
+      operationId: Spaces_export
+      description: |-
+        Export the space (RFC 008). The space's exporters can export it: its
+        admins by default. In one transaction this records which memories the
+        export holds and closes the returned operation; `SpaceOperations`
+        `:download` then serves its `phren.space/v1` file, and an import can take
+        it as `from`.
+
+        `phren.space/v1` is JSON Lines: a header (`format`, `space` with
+        `displayName`, `source`, `exportedAt`, `export`), one line per memory
+        (`content`, `kind`, `labels`, `source`, `origin` with `name`,
+        `createdAt`, `createdBy`, `createdWith`, and `verified: false` when the
+        origin was itself only claimed), and a trailer (`count`, `deleted`,
+        `sha256`, the hex SHA-256 of the memory lines). Readers ignore fields
+        they don't know.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceOperation'
+              example:
+                name: organizations/acme/spaces/notes/operations/019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33
+                done: true
+                metadata:
+                  target: organizations/acme/spaces/notes
+                  verb: export
+                  createTime: '2026-04-03T09:00:00Z'
+                  endTime: '2026-04-03T09:00:00.021Z'
+                  passes: 1
+                  progress:
+                    total: 36
+                    imported: 0
+                    skipped: 0
+                    indexed: 0
+                response:
+                  name: organizations/acme/spaces/notes
+                  project: organizations/acme/projects/agent
+                  displayName: Notes
+                  state: active
+                  createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                  createdAt: '2026-02-07T11:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaces
+  /v1/organizations/{organization}/spaces/{space}:import:
+    post:
+      operationId: Spaces_import
+      description: |-
+        Import into the space, as its importer: the space's editors can import.
+        With `from`, an export of this deployment, memory copies the source's
+        rows, so each memory's `origin` is verified, and a memory already
+        imported from the same origin is skipped: importing the same export
+        again adds nothing. `from` also needs `can_export` on the source, and
+        counts as a download of it. Without `from`, send the file to the
+        returned operation's `:append`; the import starts at its trailer. A
+        file's origins are claims (`claimedOrigin`), and a line whose content the
+        space held before the import is skipped. Each line is one memory: a line
+        over 32 KiB, a memory's limit, is refused with its line number. One
+        import runs per organization at a time (409). The operation is done when
+        the imported memories are searchable (`progress.indexed`).
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: handbook
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceOperation'
+              example:
+                name: organizations/acme/spaces/handbook/operations/019aa1b4-5e6f-7a8b-9c0d-1e2f3a4b5c44
+                done: false
+                metadata:
+                  target: organizations/acme/spaces/handbook
+                  verb: import
+                  createTime: '2026-04-03T09:01:00Z'
+                  passes: 0
+                  progress:
+                    total: 36
+                    imported: 0
+                    skipped: 0
+                    indexed: 0
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - spaces
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportSpaceRequest'
+            example:
+              from: organizations/acme/spaces/notes/operations/019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33
   /v1/organizations/{organization}/spaces/{space}:query:
     post:
       operationId: Spaces_query
@@ -3269,6 +3656,62 @@ components:
       examples:
         - project: organizations/acme/projects/agent
           displayName: Notes
+    ExportDownload:
+      type: object
+      required:
+        - downloader
+        - startTime
+        - count
+        - deleted
+        - result
+      properties:
+        downloader:
+          type: string
+          description: 'Who downloaded it: `users/{user}`.'
+        agent:
+          type: string
+          description: The agent or API key that acted for them, if any.
+        target:
+          type: string
+          description: 'For an import that read the export: the space it imported into.'
+        startTime:
+          type: string
+          format: date-time
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+        endTime:
+          type: string
+          format: date-time
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+        count:
+          type: integer
+          format: int32
+          description: Memories sent.
+        deleted:
+          type: integer
+          format: int32
+          description: Memories the export held that were deleted before this download.
+        sha256:
+          type: string
+          description: The hex SHA-256 of the memory lines sent, once complete.
+        result:
+          $ref: '#/components/schemas/ExportDownloadResult'
+      description: One download of an export, or one import that read it (RFC 008).
+    ExportDownloadResult:
+      type: string
+      enum:
+        - started
+        - complete
+        - aborted
+      description: How a download of an export ended.
+    ImportSpaceRequest:
+      type: object
+      properties:
+        from:
+          type: string
+          description: |-
+            An export to copy: `organizations/{organization}/spaces/{space}/operations/{operation}`.
+            Absent to send a file to the operation's `:append` instead.
+      description: What `:import` imports.
     Include:
       type: string
       enum:
@@ -3359,6 +3802,16 @@ components:
       description: Where an invitation stands.
       examples:
         - pending
+    ListExportDownloadsResponse:
+      type: object
+      required:
+        - downloads
+      properties:
+        downloads:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExportDownload'
+      description: An export's downloads, newest first.
     ListInvitationsResponse:
       type: object
       required:
@@ -3721,6 +4174,23 @@ components:
           description: When the memory was created.
           x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
           readOnly: true
+        origin:
+          $ref: '#/components/schemas/MemoryOrigin'
+          description: |-
+            Where a memory imported from an export first came from: its name, author
+            and time where it was created, verified from phren's own rows. Absent for
+            a memory created here or imported from a file.
+          readOnly: true
+        claimedOrigin:
+          $ref: '#/components/schemas/MemoryOrigin'
+          description: |-
+            Where a memory imported from a file says it came from. Nobody verified
+            it.
+          readOnly: true
+        importedFrom:
+          type: string
+          description: The space an imported memory was exported from.
+          readOnly: true
         permissions:
           type: array
           items:
@@ -3755,6 +4225,30 @@ components:
       type: string
       pattern: ^[a-z0-9][a-z0-9-]{0,31}$
       description: 'A free-form label: lowercase letters, digits and dashes, at most 32.'
+    MemoryOrigin:
+      type: object
+      required:
+        - name
+        - createdBy
+        - createdAt
+      properties:
+        name:
+          type: string
+          description: The memory's resource name where it was created.
+        createdBy:
+          type: string
+          description: Who created it there.
+        createdWith:
+          type: string
+          description: The agent or API key that created it there, if any.
+        createdAt:
+          type: string
+          format: date-time
+          description: When it was created there.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+      description: |-
+        An imported memory's original identity. `createdBy` and `createdAt` on the
+        memory itself stay the import's.
     OperationMetadata:
       type: object
       required:
@@ -3783,17 +4277,53 @@ components:
           type: integer
           format: int32
           description: Passes the job has made over the target's data so far.
+        progress:
+          $ref: '#/components/schemas/OperationProgress'
+          description: An export's or import's counts. Absent for other verbs.
       description: Progress of a long-running operation.
       examples:
         - target: organizations/acme
           verb: delete
           createTime: '2026-04-01T10:00:00Z'
           passes: 1
+    OperationProgress:
+      type: object
+      required:
+        - total
+        - imported
+        - skipped
+        - indexed
+      properties:
+        total:
+          type: integer
+          format: int32
+          description: Memories to import, or memories exported.
+        imported:
+          type: integer
+          format: int32
+          description: Memories written so far.
+        skipped:
+          type: integer
+          format: int32
+          description: Memories skipped because the target already holds them.
+        indexed:
+          type: integer
+          format: int32
+          description: |-
+            Imported memories recall has indexed, so a search finds them. Memories
+            with nothing but whitespace are never indexed and don't count.
+      description: |-
+        How far an export or import has got, in memories (RFC 008). A memory the
+        target already holds is skipped, not an error. An export's `total` is the
+        memories it holds. An import is done when its memories are searchable:
+        `indexed` reaches the imported memories that recall can index.
     OperationVerb:
       type: string
       enum:
         - delete
         - undelete
+        - export
+        - import
       description: What a long-running operation does to its target.
       examples:
         - delete
