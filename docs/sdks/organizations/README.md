@@ -4,7 +4,13 @@
 
 ### Available Operations
 
-* [List](#list) - List
+* [List](#list) - List the organizations the caller is a member of.
+
+`filter` takes one AIP-160 term on `state`: `state = "ACTIVE"` or
+`state != "ACTIVE"` (any state name). With `showDeleted=true`,
+`state != "ACTIVE"` lists only the deleted organizations (being deleted,
+deleted or being restored) the caller may still view, every page full
+but the last.
 * [Create](#create) - Create
 * [Get](#get) - Get
 * [Delete](#delete) - Soft-delete. The delete runs in the background: this returns its
@@ -15,8 +21,59 @@ long-running operation, done when the organization is `ACTIVE` again.
 
 ## List
 
-List
+List the organizations the caller is a member of.
 
+`filter` takes one AIP-160 term on `state`: `state = "ACTIVE"` or
+`state != "ACTIVE"` (any state name). With `showDeleted=true`,
+`state != "ACTIVE"` lists only the deleted organizations (being deleted,
+deleted or being restored) the caller may still view, every page full
+but the last.
+
+### Example Usage: Deleted only
+
+<!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/v1/organizations" example="Deleted only" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
+        Filter: phren.Pointer("state != \"ACTIVE\""),
+        ShowDeleted: phren.Pointer(true),
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.ListOrganizationsResponse != nil {
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
+    }
+}
+```
 ### Example Usage: Fetch the next page of active organizations
 
 <!-- UsageSnippet language="go" operationID="Organizations_list" method="get" path="/v1/organizations" example="Fetch the next page of active organizations" -->

@@ -1,18 +1,18 @@
 lockVersion: 2.0.0
 id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
 management:
-  docChecksum: 8adf9407edff9a80c444e9199b0a136e
+  docChecksum: a47a37f35d88ad805f60021b64a4de24
   docVersion: 0.0.0
   speakeasyVersion: 1.811.0
   generationVersion: 2.968.1
-  releaseVersion: 0.4.1
-  configChecksum: fb4e5184edd8a1611b2d48291bd3824b
+  releaseVersion: 0.4.2
+  configChecksum: ce9074247678940745af0160434e85bd
   repoURL: https://github.com/phren-io/phren-go-sdk.git
   installationURL: https://github.com/phren-io/phren-go-sdk
 persistentEdits:
-  generation_id: 08dc6fef-2d49-4353-83fd-34e73a952ac8
-  pristine_commit_hash: 60ca7d24370acb62c579ce71487c017a08ce2e31
-  pristine_tree_hash: 0d81ad8503c5480a87cf43f5cc0acc4df16e94ca
+  generation_id: 1162e7dc-8c58-495b-9d3b-80fd75d65ac7
+  pristine_commit_hash: 63c0d802a8fb360e9cb264700f355eac8a04cc27
+  pristine_tree_hash: 1f84c529555c73bd10ef396b4dba998a6309f09f
 features:
   go:
     additionalDependencies: 0.1.0
@@ -52,8 +52,8 @@ trackedFiles:
     pristine_git_object: e6a994416d0f527912d2d272e2583458f4fc9bcb
   USAGE.md:
     id: 3aed33ce6e6f
-    last_write_checksum: sha1:bdea81ada022e4998ce15e6cb229b6b29725a72c
-    pristine_git_object: 99db1b8331d34fcc895e81947bfe31237148d332
+    last_write_checksum: sha1:f74c8c1f95581767b7cdb4d651637f346f70e528
+    pristine_git_object: 36249345c52f458b0d5c23f9d9c8f412a5f4ceb3
   docs/models/apierrors/problemerror.md:
     id: 8f7c03aaf320
     last_write_checksum: sha1:10f20f1a1de2f85885b7195594907cd028232bab
@@ -608,8 +608,8 @@ trackedFiles:
     pristine_git_object: 6bae907b4f12a4ba379b16431493a2f49b6121d6
   docs/sdks/organizations/README.md:
     id: 3425667a2db5
-    last_write_checksum: sha1:53fbaf6eca83c82c5c3202a97b4b17dfd9673ed9
-    pristine_git_object: 2125658e07177953fd09748e47fe5fec3821d239
+    last_write_checksum: sha1:162c80678e9bf1d76f0556136db8c3fb868cb834
+    pristine_git_object: ab07f60ad8a4a30b829cfb335f206cbb3e180296
   docs/sdks/projectmembers/README.md:
     id: 23edba294122
     last_write_checksum: sha1:fb992399d5de8bb5bfd9b2496976ab73dc3a2661
@@ -624,8 +624,8 @@ trackedFiles:
     pristine_git_object: b51b2b5dcc9e3751393fa097676d7d0dd9c251ef
   docs/sdks/spaces/README.md:
     id: 0e054ac466b4
-    last_write_checksum: sha1:9b8a78eb2fe8d57da6225ff66e40ee18c6a4623b
-    pristine_git_object: c50958f9cf040fb7beac7528484ee34b6e0c15d2
+    last_write_checksum: sha1:ff2f0b2ec809b257f1fec2621e7415223ddf1e7a
+    pristine_git_object: fe7309c157fafe3219f309bc350d6e88af95c509
   go.mod:
     id: c47645c391ad
     last_write_checksum: sha1:e05c5281120ac5615edc8333ef284e86272b5e8b
@@ -1084,12 +1084,12 @@ trackedFiles:
     pristine_git_object: a9d7538caffada1ad0539f92c2990e8c041d4342
   organizations.go:
     id: c466ebb9a97c
-    last_write_checksum: sha1:7c9868c0e7ee41d0f01493e04dc047780dbf5024
-    pristine_git_object: 9df678d55974961a4c6c23b286ccb7d3d90fdd54
+    last_write_checksum: sha1:e287ca12cc464f91d370cf8fea2ae50d82307fa1
+    pristine_git_object: ed75c5602dee351ac268e54b77299eec9a7e6109
   phren.go:
     id: 3c886eef84be
-    last_write_checksum: sha1:c4d030b219bfa21f5e7a43fa389f7d1fc31a0bb2
-    pristine_git_object: 09d59c904d6788618be21ec138d56b628a9a3e76
+    last_write_checksum: sha1:3dea9083ddf28ae68b8a76c69c4ce3d823ab03bd
+    pristine_git_object: 91659cb73a24f143bcd598656f378b10c901430d
   projectmembers.go:
     id: e51bf3767009
     last_write_checksum: sha1:4ccbb8217d294d491ead799a9c2335ecae65a8be
@@ -1108,8 +1108,8 @@ trackedFiles:
     pristine_git_object: c1a75f4fa53579e13403d1fadad0f365466c5a59
   spaces.go:
     id: b90c9b8b3435
-    last_write_checksum: sha1:389bde7cf9a9951f1e7563634fb1744c28db61a6
-    pristine_git_object: b9360d3a2b71970c34360460989f6806e87cda67
+    last_write_checksum: sha1:09f26c26abbc793f55f66fc2f57adff84282d6cb
+    pristine_git_object: 81ee468ac5c23141d0586cf0fad29da7f23bc994
   types/bigint.go:
     id: 6f911e1a03c3
     last_write_checksum: sha1:f63da326b7a902bb319d157b10604df53a8957ad
@@ -1257,6 +1257,15 @@ examples:
       responses:
         "200":
           application/json: {"organizations": [{"name": "organizations/acme", "displayName": "Acme Corp", "state": "active", "createdBy": "users/alice", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-03-02T14:05:00Z"}], "nextPageToken": "CiAKGjBpNDd2Nmp2"}
+    Deleted only:
+      parameters:
+        query:
+          pageSize: 50
+          filter: "state != \"ACTIVE\""
+          showDeleted: true
+      responses:
+        "200":
+          application/json: {"organizations": [{"name": "organizations/acme", "displayName": "Acme Corp", "state": "deleted", "createdBy": "users/alice", "createdAt": "2026-01-15T09:30:00Z", "updatedAt": "2026-04-01T10:00:00Z", "deletedAt": "2026-04-01T10:00:00Z", "purgesAt": "2026-05-01T10:00:00Z"}]}
   Organizations_create:
     speakeasy-default-organizations-create:
       parameters:
@@ -1983,4 +1992,3 @@ examples:
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
 examplesVersion: 1.0.2
-releaseNotes: "## Go SDK Changes:\n* `Phren.SpaceOperations.SpaceOperationsListDownloads()`: \n  *  `request` **Changed** (Breaking ⚠️)\n  *  `response.NextPageToken` **Added**\n"

@@ -35,7 +35,13 @@ func newOrganizations(rootSDK *Phren, sdkConfig config.SDKConfiguration, hooks *
 	}
 }
 
-// List
+// List the organizations the caller is a member of.
+//
+// `filter` takes one AIP-160 term on `state`: `state = "ACTIVE"` or
+// `state != "ACTIVE"` (any state name). With `showDeleted=true`,
+// `state != "ACTIVE"` lists only the deleted organizations (being deleted,
+// deleted or being restored) the caller may still view, every page full
+// but the last.
 func (s *Organizations) List(ctx context.Context, request operations.OrganizationsListRequest, opts ...operations.Option) (*operations.OrganizationsListResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{

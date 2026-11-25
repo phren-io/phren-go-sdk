@@ -6,10 +6,15 @@
 
 * [List](#list) - List the spaces in the organization the caller can see.
 
-`filter` takes an AIP-160 expression on `project`, the only field it
-supports: `project = "organizations/{organization}/projects/{project}"`
-lists that project's spaces. With `include=permissions`, the list's
-`create` is known only when `filter` names the project. With
+`filter` takes AIP-160 terms joined by AND, each at most once:
+`project = "organizations/{organization}/projects/{project}"` lists that
+project's spaces, `display_name:"text"` those whose display name
+contains the text (ignoring case), and `state = "ACTIVE"` or
+`state != "ACTIVE"` (any state name) those in, or not in, that state.
+With `showDeleted=true`, `state != "ACTIVE"` lists only the deleted
+spaces the caller may undelete, every page full but the last. With
+`include=permissions`, the list's `create` is known only when `filter`
+names the project. With
 `showDeleted`, it also lists the deleted spaces the caller can undelete.
 * [Create](#create) - Create. The project's admins create spaces in it.
 * [Get](#get) - Get
@@ -53,10 +58,15 @@ space is `ACTIVE` again.
 
 List the spaces in the organization the caller can see.
 
-`filter` takes an AIP-160 expression on `project`, the only field it
-supports: `project = "organizations/{organization}/projects/{project}"`
-lists that project's spaces. With `include=permissions`, the list's
-`create` is known only when `filter` names the project. With
+`filter` takes AIP-160 terms joined by AND, each at most once:
+`project = "organizations/{organization}/projects/{project}"` lists that
+project's spaces, `display_name:"text"` those whose display name
+contains the text (ignoring case), and `state = "ACTIVE"` or
+`state != "ACTIVE"` (any state name) those in, or not in, that state.
+With `showDeleted=true`, `state != "ACTIVE"` lists only the deleted
+spaces the caller may undelete, every page full but the last. With
+`include=permissions`, the list's `create` is known only when `filter`
+names the project. With
 `showDeleted`, it also lists the deleted spaces the caller can undelete.
 
 ### Example Usage: With permissions

@@ -16,7 +16,14 @@ paths:
   /v1/organizations:
     get:
       operationId: Organizations_list
-      description: List
+      description: |-
+        List the organizations the caller is a member of.
+
+        `filter` takes one AIP-160 term on `state`: `state = "ACTIVE"` or
+        `state != "ACTIVE"` (any state name). With `showDeleted=true`,
+        `state != "ACTIVE"` lists only the deleted organizations (being deleted,
+        deleted or being restored) the caller may still view, every page full
+        but the last.
       parameters:
         - name: pageSize
           in: query
@@ -30,6 +37,9 @@ paths:
             default: 50
           explode: false
           examples:
+            Deleted only:
+              summary: Deleted only
+              value: 50
             Next page:
               summary: Next page
               value: 50
@@ -56,6 +66,9 @@ paths:
             maxLength: 1024
           explode: false
           examples:
+            Deleted only:
+              summary: Deleted only
+              value: state != "ACTIVE"
             Next page:
               summary: Next page
               value: state = "ACTIVE"
@@ -79,6 +92,9 @@ paths:
             default: false
           explode: false
           examples:
+            Deleted only:
+              summary: Deleted only
+              value: true
             First page:
               summary: First page
               value: false
@@ -90,6 +106,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListOrganizationsResponse'
               examples:
+                Deleted only:
+                  summary: Deleted only
+                  value:
+                    organizations:
+                      - name: organizations/acme
+                        displayName: Acme Corp
+                        state: deleted
+                        createdBy: users/alice
+                        createdAt: '2026-01-15T09:30:00Z'
+                        updatedAt: '2026-04-01T10:00:00Z'
+                        deletedAt: '2026-04-01T10:00:00Z'
+                        purgesAt: '2026-05-01T10:00:00Z'
                 Next page:
                   summary: Next page
                   value:
@@ -1886,10 +1914,15 @@ paths:
       description: |-
         List the spaces in the organization the caller can see.
 
-        `filter` takes an AIP-160 expression on `project`, the only field it
-        supports: `project = "organizations/{organization}/projects/{project}"`
-        lists that project's spaces. With `include=permissions`, the list's
-        `create` is known only when `filter` names the project. With
+        `filter` takes AIP-160 terms joined by AND, each at most once:
+        `project = "organizations/{organization}/projects/{project}"` lists that
+        project's spaces, `display_name:"text"` those whose display name
+        contains the text (ignoring case), and `state = "ACTIVE"` or
+        `state != "ACTIVE"` (any state name) those in, or not in, that state.
+        With `showDeleted=true`, `state != "ACTIVE"` lists only the deleted
+        spaces the caller may undelete, every page full but the last. With
+        `include=permissions`, the list's `create` is known only when `filter`
+        names the project. With
         `showDeleted`, it also lists the deleted spaces the caller can undelete.
       parameters:
         - name: pageSize

@@ -18,8 +18,9 @@ func main() {
 	)
 
 	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
-		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
-		Filter:    phren.Pointer("state = \"ACTIVE\""),
+		PageToken:   phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:      phren.Pointer("state != \"ACTIVE\""),
+		ShowDeleted: phren.Pointer(true),
 	})
 	if err != nil {
 		log.Fatal(err)

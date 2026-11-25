@@ -68,8 +68,9 @@ func main() {
 	)
 
 	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
-		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
-		Filter:    phren.Pointer("state = \"ACTIVE\""),
+		PageToken:   phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:      phren.Pointer("state != \"ACTIVE\""),
+		ShowDeleted: phren.Pointer(true),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -125,8 +126,9 @@ func main() {
 	)
 
 	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
-		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
-		Filter:    phren.Pointer("state = \"ACTIVE\""),
+		PageToken:   phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:      phren.Pointer("state != \"ACTIVE\""),
+		ShowDeleted: phren.Pointer(true),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -204,7 +206,13 @@ is still running.
 
 ### [Organizations](docs/sdks/organizations/README.md)
 
-* [List](docs/sdks/organizations/README.md#list) - List
+* [List](docs/sdks/organizations/README.md#list) - List the organizations the caller is a member of.
+
+`filter` takes one AIP-160 term on `state`: `state = "ACTIVE"` or
+`state != "ACTIVE"` (any state name). With `showDeleted=true`,
+`state != "ACTIVE"` lists only the deleted organizations (being deleted,
+deleted or being restored) the caller may still view, every page full
+but the last.
 * [Create](docs/sdks/organizations/README.md#create) - Create
 * [Get](docs/sdks/organizations/README.md#get) - Get
 * [Delete](docs/sdks/organizations/README.md#delete) - Soft-delete. The delete runs in the background: this returns its
@@ -263,10 +271,15 @@ is still running.
 
 * [List](docs/sdks/spaces/README.md#list) - List the spaces in the organization the caller can see.
 
-`filter` takes an AIP-160 expression on `project`, the only field it
-supports: `project = "organizations/{organization}/projects/{project}"`
-lists that project's spaces. With `include=permissions`, the list's
-`create` is known only when `filter` names the project. With
+`filter` takes AIP-160 terms joined by AND, each at most once:
+`project = "organizations/{organization}/projects/{project}"` lists that
+project's spaces, `display_name:"text"` those whose display name
+contains the text (ignoring case), and `state = "ACTIVE"` or
+`state != "ACTIVE"` (any state name) those in, or not in, that state.
+With `showDeleted=true`, `state != "ACTIVE"` lists only the deleted
+spaces the caller may undelete, every page full but the last. With
+`include=permissions`, the list's `create` is known only when `filter`
+names the project. With
 `showDeleted`, it also lists the deleted spaces the caller can undelete.
 * [Create](docs/sdks/spaces/README.md#create) - Create. The project's admins create spaces in it.
 * [Get](docs/sdks/spaces/README.md#get) - Get
@@ -336,8 +349,9 @@ func main() {
 	)
 
 	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
-		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
-		Filter:    phren.Pointer("state = \"ACTIVE\""),
+		PageToken:   phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:      phren.Pointer("state != \"ACTIVE\""),
+		ShowDeleted: phren.Pointer(true),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -389,8 +403,9 @@ func main() {
 	)
 
 	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
-		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
-		Filter:    phren.Pointer("state = \"ACTIVE\""),
+		PageToken:   phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:      phren.Pointer("state != \"ACTIVE\""),
+		ShowDeleted: phren.Pointer(true),
 	}, operations.WithRetries(
 		retry.Config{
 			Strategy: "backoff",
@@ -456,8 +471,9 @@ func main() {
 	)
 
 	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
-		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
-		Filter:    phren.Pointer("state = \"ACTIVE\""),
+		PageToken:   phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:      phren.Pointer("state != \"ACTIVE\""),
+		ShowDeleted: phren.Pointer(true),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -519,8 +535,9 @@ func main() {
 	)
 
 	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
-		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
-		Filter:    phren.Pointer("state = \"ACTIVE\""),
+		PageToken:   phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:      phren.Pointer("state != \"ACTIVE\""),
+		ShowDeleted: phren.Pointer(true),
 	})
 	if err != nil {
 
@@ -575,8 +592,9 @@ func main() {
 	)
 
 	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
-		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
-		Filter:    phren.Pointer("state = \"ACTIVE\""),
+		PageToken:   phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:      phren.Pointer("state != \"ACTIVE\""),
+		ShowDeleted: phren.Pointer(true),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -623,8 +641,9 @@ func main() {
 	)
 
 	res, err := s.Organizations.List(ctx, operations.OrganizationsListRequest{
-		PageToken: phren.Pointer("CiAKGjBpNDd2Nmp2"),
-		Filter:    phren.Pointer("state = \"ACTIVE\""),
+		PageToken:   phren.Pointer("CiAKGjBpNDd2Nmp2"),
+		Filter:      phren.Pointer("state != \"ACTIVE\""),
+		ShowDeleted: phren.Pointer(true),
 	})
 	if err != nil {
 		log.Fatal(err)
