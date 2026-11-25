@@ -573,13 +573,7 @@ func (s *SpaceOperations) Get(ctx context.Context, organization string, space st
 
 // SpaceOperationsListDownloads - List an export's downloads, newest first: who downloaded it, or imported
 // from it, and when. Only the space's exporters can read them.
-func (s *SpaceOperations) SpaceOperationsListDownloads(ctx context.Context, organization string, space string, operation string, opts ...operations.Option) (*operations.SpaceOperationsListDownloadsResponse, error) {
-	request := operations.SpaceOperationsListDownloadsRequest{
-		Organization: organization,
-		Space:        space,
-		Operation:    operation,
-	}
-
+func (s *SpaceOperations) SpaceOperationsListDownloads(ctx context.Context, request operations.SpaceOperationsListDownloadsRequest, opts ...operations.Option) (*operations.SpaceOperationsListDownloadsResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -616,6 +610,7 @@ func (s *SpaceOperations) SpaceOperationsListDownloads(ctx context.Context, orga
 	if timeout == nil {
 		timeout = s.sdkConfiguration.Timeout
 	}
+	paginationCtx := ctx
 
 	if timeout != nil {
 		var cancel context.CancelFunc
@@ -629,6 +624,10 @@ func (s *SpaceOperations) SpaceOperationsListDownloads(ctx context.Context, orga
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
 
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
 		return nil, err
@@ -741,6 +740,50 @@ func (s *SpaceOperations) SpaceOperationsListDownloads(ctx context.Context, orga
 			Request:  req,
 			Response: httpRes,
 		},
+	}
+	res.Next = func() (*operations.SpaceOperationsListDownloadsResponse, error) {
+		rawBody, err := utils.ConsumeRawBody(httpRes)
+		if err != nil {
+			return nil, err
+		}
+
+		b, err := ajson.Unmarshal(rawBody)
+		if err != nil {
+			return nil, err
+		}
+		nC, err := ajson.Eval(b, "$.nextPageToken")
+		if err != nil {
+			return nil, err
+		}
+		var nCVal string
+
+		if nC.IsNumeric() {
+			numVal, err := nC.GetNumeric()
+			if err != nil {
+				return nil, err
+			}
+			// GetNumeric returns as float64 so convert to the appropriate type.
+			nCVal = strconv.FormatFloat(numVal, 'f', 0, 64)
+		} else {
+			val, err := nC.Value()
+			if err != nil {
+				return nil, err
+			}
+			if val == nil {
+				return nil, nil
+			}
+			nCVal = val.(string)
+			if strings.TrimSpace(nCVal) == "" {
+				return nil, nil
+			}
+		}
+		request.PageToken = &nCVal
+
+		return s.SpaceOperationsListDownloads(
+			paginationCtx,
+			request,
+			opts...,
+		)
 	}
 
 	switch {

@@ -9,9 +9,38 @@ import (
 )
 
 type SpaceOperationsListDownloadsRequest struct {
-	Organization string `pathParam:"style=simple,explode=false,name=organization"`
-	Space        string `pathParam:"style=simple,explode=false,name=space"`
-	Operation    string `pathParam:"style=simple,explode=false,name=operation"`
+	// Maximum number of results to return.
+	PageSize *int `default:"50" queryParam:"style=form,explode=false,name=pageSize"`
+	// Token from a previous response's nextPageToken.
+	PageToken    *string `queryParam:"style=form,explode=false,name=pageToken"`
+	Organization string  `pathParam:"style=simple,explode=false,name=organization"`
+	Space        string  `pathParam:"style=simple,explode=false,name=space"`
+	Operation    string  `pathParam:"style=simple,explode=false,name=operation"`
+}
+
+func (s SpaceOperationsListDownloadsRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *SpaceOperationsListDownloadsRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *SpaceOperationsListDownloadsRequest) GetPageSize() *int {
+	if s == nil {
+		return nil
+	}
+	return s.PageSize
+}
+
+func (s *SpaceOperationsListDownloadsRequest) GetPageToken() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PageToken
 }
 
 func (s *SpaceOperationsListDownloadsRequest) GetOrganization() string {
@@ -39,6 +68,8 @@ type SpaceOperationsListDownloadsResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
 	// The request has succeeded.
 	ListExportDownloadsResponse *components.ListExportDownloadsResponse
+
+	Next func() (*SpaceOperationsListDownloadsResponse, error)
 }
 
 func (s SpaceOperationsListDownloadsResponse) MarshalJSON() ([]byte, error) {
