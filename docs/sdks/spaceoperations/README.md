@@ -170,6 +170,7 @@ import(
 	"context"
 	"os"
 	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/operations"
 	"log"
 )
 
@@ -180,25 +181,39 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    res, err := s.SpaceOperations.SpaceOperationsListDownloads(ctx, "<value>", "<value>", "<value>")
+    res, err := s.SpaceOperations.SpaceOperationsListDownloads(ctx, operations.SpaceOperationsListDownloadsRequest{
+        Organization: "<value>",
+        Space: "<value>",
+        Operation: "<value>",
+    })
     if err != nil {
         log.Fatal(err)
     }
     if res.ListExportDownloadsResponse != nil {
-        // handle response
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
     }
 }
 ```
 
 ### Parameters
 
-| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
-| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
-| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
-| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
-| `operation`                                              | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
-| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
+| Parameter                                                                                                        | Type                                                                                                             | Required                                                                                                         | Description                                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                            | [context.Context](https://pkg.go.dev/context#Context)                                                            | :heavy_check_mark:                                                                                               | The context to use for the request.                                                                              |
+| `request`                                                                                                        | [operations.SpaceOperationsListDownloadsRequest](../../models/operations/spaceoperationslistdownloadsrequest.md) | :heavy_check_mark:                                                                                               | The request object to use for the request.                                                                       |
+| `opts`                                                                                                           | [][operations.Option](../../models/operations/option.md)                                                         | :heavy_minus_sign:                                                                                               | The options for this request.                                                                                    |
 
 ### Response
 

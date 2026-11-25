@@ -3,9 +3,12 @@
 
 package components
 
-// ListExportDownloadsResponse - An export's downloads, newest first.
+// ListExportDownloadsResponse - A page of an export's downloads, newest first.
 type ListExportDownloadsResponse struct {
+	// The downloads on this page.
 	Downloads []ExportDownload `json:"downloads"`
+	// Token for the next page. Absent on the last page.
+	NextPageToken *string `json:"nextPageToken,omitzero"`
 }
 
 func (l *ListExportDownloadsResponse) GetDownloads() []ExportDownload {
@@ -13,4 +16,11 @@ func (l *ListExportDownloadsResponse) GetDownloads() []ExportDownload {
 		return []ExportDownload{}
 	}
 	return l.Downloads
+}
+
+func (l *ListExportDownloadsResponse) GetNextPageToken() *string {
+	if l == nil {
+		return nil
+	}
+	return l.NextPageToken
 }

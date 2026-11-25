@@ -2769,6 +2769,24 @@ paths:
         List an export's downloads, newest first: who downloaded it, or imported
         from it, and when. Only the space's exporters can read them.
       parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
         - name: organization
           in: path
           required: true
@@ -2817,6 +2835,14 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - spaceOperations
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
   /v1/organizations/{organization}/spaces/{space}/operations/{operation}:append:
     post:
       operationId: SpaceOperations_append
@@ -3811,7 +3837,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ExportDownload'
-      description: An export's downloads, newest first.
+          description: The downloads on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of an export's downloads, newest first.
     ListInvitationsResponse:
       type: object
       required:
