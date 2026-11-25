@@ -18,6 +18,26 @@ background: this returns its long-running operation, which
 `SpaceOperations` get and `:wait` follow until it is done, with the space
 `DELETED`. A deleted space's memories are hidden, and its project's admins
 can undelete it.
+* [SpacesExport](#spacesexport) - Export the space: its memories as one `phren.space/v1` file. The space's
+exporters can export it (its admins, and whoever they grant it to). This
+returns a long-running operation; once it is done, `SpaceOperations`
+`:download` serves the file. The file holds the memories that exist when
+the export starts.
+
+`phren.space/v1` is JSON Lines. The first line is the manifest, with
+`format` (`phren.space/v1`), `space`, `displayName`, `exportTime`,
+`count` and `sha256`, the hex SHA-256 of the lines after it. Each later
+line is one memory, with `content`, `kind`, `labels`, `source` and
+`origin` (`name`, `createdAt`, `createdBy`, `createdWith`, and `part` and
+`parts` for a split one). Readers ignore fields they don't know.
+* [SpacesImport](#spacesimport) - Import a `phren.space/v1` file into the space, as its importer: the
+space's editors can import. This returns a long-running operation whose
+`progress` counts the memories as they are written. Each memory keeps
+its original author and time as `origin` and names the space it came
+from in `importedFrom`. A line the space already holds, by origin or by
+content, is skipped, so importing the same file again adds nothing. A
+line over 32 KiB is split on paragraph boundaries into numbered parts.
+The file is at most 32 MB.
 * [SpacesQuery](#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
 query it.
 * [Undelete](#undelete) - Undelete. The admins of the space's project undelete it. The restore runs
@@ -406,6 +426,138 @@ func main() {
 | ------------------------ | ------------------------ | ------------------------ |
 | apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
 | apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
+## SpacesExport
+
+Export the space: its memories as one `phren.space/v1` file. The space's
+exporters can export it (its admins, and whoever they grant it to). This
+returns a long-running operation; once it is done, `SpaceOperations`
+`:download` serves the file. The file holds the memories that exist when
+the export starts.
+
+`phren.space/v1` is JSON Lines. The first line is the manifest, with
+`format` (`phren.space/v1`), `space`, `displayName`, `exportTime`,
+`count` and `sha256`, the hex SHA-256 of the lines after it. Each later
+line is one memory, with `content`, `kind`, `labels`, `source` and
+`origin` (`name`, `createdAt`, `createdBy`, `createdWith`, and `part` and
+`parts` for a split one). Readers ignore fields they don't know.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="Spaces_export" method="post" path="/v1/organizations/{organization}/spaces/{space}:export" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.Spaces.SpacesExport(ctx, "acme", "notes")
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.SpaceOperation != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
+| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | notes                                                    |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
+
+### Response
+
+**[*operations.SpacesExportResponse](../../models/operations/spacesexportresponse.md), error**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
+## SpacesImport
+
+Import a `phren.space/v1` file into the space, as its importer: the
+space's editors can import. This returns a long-running operation whose
+`progress` counts the memories as they are written. Each memory keeps
+its original author and time as `origin` and names the space it came
+from in `importedFrom`. A line the space already holds, by origin or by
+content, is skipped, so importing the same file again adds nothing. A
+line over 32 KiB is split on paragraph boundaries into numbered parts.
+The file is at most 32 MB.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="Spaces_import" method="post" path="/v1/organizations/{organization}/spaces/{space}:import" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    example, fileErr := os.Open("example.file")
+    if fileErr != nil {
+        panic(fileErr)
+    }
+
+    res, err := s.Spaces.SpacesImport(ctx, "<value>", "<value>", example)
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.SpaceOperation != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `body`                                                   | `any`                                                    | :heavy_check_mark:                                       | N/A                                                      |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
+
+### Response
+
+**[*operations.SpacesImportResponse](../../models/operations/spacesimportresponse.md), error**
+
+### Errors
+
+| Error Type                   | Status Code                  | Content Type                 |
+| ---------------------------- | ---------------------------- | ---------------------------- |
+| apierrors.ProblemError       | 400, 401, 403, 404, 409, 413 | application/problem+json     |
+| apierrors.APIError           | 4XX, 5XX                     | \*/\*                        |
 
 ## SpacesQuery
 

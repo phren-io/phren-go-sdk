@@ -20,6 +20,10 @@ type OperationMetadata struct {
 	EndTime *time.Time `json:"endTime,omitzero"`
 	// Passes the job has made over the target's data so far.
 	Passes int `json:"passes"`
+	// How far an export or import has got, in memories. A line of the file that
+	// the target already holds (the same origin, or the same content) is skipped,
+	// not an error.
+	Progress *OperationProgress `json:"progress,omitzero"`
 }
 
 func (o OperationMetadata) MarshalJSON() ([]byte, error) {
@@ -66,4 +70,11 @@ func (o *OperationMetadata) GetPasses() int {
 		return 0
 	}
 	return o.Passes
+}
+
+func (o *OperationMetadata) GetProgress() *OperationProgress {
+	if o == nil {
+		return nil
+	}
+	return o.Progress
 }

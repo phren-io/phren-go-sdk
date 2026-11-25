@@ -11,6 +11,9 @@
 Returns that undelete operation. Fails with 409 if the operation has
 already finished (undelete the space instead) or is not a delete. The
 admins of the space's project can cancel.
+* [SpaceOperationsDownload](#spaceoperationsdownload) - Download an export's `phren.space/v1` file. Fails with 409 while the
+export runs, or if the operation is not an export. The space's exporters
+can download it.
 * [Wait](#wait) - Wait for the operation to finish. Returns it when it is done or when
 `timeout` passes, whichever is first; check `done` and call again if it
 is still running.
@@ -190,6 +193,63 @@ func main() {
 ### Response
 
 **[*operations.SpaceOperationsCancelResponse](../../models/operations/spaceoperationscancelresponse.md), error**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
+## SpaceOperationsDownload
+
+Download an export's `phren.space/v1` file. Fails with 409 while the
+export runs, or if the operation is not an export. The space's exporters
+can download it.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="SpaceOperations_download" method="get" path="/v1/organizations/{organization}/spaces/{space}/operations/{operation}:download" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.SpaceOperations.SpaceOperationsDownload(ctx, "acme", "notes", "019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33")
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.Body != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              | Example                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |                                                          |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | acme                                                     |
+| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | notes                                                    |
+| `operation`                                              | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      | 019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33                     |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |                                                          |
+
+### Response
+
+**[*operations.SpaceOperationsDownloadResponse](../../models/operations/spaceoperationsdownloadresponse.md), error**
 
 ### Errors
 

@@ -31,6 +31,12 @@ type Memory struct {
 	CreatedWith *string `json:"createdWith,omitzero"`
 	// When the memory was created.
 	CreatedAt time.Time `json:"createdAt"`
+	// An imported memory's original identity. The importer can't change it: it
+	// comes from the exported file, and `createdBy` and `createdAt` on the memory
+	// itself stay the import's.
+	Origin *MemoryOrigin `json:"origin,omitzero"`
+	// The space an imported memory was exported from.
+	ImportedFrom *string `json:"importedFrom,omitzero"`
 	// The methods the caller may call on this resource, such as `delete`.
 	// Returned only with `include=permissions`.
 	Permissions []string `json:"permissions,omitzero"`
@@ -101,6 +107,20 @@ func (m *Memory) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return m.CreatedAt
+}
+
+func (m *Memory) GetOrigin() *MemoryOrigin {
+	if m == nil {
+		return nil
+	}
+	return m.Origin
+}
+
+func (m *Memory) GetImportedFrom() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ImportedFrom
 }
 
 func (m *Memory) GetPermissions() []string {

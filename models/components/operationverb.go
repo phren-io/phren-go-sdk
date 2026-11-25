@@ -9,6 +9,8 @@ type OperationVerb string
 const (
 	OperationVerbDelete   OperationVerb = "delete"
 	OperationVerbUndelete OperationVerb = "undelete"
+	OperationVerbExport   OperationVerb = "export"
+	OperationVerbImport   OperationVerb = "import"
 )
 
 func (e OperationVerb) ToPointer() *OperationVerb {
@@ -19,7 +21,7 @@ func (e OperationVerb) ToPointer() *OperationVerb {
 func (e *OperationVerb) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "delete", "undelete":
+		case "delete", "undelete", "export", "import":
 			return true
 		}
 	}
