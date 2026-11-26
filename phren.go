@@ -3,7 +3,7 @@
 
 package phren
 
-// Generated from OpenAPI doc version 0.0.0 and generator version 2.968.1
+// Generated from OpenAPI doc version 0.0.0 and generator version 2.968.17
 
 import (
 	"context"
@@ -138,11 +138,11 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *Phren {
 	sdk := &Phren{
-		SDKVersion: "0.4.2",
+		SDKVersion: "0.4.3",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "speakeasy-sdk/go 0.4.2 2.968.1 0.0.0 github.com/phren-io/phren-go-sdk",
-			SDKVersion:        "0.4.2",
-			GenVersion:        "2.968.1",
+			UserAgent:         "speakeasy-sdk/go 0.4.3 2.968.17 0.0.0 github.com/phren-io/phren-go-sdk",
+			SDKVersion:        "0.4.3",
+			GenVersion:        "2.968.17",
 			OpenAPIDocVersion: "0.0.0",
 			ServerList:        ServerList,
 		},
