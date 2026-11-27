@@ -176,6 +176,9 @@ invitation is pending and unexpired; otherwise it fails with 409.
 
 * [List](docs/sdks/members/README.md#list) - List
 * [Get](docs/sdks/members/README.md#get) - Get
+* [MembersUpdate](docs/sdks/members/README.md#membersupdate) - Change a member's roles: admins make another member an admin, or make an
+admin a plain member. Demoting the organization's last admin fails with
+409.
 * [Delete](docs/sdks/members/README.md#delete) - Remove a member. Admins remove anyone, and members remove themselves to
 leave. Removing the organization's last admin fails with 409.
 
@@ -215,6 +218,9 @@ organization `ACTIVE`.
 one as an admin needs the right to grant admin. Fails with 409 if they're
 already in the project.
 * [Get](docs/sdks/projectmembers/README.md#get) - Get
+* [ProjectMembersUpdate](docs/sdks/projectmembers/README.md#projectmembersupdate) - Change a member's roles in the project. Making someone an admin needs the
+right to grant admin, and making an admin a plain member the right to
+revoke it. Demoting the project's last admin fails with 409.
 * [Delete](docs/sdks/projectmembers/README.md#delete) - Remove a member. Project admins remove anyone; members remove themselves.
 
 ### [Projects](docs/sdks/projects/README.md)

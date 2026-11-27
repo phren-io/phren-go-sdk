@@ -965,6 +965,81 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - members
+    patch:
+      operationId: Members_update
+      description: |-
+        Change a member's roles: admins make another member an admin, or make an
+        admin a plain member. Demoting the organization's last admin fails with
+        409.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: member
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+              example:
+                name: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+                user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                email: bob@acme.example
+                displayName: Bob Jones
+                roles:
+                  - admin
+                createdAt: '2026-02-03T11:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - members
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberUpdate'
+            example:
+              roles:
+                - admin
     delete:
       operationId: Members_delete
       description: |-
@@ -1486,6 +1561,88 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - projectMembers
+    patch:
+      operationId: ProjectMembers_update
+      description: |-
+        Change a member's roles in the project. Making someone an admin needs the
+        right to grant admin, and making an admin a plain member the right to
+        revoke it. Demoting the project's last admin fails with 409.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+          example: agent
+        - name: member
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMember'
+              example:
+                name: organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04
+                member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
+                user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                email: bob@acme.example
+                displayName: Bob Jones
+                roles:
+                  - admin
+                createdAt: '2026-02-05T09:05:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - projectMembers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberUpdate'
+            example:
+              roles:
+                - admin
     delete:
       operationId: ProjectMembers_delete
       description: Remove a member. Project admins remove anyone; members remove themselves.
@@ -3109,6 +3266,17 @@ components:
       description: A role a member holds in its organization.
       examples:
         - admin
+    MemberUpdate:
+      type: object
+      required:
+        - roles
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberRole'
+          description: The roles the member holds from now on. Empty makes them a plain member.
+      description: The fields an update of a member sets.
     Memory:
       type: object
       required:
