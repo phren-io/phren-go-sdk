@@ -24,8 +24,8 @@ type Space struct {
 	// Name of the user that created the space.
 	CreatedBy string `json:"createdBy"`
 	// Name of the agent that created the space for the user: `agents/{agent}`
-	// for an agent the user connected, or `apiKeys/{apiKey}` for one of their
-	// API keys. Absent when the user created it themselves.
+	// for an agent the user connected. Absent when the user created it
+	// themselves.
 	CreatedWith *string `json:"createdWith,omitzero"`
 	// When the space was created.
 	CreatedAt time.Time `json:"createdAt"`
