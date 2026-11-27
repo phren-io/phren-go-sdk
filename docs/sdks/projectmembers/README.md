@@ -9,6 +9,9 @@
 one as an admin needs the right to grant admin. Fails with 409 if they're
 already in the project.
 * [Get](#get) - Get
+* [ProjectMembersUpdate](#projectmembersupdate) - Change a member's roles in the project. Making someone an admin needs the
+right to grant admin, and making an admin a plain member the right to
+revoke it. Demoting the project's last admin fails with 409.
 * [Delete](#delete) - Remove a member. Project admins remove anyone; members remove themselves.
 
 ## List
@@ -197,6 +200,69 @@ func main() {
 | Error Type               | Status Code              | Content Type             |
 | ------------------------ | ------------------------ | ------------------------ |
 | apierrors.ProblemError   | 400, 401, 403, 404       | application/problem+json |
+| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+
+## ProjectMembersUpdate
+
+Change a member's roles in the project. Making someone an admin needs the
+right to grant admin, and making an admin a plain member the right to
+revoke it. Demoting the project's last admin fails with 409.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="ProjectMembers_update" method="patch" path="/v1/organizations/{organization}/projects/{project}/members/{member}" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	phren "github.com/phren-io/phren-go-sdk"
+	"github.com/phren-io/phren-go-sdk/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := phren.New(
+        phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
+    )
+
+    res, err := s.ProjectMembers.ProjectMembersUpdate(ctx, "acme", "agent", "0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", components.MemberUpdate{
+        Roles: []components.MemberRole{
+            components.MemberRoleAdmin,
+        },
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res.ProjectMember != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                          | Type                                                               | Required                                                           | Description                                                        | Example                                                            |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `ctx`                                                              | [context.Context](https://pkg.go.dev/context#Context)              | :heavy_check_mark:                                                 | The context to use for the request.                                |                                                                    |
+| `organization`                                                     | `string`                                                           | :heavy_check_mark:                                                 | N/A                                                                | acme                                                               |
+| `project`                                                          | `string`                                                           | :heavy_check_mark:                                                 | N/A                                                                | agent                                                              |
+| `member`                                                           | `string`                                                           | :heavy_check_mark:                                                 | N/A                                                                | 0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04                               |
+| `body`                                                             | [components.MemberUpdate](../../models/components/memberupdate.md) | :heavy_check_mark:                                                 | N/A                                                                |                                                                    |
+| `opts`                                                             | [][operations.Option](../../models/operations/option.md)           | :heavy_minus_sign:                                                 | The options for this request.                                      |                                                                    |
+
+### Response
+
+**[*operations.ProjectMembersUpdateResponse](../../models/operations/projectmembersupdateresponse.md), error**
+
+### Errors
+
+| Error Type               | Status Code              | Content Type             |
+| ------------------------ | ------------------------ | ------------------------ |
+| apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
 | apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
 
 ## Delete
