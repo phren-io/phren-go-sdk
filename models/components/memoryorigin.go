@@ -15,7 +15,7 @@ type MemoryOrigin struct {
 	Name string `json:"name"`
 	// Who created it there.
 	CreatedBy string `json:"createdBy"`
-	// The agent or API key that created it there, if any.
+	// The agent that created it there, if any.
 	CreatedWith *string `json:"createdWith,omitzero"`
 	// When it was created there.
 	CreatedAt time.Time `json:"createdAt"`

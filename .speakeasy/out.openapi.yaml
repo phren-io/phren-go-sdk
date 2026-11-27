@@ -2075,7 +2075,7 @@ paths:
         '429':
           description: |-
             The caller made too many requests of this kind. Retry after the number of
-            seconds in `Retry-After`. Limits count per agent or API key when one acts,
+            seconds in `Retry-After`. Limits count per agent when one acts,
             else per user.
           headers:
             Retry-After:
@@ -2435,7 +2435,7 @@ paths:
         '429':
           description: |-
             The caller made too many requests of this kind. Retry after the number of
-            seconds in `Retry-After`. Limits count per agent or API key when one acts,
+            seconds in `Retry-After`. Limits count per agent when one acts,
             else per user.
           headers:
             Retry-After:
@@ -3150,8 +3150,8 @@ components:
           type: string
           description: |-
             Name of the agent that created the memory for the user: `agents/{agent}`
-            for an agent the user connected, or `apiKeys/{apiKey}` for one of their
-            API keys. Absent when the user created it themselves.
+            for an agent the user connected. Absent when the user created it
+            themselves.
           readOnly: true
         createdAt:
           type: string
@@ -3225,7 +3225,7 @@ components:
           description: Who created it there.
         createdWith:
           type: string
-          description: The agent or API key that created it there, if any.
+          description: The agent that created it there, if any.
         createdAt:
           type: string
           format: date-time
@@ -3556,8 +3556,8 @@ components:
           type: string
           description: |-
             Name of the agent that created the space for the user: `agents/{agent}`
-            for an agent the user connected, or `apiKeys/{apiKey}` for one of their
-            API keys. Absent when the user created it themselves.
+            for an agent the user connected. Absent when the user created it
+            themselves.
           readOnly: true
         createdAt:
           type: string
