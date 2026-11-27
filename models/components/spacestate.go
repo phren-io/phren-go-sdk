@@ -17,6 +17,16 @@ func (e SpaceState) ToPointer() *SpaceState {
 	return &e
 }
 
+// SpaceStateValues returns every known SpaceState value in schema order.
+func SpaceStateValues() []SpaceState {
+	return []SpaceState{
+		SpaceStateActive,
+		SpaceStateDeleting,
+		SpaceStateDeleted,
+		SpaceStateRestoring,
+	}
+}
+
 // IsExact returns true if the value matches a known enum value, false otherwise.
 func (e *SpaceState) IsExact() bool {
 	if e != nil {

@@ -18,6 +18,13 @@ const (
 func (e Include) ToPointer() *Include {
 	return &e
 }
+
+// IncludeValues returns every known Include value in schema order.
+func IncludeValues() []Include {
+	return []Include{
+		IncludePermissions,
+	}
+}
 func (e *Include) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

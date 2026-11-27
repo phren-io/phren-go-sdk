@@ -13,11 +13,11 @@ deleted or being restored) the caller may still view, every page full
 but the last.
 * [Create](#create) - Create
 * [Get](#get) - Get
-* [Delete](#delete) - Soft-delete. The delete runs in the background: this returns its
-long-running operation, which `OrganizationOperations` get and `:wait`
-follow until it is done, with the organization `DELETED`.
-* [Undelete](#undelete) - Undelete. The restore runs in the background: this returns its
-long-running operation, done when the organization is `ACTIVE` again.
+* [Delete](#delete) - Soft-delete. Returns the organization `DELETED` once nobody but its
+admins can reach it or anything in it; its admins can still view and
+undelete it.
+* [Undelete](#undelete) - Undelete. Restores exactly what the delete removed, and returns the
+organization `ACTIVE`.
 
 ## List
 
@@ -381,9 +381,9 @@ func main() {
 
 ## Delete
 
-Soft-delete. The delete runs in the background: this returns its
-long-running operation, which `OrganizationOperations` get and `:wait`
-follow until it is done, with the organization `DELETED`.
+Soft-delete. Returns the organization `DELETED` once nobody but its
+admins can reach it or anything in it; its admins can still view and
+undelete it.
 
 ### Example Usage
 
@@ -409,7 +409,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    if res.OrganizationOperation != nil {
+    if res.Organization != nil {
         // handle response
     }
 }
@@ -437,8 +437,8 @@ func main() {
 
 ## Undelete
 
-Undelete. The restore runs in the background: this returns its
-long-running operation, done when the organization is `ACTIVE` again.
+Undelete. Restores exactly what the delete removed, and returns the
+organization `ACTIVE`.
 
 ### Example Usage
 
@@ -464,7 +464,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    if res.OrganizationOperation != nil {
+    if res.Organization != nil {
         // handle response
     }
 }

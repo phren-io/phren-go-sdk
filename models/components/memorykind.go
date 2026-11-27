@@ -19,6 +19,17 @@ func (e MemoryKind) ToPointer() *MemoryKind {
 	return &e
 }
 
+// MemoryKindValues returns every known MemoryKind value in schema order.
+func MemoryKindValues() []MemoryKind {
+	return []MemoryKind{
+		MemoryKindNote,
+		MemoryKindQuote,
+		MemoryKindThought,
+		MemoryKindSummary,
+		MemoryKindTask,
+	}
+}
+
 // IsExact returns true if the value matches a known enum value, false otherwise.
 func (e *MemoryKind) IsExact() bool {
 	if e != nil {

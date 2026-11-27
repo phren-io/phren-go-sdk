@@ -30,7 +30,7 @@ func (s *SpacesUndeleteRequest) GetSpace() string {
 type SpacesUndeleteResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
 	// The request has succeeded.
-	SpaceOperation *components.SpaceOperation
+	Space *components.Space
 }
 
 func (s SpacesUndeleteResponse) MarshalJSON() ([]byte, error) {
@@ -51,9 +51,9 @@ func (s *SpacesUndeleteResponse) GetHTTPMeta() components.HTTPMetadata {
 	return s.HTTPMeta
 }
 
-func (s *SpacesUndeleteResponse) GetSpaceOperation() *components.SpaceOperation {
+func (s *SpacesUndeleteResponse) GetSpace() *components.Space {
 	if s == nil {
 		return nil
 	}
-	return s.SpaceOperation
+	return s.Space
 }

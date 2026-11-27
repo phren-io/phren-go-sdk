@@ -4,7 +4,6 @@
 package operations
 
 import (
-	"github.com/phren-io/phren-go-sdk/internal/utils"
 	"github.com/phren-io/phren-go-sdk/models/components"
 )
 
@@ -29,19 +28,8 @@ func (s *SpacesExportRequest) GetSpace() string {
 
 type SpacesExportResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
-	// The request has succeeded.
-	SpaceOperation *components.SpaceOperation
-}
-
-func (s SpacesExportResponse) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(s, "", false)
-}
-
-func (s *SpacesExportResponse) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
-		return err
-	}
-	return nil
+	Body     []byte
+	Headers  map[string][]string
 }
 
 func (s *SpacesExportResponse) GetHTTPMeta() components.HTTPMetadata {
@@ -51,9 +39,16 @@ func (s *SpacesExportResponse) GetHTTPMeta() components.HTTPMetadata {
 	return s.HTTPMeta
 }
 
-func (s *SpacesExportResponse) GetSpaceOperation() *components.SpaceOperation {
+func (s *SpacesExportResponse) GetBody() []byte {
 	if s == nil {
 		return nil
 	}
-	return s.SpaceOperation
+	return s.Body
+}
+
+func (s *SpacesExportResponse) GetHeaders() map[string][]string {
+	if s == nil {
+		return map[string][]string{}
+	}
+	return s.Headers
 }

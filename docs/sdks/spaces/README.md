@@ -18,41 +18,33 @@ names the project. With
 `showDeleted`, it also lists the deleted spaces the caller can undelete.
 * [Create](#create) - Create. The project's admins create spaces in it.
 * [Get](#get) - Get
-* [Delete](#delete) - Soft-delete. The space's admins delete it. The delete runs in the
-background: this returns its long-running operation, which
-`SpaceOperations` get and `:wait` follow until it is done, with the space
-`DELETED`. A deleted space's memories are hidden, and its project's admins
-can undelete it.
-* [SpacesExport](#spacesexport) - Export the space (RFC 008). The space's exporters can export it: its
-admins by default. In one transaction this records which memories the
-export holds and closes the returned operation; `SpaceOperations`
-`:download` then serves its `phren.space/v1` file, and an import can take
-it as `from`.
+* [Delete](#delete) - Soft-delete. The space's admins delete it. Returns the space `DELETED`
+once its memories are hidden from everyone; its project's admins can
+still view and undelete it.
+* [SpacesExport](#spacesexport) - Export the space (RFC 008) as a `phren.space/v1` file, streamed. The
+space's exporters can export it: its admins by default. Each export is
+recorded (who, when, how many memories) and publishes `space.exported`.
 
 `phren.space/v1` is JSON Lines: a header (`format`, `space` with
-`displayName`, `source`, `exportedAt`, `export`), one line per memory
-(`content`, `kind`, `labels`, `source`, `origin` with `name`,
-`createdAt`, `createdBy`, `createdWith`, and `verified: false` when the
-origin was itself only claimed), and a trailer (`count`, `deleted`,
-`sha256`, the hex SHA-256 of the memory lines). Readers ignore fields
-they don't know.
-* [SpacesImport](#spacesimport) - Import into the space, as its importer: the space's editors can import.
-With `from`, an export of this deployment, memory copies the source's
-rows, so each memory's `origin` is verified, and a memory already
-imported from the same origin is skipped: importing the same export
-again adds nothing. `from` also needs `can_export` on the source, and
-counts as a download of it. Without `from`, send the file to the
-returned operation's `:append`; the import starts at its trailer. A
-file's origins are claims (`claimedOrigin`), and a line whose content the
-space held before the import is skipped. Each line is one memory: a line
-over 32 KiB, a memory's limit, is refused with its line number. One
-import runs per organization at a time (409). The operation is done when
-the imported memories are searchable (`progress.indexed`).
+`displayName`, `source`, `exportedAt`), one line per memory (`content`,
+`kind`, `labels`, `source`, `origin` with `name`, `createdAt`,
+`createdBy`, `createdWith`, and `verified: false` when the origin was
+itself only claimed), and a trailer (`count`, `sha256`, the hex SHA-256
+of the memory lines). Readers ignore fields they don't know.
+* [SpacesImport](#spacesimport) - Import a `phren.space/v1` file into the space, as its importer: the
+space's editors can import. The file is the body; the call returns when
+its memories are written, and they become searchable as any saved
+memory does. Every line is checked first: a line that isn't a valid
+memory (its shape, kind, labels or source, or over 32 KiB) is a 400
+naming its line number, and nothing is written. The trailer's count and
+SHA-256 must match. A file holds at most 10,000 memories and 64 MB
+(413). A file's origins are claims (`claimedOrigin`); a memory already
+imported from the same origin, or whose content the space already
+holds, is skipped, so importing the same file again adds nothing.
 * [SpacesQuery](#spacesquery) - Search the space's memories. The space's viewers, editors and admins can
 query it.
-* [Undelete](#undelete) - Undelete. The admins of the space's project undelete it. The restore runs
-in the background: this returns its long-running operation, done when the
-space is `ACTIVE` again.
+* [Undelete](#undelete) - Undelete. The admins of the space's project undelete it. Restores
+exactly what the delete removed, and returns the space `ACTIVE`.
 
 ## List
 
@@ -386,11 +378,9 @@ func main() {
 
 ## Delete
 
-Soft-delete. The space's admins delete it. The delete runs in the
-background: this returns its long-running operation, which
-`SpaceOperations` get and `:wait` follow until it is done, with the space
-`DELETED`. A deleted space's memories are hidden, and its project's admins
-can undelete it.
+Soft-delete. The space's admins delete it. Returns the space `DELETED`
+once its memories are hidden from everyone; its project's admins can
+still view and undelete it.
 
 ### Example Usage
 
@@ -416,7 +406,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    if res.SpaceOperation != nil {
+    if res.Space != nil {
         // handle response
     }
 }
@@ -444,23 +434,20 @@ func main() {
 
 ## SpacesExport
 
-Export the space (RFC 008). The space's exporters can export it: its
-admins by default. In one transaction this records which memories the
-export holds and closes the returned operation; `SpaceOperations`
-`:download` then serves its `phren.space/v1` file, and an import can take
-it as `from`.
+Export the space (RFC 008) as a `phren.space/v1` file, streamed. The
+space's exporters can export it: its admins by default. Each export is
+recorded (who, when, how many memories) and publishes `space.exported`.
 
 `phren.space/v1` is JSON Lines: a header (`format`, `space` with
-`displayName`, `source`, `exportedAt`, `export`), one line per memory
-(`content`, `kind`, `labels`, `source`, `origin` with `name`,
-`createdAt`, `createdBy`, `createdWith`, and `verified: false` when the
-origin was itself only claimed), and a trailer (`count`, `deleted`,
-`sha256`, the hex SHA-256 of the memory lines). Readers ignore fields
-they don't know.
+`displayName`, `source`, `exportedAt`), one line per memory (`content`,
+`kind`, `labels`, `source`, `origin` with `name`, `createdAt`,
+`createdBy`, `createdWith`, and `verified: false` when the origin was
+itself only claimed), and a trailer (`count`, `sha256`, the hex SHA-256
+of the memory lines). Readers ignore fields they don't know.
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="Spaces_export" method="post" path="/v1/organizations/{organization}/spaces/{space}:export" -->
+<!-- UsageSnippet language="go" operationID="Spaces_export" method="get" path="/v1/organizations/{organization}/spaces/{space}:export" -->
 ```go
 package main
 
@@ -482,7 +469,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    if res.SpaceOperation != nil {
+    if res.Body != nil {
         // handle response
     }
 }
@@ -510,18 +497,16 @@ func main() {
 
 ## SpacesImport
 
-Import into the space, as its importer: the space's editors can import.
-With `from`, an export of this deployment, memory copies the source's
-rows, so each memory's `origin` is verified, and a memory already
-imported from the same origin is skipped: importing the same export
-again adds nothing. `from` also needs `can_export` on the source, and
-counts as a download of it. Without `from`, send the file to the
-returned operation's `:append`; the import starts at its trailer. A
-file's origins are claims (`claimedOrigin`), and a line whose content the
-space held before the import is skipped. Each line is one memory: a line
-over 32 KiB, a memory's limit, is refused with its line number. One
-import runs per organization at a time (409). The operation is done when
-the imported memories are searchable (`progress.indexed`).
+Import a `phren.space/v1` file into the space, as its importer: the
+space's editors can import. The file is the body; the call returns when
+its memories are written, and they become searchable as any saved
+memory does. Every line is checked first: a line that isn't a valid
+memory (its shape, kind, labels or source, or over 32 KiB) is a 400
+naming its line number, and nothing is written. The trailer's count and
+SHA-256 must match. A file holds at most 10,000 memories and 64 MB
+(413). A file's origins are claims (`claimedOrigin`); a memory already
+imported from the same origin, or whose content the space already
+holds, is skipped, so importing the same file again adds nothing.
 
 ### Example Usage
 
@@ -533,7 +518,7 @@ import(
 	"context"
 	"os"
 	phren "github.com/phren-io/phren-go-sdk"
-	"github.com/phren-io/phren-go-sdk/models/components"
+	"bytes"
 	"log"
 )
 
@@ -544,13 +529,11 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    res, err := s.Spaces.SpacesImport(ctx, "acme", "handbook", components.ImportSpaceRequest{
-        From: phren.Pointer("organizations/acme/spaces/notes/operations/019aa1b2-3c4d-7e5f-8a6b-7c8d9e0f1a33"),
-    })
+    res, err := s.Spaces.SpacesImport(ctx, "acme", "handbook", bytes.NewBuffer([]byte("{}")))
     if err != nil {
         log.Fatal(err)
     }
-    if res.SpaceOperation != nil {
+    if res.ImportSpaceResponse != nil {
         // handle response
     }
 }
@@ -558,13 +541,13 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                      | Type                                                                           | Required                                                                       | Description                                                                    | Example                                                                        |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `ctx`                                                                          | [context.Context](https://pkg.go.dev/context#Context)                          | :heavy_check_mark:                                                             | The context to use for the request.                                            |                                                                                |
-| `organization`                                                                 | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | acme                                                                           |
-| `space`                                                                        | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | handbook                                                                       |
-| `body`                                                                         | [components.ImportSpaceRequest](../../models/components/importspacerequest.md) | :heavy_check_mark:                                                             | N/A                                                                            |                                                                                |
-| `opts`                                                                         | [][operations.Option](../../models/operations/option.md)                       | :heavy_minus_sign:                                                             | The options for this request.                                                  |                                                                                |
+| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
+| `organization`                                           | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `space`                                                  | `string`                                                 | :heavy_check_mark:                                       | N/A                                                      |
+| `body`                                                   | `any`                                                    | :heavy_check_mark:                                       | N/A                                                      |
+| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
 
 ### Response
 
@@ -572,10 +555,10 @@ func main() {
 
 ### Errors
 
-| Error Type               | Status Code              | Content Type             |
-| ------------------------ | ------------------------ | ------------------------ |
-| apierrors.ProblemError   | 400, 401, 403, 404, 409  | application/problem+json |
-| apierrors.APIError       | 4XX, 5XX                 | \*/\*                    |
+| Error Type                   | Status Code                  | Content Type                 |
+| ---------------------------- | ---------------------------- | ---------------------------- |
+| apierrors.ProblemError       | 400, 401, 403, 404, 409, 413 | application/problem+json     |
+| apierrors.APIError           | 4XX, 5XX                     | \*/\*                        |
 
 ## SpacesQuery
 
@@ -641,9 +624,8 @@ func main() {
 
 ## Undelete
 
-Undelete. The admins of the space's project undelete it. The restore runs
-in the background: this returns its long-running operation, done when the
-space is `ACTIVE` again.
+Undelete. The admins of the space's project undelete it. Restores
+exactly what the delete removed, and returns the space `ACTIVE`.
 
 ### Example Usage
 
@@ -669,7 +651,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    if res.SpaceOperation != nil {
+    if res.Space != nil {
         // handle response
     }
 }
