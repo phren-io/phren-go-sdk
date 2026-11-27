@@ -16,6 +16,15 @@ func (e InvitationState) ToPointer() *InvitationState {
 	return &e
 }
 
+// InvitationStateValues returns every known InvitationState value in schema order.
+func InvitationStateValues() []InvitationState {
+	return []InvitationState{
+		InvitationStatePending,
+		InvitationStateAccepted,
+		InvitationStateDeclined,
+	}
+}
+
 // IsExact returns true if the value matches a known enum value, false otherwise.
 func (e *InvitationState) IsExact() bool {
 	if e != nil {

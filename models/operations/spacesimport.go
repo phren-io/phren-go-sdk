@@ -9,9 +9,10 @@ import (
 )
 
 type SpacesImportRequest struct {
-	Organization string                        `pathParam:"style=simple,explode=false,name=organization"`
-	Space        string                        `pathParam:"style=simple,explode=false,name=space"`
-	Body         components.ImportSpaceRequest `request:"mediaType=application/json"`
+	Organization string `pathParam:"style=simple,explode=false,name=organization"`
+	Space        string `pathParam:"style=simple,explode=false,name=space"`
+	// This field accepts []byte data or io.Reader implementations, such as *os.File.
+	Body any `request:"mediaType=application/octet-stream"`
 }
 
 func (s *SpacesImportRequest) GetOrganization() string {
@@ -28,9 +29,9 @@ func (s *SpacesImportRequest) GetSpace() string {
 	return s.Space
 }
 
-func (s *SpacesImportRequest) GetBody() components.ImportSpaceRequest {
+func (s *SpacesImportRequest) GetBody() any {
 	if s == nil {
-		return components.ImportSpaceRequest{}
+		return nil
 	}
 	return s.Body
 }
@@ -38,7 +39,7 @@ func (s *SpacesImportRequest) GetBody() components.ImportSpaceRequest {
 type SpacesImportResponse struct {
 	HTTPMeta components.HTTPMetadata `json:"-"`
 	// The request has succeeded.
-	SpaceOperation *components.SpaceOperation
+	ImportSpaceResponse *components.ImportSpaceResponse
 }
 
 func (s SpacesImportResponse) MarshalJSON() ([]byte, error) {
@@ -59,9 +60,9 @@ func (s *SpacesImportResponse) GetHTTPMeta() components.HTTPMetadata {
 	return s.HTTPMeta
 }
 
-func (s *SpacesImportResponse) GetSpaceOperation() *components.SpaceOperation {
+func (s *SpacesImportResponse) GetImportSpaceResponse() *components.ImportSpaceResponse {
 	if s == nil {
 		return nil
 	}
-	return s.SpaceOperation
+	return s.ImportSpaceResponse
 }

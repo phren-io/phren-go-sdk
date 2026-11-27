@@ -839,9 +839,9 @@ func (s *Organizations) Get(ctx context.Context, organization string, include *c
 
 }
 
-// Delete - Soft-delete. The delete runs in the background: this returns its
-// long-running operation, which `OrganizationOperations` get and `:wait`
-// follow until it is done, with the organization `DELETED`.
+// Delete - Soft-delete. Returns the organization `DELETED` once nobody but its
+// admins can reach it or anything in it; its admins can still view and
+// undelete it.
 func (s *Organizations) Delete(ctx context.Context, organization string, force *bool, opts ...operations.Option) (*operations.OrganizationsDeleteResponse, error) {
 	request := operations.OrganizationsDeleteRequest{
 		Organization: organization,
@@ -1024,12 +1024,12 @@ func (s *Organizations) Delete(ctx context.Context, organization string, force *
 				return nil, err
 			}
 
-			var out components.OrganizationOperation
+			var out components.Organization
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 
-			res.OrganizationOperation = &out
+			res.Organization = &out
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
 			if err != nil {
@@ -1094,8 +1094,8 @@ func (s *Organizations) Delete(ctx context.Context, organization string, force *
 
 }
 
-// Undelete - Undelete. The restore runs in the background: this returns its
-// long-running operation, done when the organization is `ACTIVE` again.
+// Undelete - Undelete. Restores exactly what the delete removed, and returns the
+// organization `ACTIVE`.
 func (s *Organizations) Undelete(ctx context.Context, organization string, opts ...operations.Option) (*operations.OrganizationsUndeleteResponse, error) {
 	request := operations.OrganizationsUndeleteRequest{
 		Organization: organization,
@@ -1273,12 +1273,12 @@ func (s *Organizations) Undelete(ctx context.Context, organization string, opts 
 				return nil, err
 			}
 
-			var out components.OrganizationOperation
+			var out components.Organization
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 
-			res.OrganizationOperation = &out
+			res.Organization = &out
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
 			if err != nil {

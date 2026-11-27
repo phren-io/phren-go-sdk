@@ -3,8 +3,8 @@
 
 ## Fields
 
-| Field                                                                          | Type                                                                           | Required                                                                       | Description                                                                    | Example                                                                        |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `Organization`                                                                 | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | acme                                                                           |
-| `Space`                                                                        | `string`                                                                       | :heavy_check_mark:                                                             | N/A                                                                            | handbook                                                                       |
-| `Body`                                                                         | [components.ImportSpaceRequest](../../models/components/importspacerequest.md) | :heavy_check_mark:                                                             | N/A                                                                            |                                                                                |
+| Field              | Type               | Required           | Description        |
+| ------------------ | ------------------ | ------------------ | ------------------ |
+| `Organization`     | `string`           | :heavy_check_mark: | N/A                |
+| `Space`            | `string`           | :heavy_check_mark: | N/A                |
+| `Body`             | `any`              | :heavy_check_mark: | N/A                |
