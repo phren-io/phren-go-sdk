@@ -172,6 +172,14 @@ already have a pending invitation.
 invitation is pending and unexpired; otherwise it fails with 409.
 * [Decline](docs/sdks/invitations/README.md#decline) - Decline. Only the invitee can decline, while the invitation is pending.
 
+### [LinkGrants](docs/sdks/linkgrants/README.md)
+
+* [List](docs/sdks/linkgrants/README.md#list) - List who may link the space as a source. Its admins can.
+* [Create](docs/sdks/linkgrants/README.md#create) - Grant a project, or the whole organization, linking. Its admins can.
+* [Delete](docs/sdks/linkgrants/README.md#delete) - Revoke a grant. Every source it was allowing is removed in the same
+call; sources still allowed another way (the same project, another
+grant) stay.
+
 ### [Members](docs/sdks/members/README.md)
 
 * [List](docs/sdks/members/README.md#list) - List
@@ -231,6 +239,19 @@ Organization admins see every project.
 * [Create](docs/sdks/projects/README.md#create) - Create. Organization admins create projects, and manage them without
 joining: add a member as the project's admin to hand it over.
 * [Get](docs/sdks/projects/README.md#get) - Get
+
+### [Sources](docs/sdks/sources/README.md)
+
+* [SpaceSourcesListCandidates](docs/sdks/sources/README.md#spacesourceslistcandidates) - List the organization's spaces the space may add as sources: the ones
+its project may link, but for itself and its sources. The space's
+editors can list them. A page may hold fewer than `pageSize` spaces.
+* [List](docs/sdks/sources/README.md#list) - List the space's sources. The space's viewers can list them.
+* [Create](docs/sdks/sources/README.md#create) - Add a source. The space's editors add one, when the space's project may
+link the source: the source's own project always may, others when the
+source's admins granted it (`linkGrants`).
+* [Delete](docs/sdks/sources/README.md#delete) - Remove a source. The space's editors remove it, and so do the source's
+admins (from its `usedBy`).
+* [SpaceSourcesListUsedBy](docs/sdks/sources/README.md#spacesourceslistusedby) - List the sources that name this space: who uses it. Its admins can.
 
 ### [Spaces](docs/sdks/spaces/README.md)
 

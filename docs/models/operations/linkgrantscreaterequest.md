@@ -1,0 +1,10 @@
+# LinkGrantsCreateRequest
+
+
+## Fields
+
+| Field                                                                    | Type                                                                     | Required                                                                 | Description                                                              | Example                                                                  |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `Organization`                                                           | `string`                                                                 | :heavy_check_mark:                                                       | N/A                                                                      | acme                                                                     |
+| `Space`                                                                  | `string`                                                                 | :heavy_check_mark:                                                       | N/A                                                                      | style-guide                                                              |
+| `Body`                                                                   | [components.CreateLinkGrant](../../models/components/createlinkgrant.md) | :heavy_check_mark:                                                       | N/A                                                                      | {<br/>"grantee": "organizations/acme/projects/agent"<br/>}               |

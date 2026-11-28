@@ -10,6 +10,8 @@ tags:
   - name: projectMembers
   - name: spaces
   - name: memories
+  - name: sources
+  - name: linkGrants
 paths:
   /v1/organizations:
     get:
@@ -2052,6 +2054,200 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - spaces
+  /v1/organizations/{organization}/spaces/{space}/linkGrants:
+    get:
+      operationId: LinkGrants_list
+      description: List who may link the space as a source. Its admins can.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListLinkGrantsResponse'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - linkGrants
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+    post:
+      operationId: LinkGrants_create
+      description: Grant a project, or the whole organization, linking. Its admins can.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: style-guide
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinkGrant'
+              example:
+                name: organizations/acme/spaces/style-guide/linkGrants/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f02
+                grantee: organizations/acme/projects/agent
+                createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                createdAt: '2026-02-08T08:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - linkGrants
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLinkGrant'
+            example:
+              grantee: organizations/acme/projects/agent
+  /v1/organizations/{organization}/spaces/{space}/linkGrants/{grant}:
+    delete:
+      operationId: LinkGrants_delete
+      description: |-
+        Revoke a grant. Every source it was allowing is removed in the same
+        call; sources still allowed another way (the same project, another
+        grant) stay.
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: grant
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: There is no content to send for this request, but the headers may be useful.
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - linkGrants
   /v1/organizations/{organization}/spaces/{space}/memories:
     get:
       operationId: Memories_list
@@ -2378,6 +2574,391 @@ paths:
                 $ref: '#/components/schemas/Problem'
       tags:
         - memories
+  /v1/organizations/{organization}/spaces/{space}/sourceCandidates:
+    get:
+      operationId: SpaceSources_listCandidates
+      description: |-
+        List the organization's spaces the space may add as sources: the ones
+        its project may link, but for itself and its sources. The space's
+        editors can list them. A page may hold fewer than `pageSize` spaces.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          example: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: style-guide
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSourceCandidatesResponse'
+              example:
+                spaces:
+                  - name: organizations/acme/spaces/notes
+                    project: organizations/acme/projects/agent
+                    displayName: Notes
+                    state: active
+                    createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                    createdAt: '2026-02-07T11:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - sources
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+  /v1/organizations/{organization}/spaces/{space}/sources:
+    get:
+      operationId: SpaceSources_list
+      description: List the space's sources. The space's viewers can list them.
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          example: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSpaceSourcesResponse'
+              example:
+                sources:
+                  - name: organizations/acme/spaces/notes/sources/style-guide
+                    space: organizations/acme/spaces/notes
+                    spaceDisplayName: Notes
+                    source: organizations/acme/spaces/style-guide
+                    sourceDisplayName: Style guide
+                    createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                    createdAt: '2026-02-08T09:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - sources
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
+    post:
+      operationId: SpaceSources_create
+      description: |-
+        Add a source. The space's editors add one, when the space's project may
+        link the source: the source's own project always may, others when the
+        source's admins granted it (`linkGrants`).
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: notes
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceSource'
+              example:
+                name: organizations/acme/spaces/notes/sources/style-guide
+                space: organizations/acme/spaces/notes
+                spaceDisplayName: Notes
+                source: organizations/acme/spaces/style-guide
+                sourceDisplayName: Style guide
+                createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                createdAt: '2026-02-08T09:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - sources
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSpaceSource'
+            example:
+              source: organizations/acme/spaces/style-guide
+  /v1/organizations/{organization}/spaces/{space}/sources/{source}:
+    delete:
+      operationId: SpaceSources_delete
+      description: |-
+        Remove a source. The space's editors remove it, and so do the source's
+        admins (from its `usedBy`).
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: source
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: There is no content to send for this request, but the headers may be useful.
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: The request conflicts with the resource's current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - sources
+  /v1/organizations/{organization}/spaces/{space}/usedBy:
+    get:
+      operationId: SpaceSources_listUsedBy
+      description: 'List the sources that name this space: who uses it. Its admins can.'
+      parameters:
+        - name: pageSize
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+          explode: false
+          example: 50
+        - name: pageToken
+          in: query
+          required: false
+          description: Token from a previous response's nextPageToken.
+          schema:
+            type: string
+          explode: false
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+          example: acme
+        - name: space
+          in: path
+          required: true
+          schema:
+            type: string
+          example: style-guide
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSpaceSourcesResponse'
+              example:
+                sources:
+                  - name: organizations/acme/spaces/notes/sources/style-guide
+                    space: organizations/acme/spaces/notes
+                    spaceDisplayName: Notes
+                    source: organizations/acme/spaces/style-guide
+                    sourceDisplayName: Style guide
+                    createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+                    createdAt: '2026-02-08T09:00:00Z'
+        '400':
+          description: The request is malformed or fails validation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request has no bearer token, or the token is invalid or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: The caller lacks permission for this resource, or it does not exist outside the caller's access.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The caller is authorized for the requested resources, but this one does not exist.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+      tags:
+        - sources
+      x-speakeasy-pagination:
+        type: cursor
+        inputs:
+          - name: pageToken
+            in: parameters
+            type: cursor
+        outputs:
+          nextCursor: $.nextPageToken
   /v1/organizations/{organization}/spaces/{space}:export:
     get:
       operationId: Spaces_export
@@ -2766,6 +3347,22 @@ components:
         accepts it by signing in with that email.
       examples:
         - email: bob@acme.example
+    CreateLinkGrant:
+      type: object
+      required:
+        - grantee
+      properties:
+        grantee:
+          type: string
+          description: |-
+            Who may link the space: `organizations/{organization}` for every project
+            of the space's organization, or
+            `organizations/{organization}/projects/{project}` for one of them.
+      description: |-
+        A grant that lets a project, or every project of the organization, add
+        the space as a source of their spaces.
+      examples:
+        - grantee: organizations/acme/projects/agent
     CreateMemory:
       type: object
       required:
@@ -2865,6 +3462,22 @@ components:
       examples:
         - project: organizations/acme/projects/agent
           displayName: Notes
+    CreateSpaceSource:
+      type: object
+      required:
+        - source
+      properties:
+        source:
+          type: string
+          description: |-
+            The source space: `organizations/{organization}/spaces/{space}`, in the
+            same organization. Its project must be allowed to link it.
+      description: |-
+        A source of a space (RFC 011): a query of the space also searches the
+        source space's memories, without copying them. It gives no access to the
+        source space itself. Sources stay inside the organization.
+      examples:
+        - source: organizations/acme/spaces/style-guide
     ImportSpaceResponse:
       type: object
       required:
@@ -2975,6 +3588,42 @@ components:
       description: Where an invitation stands.
       examples:
         - pending
+    LinkGrant:
+      type: object
+      required:
+        - name
+        - grantee
+        - createdBy
+        - createdAt
+      properties:
+        name:
+          type: string
+          description: 'Resource name: `organizations/{organization}/spaces/{space}/linkGrants/{grant}`.'
+          readOnly: true
+        grantee:
+          type: string
+          description: |-
+            Who may link the space: `organizations/{organization}` for every project
+            of the space's organization, or
+            `organizations/{organization}/projects/{project}` for one of them.
+        createdBy:
+          type: string
+          description: Name of the user that granted it.
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          description: When it was granted.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+      description: |-
+        A grant that lets a project, or every project of the organization, add
+        the space as a source of their spaces.
+      examples:
+        - name: organizations/acme/spaces/style-guide/linkGrants/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f02
+          grantee: organizations/acme/projects/agent
+          createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+          createdAt: '2026-02-08T08:00:00Z'
     ListInvitationsResponse:
       type: object
       required:
@@ -3008,6 +3657,26 @@ components:
               createdAt: '2026-02-01T10:00:00Z'
               updatedAt: '2026-02-01T10:00:00Z'
               expiresAt: '2026-02-15T10:00:00Z'
+    ListLinkGrantsResponse:
+      type: object
+      required:
+        - linkGrants
+      properties:
+        linkGrants:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkGrant'
+          description: The grants on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of link grants.
+      examples:
+        - linkGrants:
+            - name: organizations/acme/spaces/style-guide/linkGrants/0196f2a0-1b2c-7d3e-8f4a-5b6c7d8e9f02
+              grantee: organizations/acme/projects/agent
+              createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+              createdAt: '2026-02-08T08:00:00Z'
     ListMembersResponse:
       type: object
       required:
@@ -3166,6 +3835,51 @@ components:
               displayName: Agent
               createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
               createdAt: '2026-02-06T10:00:00Z'
+    ListSourceCandidatesResponse:
+      type: object
+      required:
+        - spaces
+      properties:
+        spaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Space'
+          description: The spaces on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of the spaces that can be added as sources.
+      examples:
+        - spaces:
+            - name: organizations/acme/spaces/notes
+              project: organizations/acme/projects/agent
+              displayName: Notes
+              state: active
+              createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+              createdAt: '2026-02-07T11:00:00Z'
+    ListSpaceSourcesResponse:
+      type: object
+      required:
+        - sources
+      properties:
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpaceSource'
+          description: The sources on this page.
+        nextPageToken:
+          type: string
+          description: Token for the next page. Absent on the last page.
+      description: A page of sources.
+      examples:
+        - sources:
+            - name: organizations/acme/spaces/notes/sources/style-guide
+              space: organizations/acme/spaces/notes
+              spaceDisplayName: Notes
+              source: organizations/acme/spaces/style-guide
+              sourceDisplayName: Style guide
+              createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+              createdAt: '2026-02-08T09:00:00Z'
     ListSpacesResponse:
       type: object
       required:
@@ -3762,6 +4476,63 @@ components:
           state: active
           createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
           createdAt: '2026-02-07T11:00:00Z'
+    SpaceSource:
+      type: object
+      required:
+        - name
+        - space
+        - spaceDisplayName
+        - source
+        - sourceDisplayName
+        - createdBy
+        - createdAt
+      properties:
+        name:
+          type: string
+          description: |-
+            Resource name:
+            `organizations/{organization}/spaces/{space}/sources/{source}`, where
+            `{source}` is the source space's ID.
+          readOnly: true
+        space:
+          type: string
+          description: 'The space that searches the source: `organizations/{organization}/spaces/{space}`.'
+          readOnly: true
+        spaceDisplayName:
+          type: string
+          description: The space's display name.
+          readOnly: true
+        source:
+          type: string
+          description: |-
+            The source space: `organizations/{organization}/spaces/{space}`, in the
+            same organization. Its project must be allowed to link it.
+        sourceDisplayName:
+          type: string
+          description: The source space's display name.
+          readOnly: true
+        createdBy:
+          type: string
+          description: Name of the user that added the source.
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          description: When the source was added.
+          x-ogen-time-format: 2006-01-02T15:04:05.999Z07:00
+          readOnly: true
+      description: |-
+        A source of a space (RFC 011): a query of the space also searches the
+        source space's memories, without copying them. It gives no access to the
+        source space itself. Sources stay inside the organization.
+      examples:
+        - name: organizations/acme/spaces/notes/sources/style-guide
+          space: organizations/acme/spaces/notes
+          spaceDisplayName: Notes
+          source: organizations/acme/spaces/style-guide
+          sourceDisplayName: Style guide
+          createdBy: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
+          createdAt: '2026-02-08T09:00:00Z'
     SpaceState:
       type: string
       enum:

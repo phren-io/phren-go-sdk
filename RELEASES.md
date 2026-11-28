@@ -329,3 +329,13 @@ Based on:
 - [go v0.4.6] .
 ### Releases
 - [Go v0.4.6] https://github.com/phren-io/phren-go-sdk/releases/tag/v0.4.6 - .
+
+## 2026-11-28 00:48:09
+### Changes
+Based on:
+- OpenAPI Doc  
+- Speakeasy CLI 1.813.0 (2.969.4) https://github.com/speakeasy-api/speakeasy
+### Generated
+- [go v0.4.7] .
+### Releases
+- [Go v0.4.7] https://github.com/phren-io/phren-go-sdk/releases/tag/v0.4.7 - .

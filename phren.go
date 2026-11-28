@@ -59,7 +59,9 @@ type Phren struct {
 	Projects       *Projects
 	ProjectMembers *ProjectMembers
 	Spaces         *Spaces
+	LinkGrants     *LinkGrants
 	Memories       *Memories
+	Sources        *Sources
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -136,10 +138,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *Phren {
 	sdk := &Phren{
-		SDKVersion: "0.4.6",
+		SDKVersion: "0.4.7",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "speakeasy-sdk/go 0.4.6 2.969.4 0.0.0 github.com/phren-io/phren-go-sdk",
-			SDKVersion:        "0.4.6",
+			UserAgent:         "speakeasy-sdk/go 0.4.7 2.969.4 0.0.0 github.com/phren-io/phren-go-sdk",
+			SDKVersion:        "0.4.7",
 			GenVersion:        "2.969.4",
 			OpenAPIDocVersion: "0.0.0",
 			ServerList:        ServerList,
@@ -170,7 +172,9 @@ func New(opts ...SDKOption) *Phren {
 	sdk.Projects = newProjects(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.ProjectMembers = newProjectMembers(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Spaces = newSpaces(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.LinkGrants = newLinkGrants(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Memories = newMemories(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Sources = newSources(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }
