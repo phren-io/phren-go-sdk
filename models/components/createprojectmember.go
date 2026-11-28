@@ -3,29 +3,16 @@
 
 package components
 
-import (
-	"github.com/phren-io/phren-go-sdk/internal/utils"
-)
-
 // CreateProjectMember - An organization member's membership in a project. Organization admins
 // manage every project without being members.
 type CreateProjectMember struct {
 	// The organization member added to the project:
 	// `organizations/{organization}/members/{member}`.
 	Member string `json:"member"`
-	// Roles the member holds in the project. Empty for a plain member.
-	Roles []MemberRole `json:"roles,omitzero"`
-}
-
-func (c CreateProjectMember) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(c, "", false)
-}
-
-func (c *CreateProjectMember) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
-		return err
-	}
-	return nil
+	// A member's role in a project. Each includes the next: admins manage the
+	// project's members and spaces, editors also write and delete memories in
+	// its spaces, and viewers read and search them.
+	Role ProjectRole `json:"role"`
 }
 
 func (c *CreateProjectMember) GetMember() string {
@@ -35,9 +22,9 @@ func (c *CreateProjectMember) GetMember() string {
 	return c.Member
 }
 
-func (c *CreateProjectMember) GetRoles() []MemberRole {
+func (c *CreateProjectMember) GetRole() ProjectRole {
 	if c == nil {
-		return nil
+		return ProjectRole("")
 	}
-	return c.Roles
+	return c.Role
 }

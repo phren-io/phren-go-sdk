@@ -22,8 +22,10 @@ type ProjectMember struct {
 	Email string `json:"email"`
 	// The user's name, from their organization membership.
 	DisplayName string `json:"displayName"`
-	// Roles the member holds in the project. Empty for a plain member.
-	Roles []MemberRole `json:"roles,omitzero"`
+	// A member's role in a project. Each includes the next: admins manage the
+	// project's members and spaces, editors also write and delete memories in
+	// its spaces, and viewers read and search them.
+	Role ProjectRole `json:"role"`
 	// When the member was added to the project.
 	CreatedAt time.Time `json:"createdAt"`
 	// The methods the caller may call on this resource, such as `delete`.
@@ -77,11 +79,11 @@ func (p *ProjectMember) GetDisplayName() string {
 	return p.DisplayName
 }
 
-func (p *ProjectMember) GetRoles() []MemberRole {
+func (p *ProjectMember) GetRole() ProjectRole {
 	if p == nil {
-		return nil
+		return ProjectRole("")
 	}
-	return p.Roles
+	return p.Role
 }
 
 func (p *ProjectMember) GetCreatedAt() time.Time {

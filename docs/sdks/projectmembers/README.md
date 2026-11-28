@@ -5,13 +5,14 @@
 ### Available Operations
 
 * [List](#list) - List. The project's members can list them.
-* [Create](#create) - Add an organization member to the project. Project admins add members; adding
+* [Create](#create) - Add an organization member to the project with a role. Project admins add members; adding
 one as an admin needs the right to grant admin. Fails with 409 if they're
 already in the project.
 * [Get](#get) - Get
-* [ProjectMembersUpdate](#projectmembersupdate) - Change a member's roles in the project. Making someone an admin needs the
-right to grant admin, and making an admin a plain member the right to
-revoke it. Demoting the project's last admin fails with 409.
+* [ProjectMembersUpdate](#projectmembersupdate) - Change a member's role in the project. Making someone an admin needs the
+right to grant admin; any other role needs the rights to add members and
+to revoke admin. A project needs no admin of its own: the organization's
+admins are its admins.
 * [Delete](#delete) - Remove a member. Project admins remove anyone; members remove themselves.
 
 ## List
@@ -85,7 +86,7 @@ func main() {
 
 ## Create
 
-Add an organization member to the project. Project admins add members; adding
+Add an organization member to the project with a role. Project admins add members; adding
 one as an admin needs the right to grant admin. Fails with 409 if they're
 already in the project.
 
@@ -112,9 +113,7 @@ func main() {
 
     res, err := s.ProjectMembers.Create(ctx, "acme", "agent", components.CreateProjectMember{
         Member: "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02",
-        Roles: []components.MemberRole{
-            components.MemberRoleAdmin,
-        },
+        Role: components.ProjectRoleEditor,
     })
     if err != nil {
         log.Fatal(err)
@@ -127,13 +126,13 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                             | Type                                                                                                  | Required                                                                                              | Description                                                                                           | Example                                                                                               |
-| ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                 | [context.Context](https://pkg.go.dev/context#Context)                                                 | :heavy_check_mark:                                                                                    | The context to use for the request.                                                                   |                                                                                                       |
-| `organization`                                                                                        | `string`                                                                                              | :heavy_check_mark:                                                                                    | N/A                                                                                                   | acme                                                                                                  |
-| `project`                                                                                             | `string`                                                                                              | :heavy_check_mark:                                                                                    | N/A                                                                                                   | agent                                                                                                 |
-| `body`                                                                                                | [components.CreateProjectMember](../../models/components/createprojectmember.md)                      | :heavy_check_mark:                                                                                    | N/A                                                                                                   | {<br/>"member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02",<br/>"roles": [<br/>"admin"<br/>]<br/>} |
-| `opts`                                                                                                | [][operations.Option](../../models/operations/option.md)                                              | :heavy_minus_sign:                                                                                    | The options for this request.                                                                         |                                                                                                       |
+| Parameter                                                                                         | Type                                                                                              | Required                                                                                          | Description                                                                                       | Example                                                                                           |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                             | [context.Context](https://pkg.go.dev/context#Context)                                             | :heavy_check_mark:                                                                                | The context to use for the request.                                                               |                                                                                                   |
+| `organization`                                                                                    | `string`                                                                                          | :heavy_check_mark:                                                                                | N/A                                                                                               | acme                                                                                              |
+| `project`                                                                                         | `string`                                                                                          | :heavy_check_mark:                                                                                | N/A                                                                                               | agent                                                                                             |
+| `body`                                                                                            | [components.CreateProjectMember](../../models/components/createprojectmember.md)                  | :heavy_check_mark:                                                                                | N/A                                                                                               | {<br/>"member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02",<br/>"role": "editor"<br/>} |
+| `opts`                                                                                            | [][operations.Option](../../models/operations/option.md)                                          | :heavy_minus_sign:                                                                                | The options for this request.                                                                     |                                                                                                   |
 
 ### Response
 
@@ -204,9 +203,10 @@ func main() {
 
 ## ProjectMembersUpdate
 
-Change a member's roles in the project. Making someone an admin needs the
-right to grant admin, and making an admin a plain member the right to
-revoke it. Demoting the project's last admin fails with 409.
+Change a member's role in the project. Making someone an admin needs the
+right to grant admin; any other role needs the rights to add members and
+to revoke admin. A project needs no admin of its own: the organization's
+admins are its admins.
 
 ### Example Usage
 
@@ -229,10 +229,8 @@ func main() {
         phren.WithSecurity(os.Getenv("PHREN_BEARER_AUTH")),
     )
 
-    res, err := s.ProjectMembers.ProjectMembersUpdate(ctx, "acme", "agent", "0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", components.MemberUpdate{
-        Roles: []components.MemberRole{
-            components.MemberRoleAdmin,
-        },
+    res, err := s.ProjectMembers.ProjectMembersUpdate(ctx, "acme", "agent", "0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", components.ProjectMemberUpdate{
+        Role: components.ProjectRoleEditor,
     })
     if err != nil {
         log.Fatal(err)
@@ -245,14 +243,14 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                          | Type                                                               | Required                                                           | Description                                                        | Example                                                            |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `ctx`                                                              | [context.Context](https://pkg.go.dev/context#Context)              | :heavy_check_mark:                                                 | The context to use for the request.                                |                                                                    |
-| `organization`                                                     | `string`                                                           | :heavy_check_mark:                                                 | N/A                                                                | acme                                                               |
-| `project`                                                          | `string`                                                           | :heavy_check_mark:                                                 | N/A                                                                | agent                                                              |
-| `member`                                                           | `string`                                                           | :heavy_check_mark:                                                 | N/A                                                                | 0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04                               |
-| `body`                                                             | [components.MemberUpdate](../../models/components/memberupdate.md) | :heavy_check_mark:                                                 | N/A                                                                |                                                                    |
-| `opts`                                                             | [][operations.Option](../../models/operations/option.md)           | :heavy_minus_sign:                                                 | The options for this request.                                      |                                                                    |
+| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      | Example                                                                          |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |                                                                                  |
+| `organization`                                                                   | `string`                                                                         | :heavy_check_mark:                                                               | N/A                                                                              | acme                                                                             |
+| `project`                                                                        | `string`                                                                         | :heavy_check_mark:                                                               | N/A                                                                              | agent                                                                            |
+| `member`                                                                         | `string`                                                                         | :heavy_check_mark:                                                               | N/A                                                                              | 0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04                                             |
+| `body`                                                                           | [components.ProjectMemberUpdate](../../models/components/projectmemberupdate.md) | :heavy_check_mark:                                                               | N/A                                                                              |                                                                                  |
+| `opts`                                                                           | [][operations.Option](../../models/operations/option.md)                         | :heavy_minus_sign:                                                               | The options for this request.                                                    |                                                                                  |
 
 ### Response
 
