@@ -1,18 +1,18 @@
 lockVersion: 2.0.0
 id: 83f0f408-6f84-4f5d-9549-e2e375be1a80
 management:
-  docChecksum: e9b8fc503d4d26ff72087e18ede2c416
+  docChecksum: 18e4ee20af502972f166f62b3df9ed64
   docVersion: 0.0.0
   speakeasyVersion: 1.813.0
   generationVersion: 2.969.4
-  releaseVersion: 0.4.5
-  configChecksum: b085907fd90b54f8266d8668d3191810
+  releaseVersion: 0.4.6
+  configChecksum: 99ecd8e696bb49694595f4a0bfb08343
   repoURL: https://github.com/phren-io/phren-go-sdk.git
   installationURL: https://github.com/phren-io/phren-go-sdk
 persistentEdits:
-  generation_id: c4e2c349-abaa-424e-a37b-8d52ad7ec8e5
-  pristine_commit_hash: 51721084a088dba2f80fb239776421418c268f6d
-  pristine_tree_hash: f639201884439f8a578624fb998eaffb5576424c
+  generation_id: bd5c7372-e895-42c1-b403-ecc20736eec5
+  pristine_commit_hash: 08162b54d9c55a23a9b47e05c55ac76dc32035a9
+  pristine_tree_hash: e7dabdcb7bf65ccf495f0ec580b53135b99deebe
 features:
   go:
     additionalDependencies: 0.1.0
@@ -76,8 +76,8 @@ trackedFiles:
     pristine_git_object: b795d6d7c70815c4410853c26b42fa9dd975942d
   docs/models/components/createprojectmember.md:
     id: aab7d14d737a
-    last_write_checksum: sha1:1967e59ba068f3494008277904802335fd876bf9
-    pristine_git_object: 2cba5631de2dbaa72d97134755160bcbd2edb58a
+    last_write_checksum: sha1:9c389934eeb85f94a89471f5c2b3f2511ec45e22
+    pristine_git_object: 9f6dbd429f82c228d6bd9e9e77fa3fd6720d092e
   docs/models/components/createspace.md:
     id: c8bf2c7f7b30
     last_write_checksum: sha1:1611ce59d5f0757b66855a83c6cee0c9a42e4ed6
@@ -168,8 +168,16 @@ trackedFiles:
     pristine_git_object: 7519e1b980fd901b31fbbeefb89457aa06daa749
   docs/models/components/projectmember.md:
     id: 1adeb3316fd5
-    last_write_checksum: sha1:c520bf826068bcf2596282f12dad7ebda0926d1c
-    pristine_git_object: 7a2b117acab7ca28333374667c71cda4ece432ed
+    last_write_checksum: sha1:365b1c7e39a8cb8d9b07ab38304c1493f85745ff
+    pristine_git_object: 0ca0446b25e0f68284f4ee81f22023d7b149daf3
+  docs/models/components/projectmemberupdate.md:
+    id: 7c37db9fd9b7
+    last_write_checksum: sha1:37d774ea4fe43b4755e0c9936dd49670c44bc4ba
+    pristine_git_object: f4c93b169588c82c5f8dca70806d0ecbc5a2c591
+  docs/models/components/projectrole.md:
+    id: 8b41531b4d43
+    last_write_checksum: sha1:edcdc5a663162757e429a157ad5432381cf6f002
+    pristine_git_object: 3d4caf60219564ea2dc75ffa392fda78534429e3
   docs/models/components/queryresult.md:
     id: e63413482f35
     last_write_checksum: sha1:cb637bd423f6482093f56624499df03592f6d5d0
@@ -352,12 +360,12 @@ trackedFiles:
     pristine_git_object: 5fc468c11a009eb553b6e7fde273221d8ff1ca31
   docs/models/operations/projectmemberscreaterequest.md:
     id: 6d782f7108b4
-    last_write_checksum: sha1:ec04f2265fa7fde3d47b4206e674fadd008c2633
-    pristine_git_object: 30ebe29fdff55fe4ac944c8f7d985e720e51b76c
+    last_write_checksum: sha1:2215991589140da9d733791b99bf19c6f61189ca
+    pristine_git_object: 3332f972c14f03b851165557e167d0911862010c
   docs/models/operations/projectmemberscreateresponse.md:
     id: baf86d673615
-    last_write_checksum: sha1:84235745999d0e18f8bbb6d007ca11729bda52df
-    pristine_git_object: 2559ed4c32bc978daec8155435692d4fb57a504e
+    last_write_checksum: sha1:a5057302b2e69470be970f61391c0c14ae335aee
+    pristine_git_object: 8b1579eec29dedea8d174b79b2a9bd5899e98c7a
   docs/models/operations/projectmembersdeleterequest.md:
     id: 5e83ddf929ae
     last_write_checksum: sha1:a22062964f1940600e5396e2aed54d7571189688
@@ -372,24 +380,24 @@ trackedFiles:
     pristine_git_object: 8607882514f37d73e12e80eb21bc1391cdf278bb
   docs/models/operations/projectmembersgetresponse.md:
     id: 326d3f744520
-    last_write_checksum: sha1:86f2171c01ae99f191a253ba9c65e270cdb641cc
-    pristine_git_object: bc5e293c9ec600741e52a225ec90387818282b79
+    last_write_checksum: sha1:7431bef664729d03be7adf664491c9f262841da3
+    pristine_git_object: acbcfa82e6d5ec014a6f7218e0db1b72d7a3f009
   docs/models/operations/projectmemberslistrequest.md:
     id: 32928c68a14b
     last_write_checksum: sha1:266ede86e1b658a504ef2095c81541a5affd6b02
     pristine_git_object: 5ae51078979c7613f2f381414042a6135c92e2e9
   docs/models/operations/projectmemberslistresponse.md:
     id: f993f46adb0d
-    last_write_checksum: sha1:b8d390515860ff1b3e36a336f489ca3575d79a16
-    pristine_git_object: c708e5aee3edee7b4ca6023c01ef08f3dacd7efe
+    last_write_checksum: sha1:cabcce2fee5a90e29170d67b2fd54a4ee607ec51
+    pristine_git_object: 46877c053d7436f4308f913ca586644501031286
   docs/models/operations/projectmembersupdaterequest.md:
     id: 9f146d6367dd
-    last_write_checksum: sha1:4d14a82bc50646286750ecdba3834699f6fd7709
-    pristine_git_object: 75e9ae286c4138fec2b832052e60042dec63ae2b
+    last_write_checksum: sha1:bcb594ec83a9685e9a9e9348577afed4becd91da
+    pristine_git_object: ed97b8f66a6f78169f10d31f6a737d81fe10efa8
   docs/models/operations/projectmembersupdateresponse.md:
     id: 5fcb00f90221
-    last_write_checksum: sha1:7cc559f68555ea09dd9b3f1c7cf42fae7bcbf71c
-    pristine_git_object: 66450f4229be7b661df30fa91f9a9a3a584ab861
+    last_write_checksum: sha1:dc6a19cd7954f940039ae16b6a1eb0013508f500
+    pristine_git_object: 8361aa27e14756bfb51e42f8e141f25622ab5fc9
   docs/models/operations/projectscreaterequest.md:
     id: 89fc17102ec8
     last_write_checksum: sha1:923057d68400804b6bd0dd6727018476090e5c1f
@@ -496,8 +504,8 @@ trackedFiles:
     pristine_git_object: e36d82fbbb17dd0d32b535779ad2f05c6dcb29ec
   docs/sdks/projectmembers/README.md:
     id: 23edba294122
-    last_write_checksum: sha1:08e4a26d3c1980d38a7090ac80d7910fcee0211d
-    pristine_git_object: 6100d7565549109137202b26bdaa47cd03129981
+    last_write_checksum: sha1:03ae407f5bae2716c1affd3ae8dcae96155779ed
+    pristine_git_object: 913caa22cfc313aae106dfddedb66a0d1ef93257
   docs/sdks/projects/README.md:
     id: 1c5f71754e17
     last_write_checksum: sha1:edab2fe630169fc37cb58fedb3c40ec67480dd18
@@ -612,8 +620,8 @@ trackedFiles:
     pristine_git_object: d69be1d70b03069164ddbeb8b122cb7e8c8ca504
   models/components/createprojectmember.go:
     id: ad1ef3f99233
-    last_write_checksum: sha1:bb467b8ab552923593e3f345bbdc4478744b0836
-    pristine_git_object: cdda5dc0b0eecd1d5abc0bb2e5fb22d1078e7ea5
+    last_write_checksum: sha1:fc33d3839a53da57b1c4c1f8160eda54620d0f5a
+    pristine_git_object: d8f11bf9766d0d8ecc0f1b56ca052328e2d4e848
   models/components/createspace.go:
     id: 13893b5ee8a1
     last_write_checksum: sha1:92d92e7afbdfbd0cf1d21b3078361e02588546eb
@@ -704,8 +712,16 @@ trackedFiles:
     pristine_git_object: cea99277fc4d1f3fd6b6f06b2dc341dae55913a5
   models/components/projectmember.go:
     id: 10905e6a19e9
-    last_write_checksum: sha1:05ad0eceb8b79c25d4787a757fedc92dc113bdcc
-    pristine_git_object: 22c8ebbdb8c49d0d8ec05fd1fd63625ab7a3a6ec
+    last_write_checksum: sha1:abdbe6234ca33c3d1d219af83f4383db30d76a09
+    pristine_git_object: b312d2662dd02fa5bde405d0d29a75297517851b
+  models/components/projectmemberupdate.go:
+    id: be8242e2cce2
+    last_write_checksum: sha1:fc887c55378615bd2a618597ca7995253719365f
+    pristine_git_object: 186474f0d4bd8f9d429fc68c1d8778244f6de8dd
+  models/components/projectrole.go:
+    id: 22ed344cbe62
+    last_write_checksum: sha1:e2dea3ffd75945f17b23554cb313f44df4ccfd77
+    pristine_git_object: 4e2fd68de72260072e0d553809642c48112c8ff6
   models/components/queryresult.go:
     id: 611cdedf66ff
     last_write_checksum: sha1:6a870234b21601f03b0365cfa572c989f3565408
@@ -828,8 +844,8 @@ trackedFiles:
     pristine_git_object: 9495e05ada1fc3ae7c2e6f5ecb0f84d14b772df6
   models/operations/projectmembersupdate.go:
     id: ebdea37c5191
-    last_write_checksum: sha1:df68f7a86fdefc7b3ef6fa90d01bda19b3501e3e
-    pristine_git_object: 4161d1152b7d04d4a5efa5804be77bcfcbb403da
+    last_write_checksum: sha1:ed44e71418c7c719974de75d00727ffe2c846c12
+    pristine_git_object: 1215b153d215006052b2b1f2e2536ae72cc8c1be
   models/operations/projectscreate.go:
     id: 564a9b1f9c2d
     last_write_checksum: sha1:d0b104eb31b654280faff701e09797d5d3ff7273
@@ -888,12 +904,12 @@ trackedFiles:
     pristine_git_object: a3534dee6a2ae9e278b3b0f8b113ee2a1664bc44
   phren.go:
     id: 3c886eef84be
-    last_write_checksum: sha1:4a9ee6f3f2de4b8a4f3b21e377ba4bb354c60106
-    pristine_git_object: 3ad2fcc039f081f0cf82ae4ad0f17d02315c4f57
+    last_write_checksum: sha1:b4763526560f47690cbf1c70e4f3aaae49414614
+    pristine_git_object: a5725b2270dac0d7e3ef59db371c7a376b86c809
   projectmembers.go:
     id: e51bf3767009
-    last_write_checksum: sha1:b2bf221e56d6aa067cacd943b229f7b963ccede8
-    pristine_git_object: d2b24321f65aa9d750396f9ab9d0a890dc5b002c
+    last_write_checksum: sha1:12eba03553d447d69ff1fe9f9facfae88e525675
+    pristine_git_object: c24815250571e333b484f9fe592c5b1beeff9ac1
   projects.go:
     id: 18025b258b56
     last_write_checksum: sha1:50d60ad4a30d7ca2ae8dd2ea65a872c8a959201b
@@ -1560,7 +1576,7 @@ examples:
           pageSize: 50
       responses:
         "200":
-          application/json: {"members": [{"name": "organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", "member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02", "user": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "email": "bob@acme.example", "displayName": "Bob Jones", "roles": ["admin"], "createdAt": "2026-02-05T09:05:00Z"}]}
+          application/json: {"members": [{"name": "organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", "member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02", "user": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "email": "bob@acme.example", "displayName": "Bob Jones", "role": "editor", "createdAt": "2026-02-05T09:05:00Z"}]}
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
   ProjectMembers_create:
@@ -1570,10 +1586,10 @@ examples:
           organization: "acme"
           project: "agent"
       requestBody:
-        application/json: {"member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02", "roles": ["admin"]}
+        application/json: {"member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02", "role": "editor"}
       responses:
         "201":
-          application/json: {"name": "organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", "member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02", "user": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "email": "bob@acme.example", "displayName": "Bob Jones", "roles": ["admin"], "createdAt": "2026-02-05T09:05:00Z"}
+          application/json: {"name": "organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", "member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02", "user": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "email": "bob@acme.example", "displayName": "Bob Jones", "role": "editor", "createdAt": "2026-02-05T09:05:00Z"}
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
   ProjectMembers_get:
@@ -1585,7 +1601,7 @@ examples:
           member: "0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04"
       responses:
         "200":
-          application/json: {"name": "organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", "member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02", "user": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "email": "bob@acme.example", "displayName": "Bob Jones", "roles": ["admin"], "createdAt": "2026-02-05T09:05:00Z"}
+          application/json: {"name": "organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", "member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02", "user": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "email": "bob@acme.example", "displayName": "Bob Jones", "role": "editor", "createdAt": "2026-02-05T09:05:00Z"}
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
   ProjectMembers_delete:
@@ -1810,14 +1826,11 @@ examples:
           project: "agent"
           member: "0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04"
       requestBody:
-        application/json: {"roles": ["admin"]}
+        application/json: {"role": "editor"}
       responses:
         "200":
-          application/json: {"name": "organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", "member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02", "user": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "email": "bob@acme.example", "displayName": "Bob Jones", "roles": ["admin"], "createdAt": "2026-02-05T09:05:00Z"}
+          application/json: {"name": "organizations/acme/projects/agent/members/0196f1d0-3b4c-7d5e-9f1a-2b3c4d5e6f04", "member": "organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02", "user": "users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e", "email": "bob@acme.example", "displayName": "Bob Jones", "role": "editor", "createdAt": "2026-02-05T09:05:00Z"}
         "400":
           application/problem+json: {"title": "Not Found", "status": 404, "detail": "organizations/acme does not exist."}
 examplesVersion: 1.0.2
-releaseNotes: |
-  ## Go SDK Changes:
-  * `Phren.Members.MembersUpdate()`: **Added**
-  * `Phren.ProjectMembers.ProjectMembersUpdate()`: **Added**
+releaseNotes: "## Go SDK Changes:\n* `Phren.ProjectMembers.List()`:  `response.Members[]` **Changed** (Breaking ⚠️)\n* `Phren.ProjectMembers.Create()`: \n  *  `request.Body` **Changed** (Breaking ⚠️)\n  *  `response` **Changed** (Breaking ⚠️)\n* `Phren.ProjectMembers.Get()`:  `response` **Changed** (Breaking ⚠️)\n* `Phren.ProjectMembers.ProjectMembersUpdate()`: \n  *  `request.Body` **Changed** (Breaking ⚠️)\n  *  `response` **Changed** (Breaking ⚠️)\n"

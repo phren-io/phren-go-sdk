@@ -214,13 +214,14 @@ organization `ACTIVE`.
 ### [ProjectMembers](docs/sdks/projectmembers/README.md)
 
 * [List](docs/sdks/projectmembers/README.md#list) - List. The project's members can list them.
-* [Create](docs/sdks/projectmembers/README.md#create) - Add an organization member to the project. Project admins add members; adding
+* [Create](docs/sdks/projectmembers/README.md#create) - Add an organization member to the project with a role. Project admins add members; adding
 one as an admin needs the right to grant admin. Fails with 409 if they're
 already in the project.
 * [Get](docs/sdks/projectmembers/README.md#get) - Get
-* [ProjectMembersUpdate](docs/sdks/projectmembers/README.md#projectmembersupdate) - Change a member's roles in the project. Making someone an admin needs the
-right to grant admin, and making an admin a plain member the right to
-revoke it. Demoting the project's last admin fails with 409.
+* [ProjectMembersUpdate](docs/sdks/projectmembers/README.md#projectmembersupdate) - Change a member's role in the project. Making someone an admin needs the
+right to grant admin; any other role needs the rights to add members and
+to revoke admin. A project needs no admin of its own: the organization's
+admins are its admins.
 * [Delete](docs/sdks/projectmembers/README.md#delete) - Remove a member. Project admins remove anyone; members remove themselves.
 
 ### [Projects](docs/sdks/projects/README.md)

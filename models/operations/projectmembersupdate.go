@@ -9,10 +9,10 @@ import (
 )
 
 type ProjectMembersUpdateRequest struct {
-	Organization string                  `pathParam:"style=simple,explode=false,name=organization"`
-	Project      string                  `pathParam:"style=simple,explode=false,name=project"`
-	Member       string                  `pathParam:"style=simple,explode=false,name=member"`
-	Body         components.MemberUpdate `request:"mediaType=application/json"`
+	Organization string                         `pathParam:"style=simple,explode=false,name=organization"`
+	Project      string                         `pathParam:"style=simple,explode=false,name=project"`
+	Member       string                         `pathParam:"style=simple,explode=false,name=member"`
+	Body         components.ProjectMemberUpdate `request:"mediaType=application/json"`
 }
 
 func (p *ProjectMembersUpdateRequest) GetOrganization() string {
@@ -36,9 +36,9 @@ func (p *ProjectMembersUpdateRequest) GetMember() string {
 	return p.Member
 }
 
-func (p *ProjectMembersUpdateRequest) GetBody() components.MemberUpdate {
+func (p *ProjectMembersUpdateRequest) GetBody() components.ProjectMemberUpdate {
 	if p == nil {
-		return components.MemberUpdate{}
+		return components.ProjectMemberUpdate{}
 	}
 	return p.Body
 }

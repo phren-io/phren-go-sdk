@@ -323,7 +323,7 @@ func (s *ProjectMembers) List(ctx context.Context, request operations.ProjectMem
 
 }
 
-// Create - Add an organization member to the project. Project admins add members; adding
+// Create - Add an organization member to the project with a role. Project admins add members; adding
 // one as an admin needs the right to grant admin. Fails with 409 if they're
 // already in the project.
 func (s *ProjectMembers) Create(ctx context.Context, organization string, project string, body components.CreateProjectMember, opts ...operations.Option) (*operations.ProjectMembersCreateResponse, error) {
@@ -833,10 +833,11 @@ func (s *ProjectMembers) Get(ctx context.Context, organization string, project s
 
 }
 
-// ProjectMembersUpdate - Change a member's roles in the project. Making someone an admin needs the
-// right to grant admin, and making an admin a plain member the right to
-// revoke it. Demoting the project's last admin fails with 409.
-func (s *ProjectMembers) ProjectMembersUpdate(ctx context.Context, organization string, project string, member string, body components.MemberUpdate, opts ...operations.Option) (*operations.ProjectMembersUpdateResponse, error) {
+// ProjectMembersUpdate - Change a member's role in the project. Making someone an admin needs the
+// right to grant admin; any other role needs the rights to add members and
+// to revoke admin. A project needs no admin of its own: the organization's
+// admins are its admins.
+func (s *ProjectMembers) ProjectMembersUpdate(ctx context.Context, organization string, project string, member string, body components.ProjectMemberUpdate, opts ...operations.Option) (*operations.ProjectMembersUpdateResponse, error) {
 	request := operations.ProjectMembersUpdateRequest{
 		Organization: organization,
 		Project:      project,

@@ -1383,8 +1383,7 @@ paths:
                     user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                     email: bob@acme.example
                     displayName: Bob Jones
-                    roles:
-                      - admin
+                    role: editor
                     createdAt: '2026-02-05T09:05:00Z'
         '400':
           description: The request is malformed or fails validation.
@@ -1417,7 +1416,7 @@ paths:
     post:
       operationId: ProjectMembers_create
       description: |-
-        Add an organization member to the project. Project admins add members; adding
+        Add an organization member to the project with a role. Project admins add members; adding
         one as an admin needs the right to grant admin. Fails with 409 if they're
         already in the project.
       parameters:
@@ -1446,8 +1445,7 @@ paths:
                 user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                 email: bob@acme.example
                 displayName: Bob Jones
-                roles:
-                  - admin
+                role: editor
                 createdAt: '2026-02-05T09:05:00Z'
         '400':
           description: The request is malformed or fails validation.
@@ -1483,8 +1481,7 @@ paths:
               $ref: '#/components/schemas/CreateProjectMember'
             example:
               member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
-              roles:
-                - admin
+              role: editor
   /v1/organizations/{organization}/projects/{project}/members/{member}:
     get:
       operationId: ProjectMembers_get
@@ -1532,8 +1529,7 @@ paths:
                 user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                 email: bob@acme.example
                 displayName: Bob Jones
-                roles:
-                  - admin
+                role: editor
                 createdAt: '2026-02-05T09:05:00Z'
         '400':
           description: The request is malformed or fails validation.
@@ -1564,9 +1560,10 @@ paths:
     patch:
       operationId: ProjectMembers_update
       description: |-
-        Change a member's roles in the project. Making someone an admin needs the
-        right to grant admin, and making an admin a plain member the right to
-        revoke it. Demoting the project's last admin fails with 409.
+        Change a member's role in the project. Making someone an admin needs the
+        right to grant admin; any other role needs the rights to add members and
+        to revoke admin. A project needs no admin of its own: the organization's
+        admins are its admins.
       parameters:
         - name: organization
           in: path
@@ -1599,8 +1596,7 @@ paths:
                 user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
                 email: bob@acme.example
                 displayName: Bob Jones
-                roles:
-                  - admin
+                role: editor
                 createdAt: '2026-02-05T09:05:00Z'
         '400':
           description: The request is malformed or fails validation.
@@ -1639,10 +1635,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MemberUpdate'
+              $ref: '#/components/schemas/ProjectMemberUpdate'
             example:
-              roles:
-                - admin
+              role: editor
     delete:
       operationId: ProjectMembers_delete
       description: Remove a member. Project admins remove anyone; members remove themselves.
@@ -2833,24 +2828,22 @@ components:
       type: object
       required:
         - member
+        - role
       properties:
         member:
           type: string
           description: |-
             The organization member added to the project:
             `organizations/{organization}/members/{member}`.
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/MemberRole'
-          description: Roles the member holds in the project. Empty for a plain member.
+        role:
+          $ref: '#/components/schemas/ProjectRole'
+          description: "The member's role in the project: exactly one."
       description: |-
         An organization member's membership in a project. Organization admins
         manage every project without being members.
       examples:
         - member: organizations/acme/members/0196f1b8-2d4f-7a1c-8e3b-5c6d7e8f9a02
-          roles:
-            - admin
+          role: editor
     CreateSpace:
       type: object
       required:
@@ -3143,8 +3136,7 @@ components:
               user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
               email: bob@acme.example
               displayName: Bob Jones
-              roles:
-                - admin
+              role: editor
               createdAt: '2026-02-05T09:05:00Z'
     ListProjectsResponse:
       type: object
@@ -3550,6 +3542,7 @@ components:
         - user
         - email
         - displayName
+        - role
         - createdAt
       properties:
         name:
@@ -3573,11 +3566,9 @@ components:
           type: string
           description: The user's name, from their organization membership.
           readOnly: true
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/MemberRole'
-          description: Roles the member holds in the project. Empty for a plain member.
+        role:
+          $ref: '#/components/schemas/ProjectRole'
+          description: "The member's role in the project: exactly one."
         createdAt:
           type: string
           format: date-time
@@ -3601,9 +3592,29 @@ components:
           user: users/4e1a2b3c-6d5f-4a8b-9c7e-2f3a4b5c6d7e
           email: bob@acme.example
           displayName: Bob Jones
-          roles:
-            - admin
+          role: editor
           createdAt: '2026-02-05T09:05:00Z'
+    ProjectMemberUpdate:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          $ref: '#/components/schemas/ProjectRole'
+          description: The member's role from now on.
+      description: The fields an update of a project member sets.
+    ProjectRole:
+      type: string
+      enum:
+        - admin
+        - editor
+        - viewer
+      description: |-
+        A member's role in a project. Each includes the next: admins manage the
+        project's members and spaces, editors also write and delete memories in
+        its spaces, and viewers read and search them.
+      examples:
+        - editor
     QueryResult:
       type: object
       required:
